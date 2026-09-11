@@ -1,22 +1,31 @@
 import {
+  LeagueStandingsTable,
+  type LeagueStandingsByScope,
+} from "@/components/LeagueStandingsTable";
+import {
   historicalImportSummary,
   historicalLeagueData,
 } from "@/lib/data/historicalLeagueData";
-import Link from "next/link";
+import {
+  filterGameResultsByScope,
+  type GameScope,
+} from "@/lib/stats/gameFilters";
 import type { MarginRecord, ScoreRecord } from "@/lib/stats/leagueStats";
 import { getManagerActivities } from "@/lib/stats/managerActivity";
 import {
   buildGameResults,
-  isRecordEligibleGame,
+  getManagerStandings,
   summarizeLeague,
 } from "@/lib/stats/leagueStats";
 
 export default function Home() {
-  const officialGameResults = buildGameResults(historicalLeagueData).filter(
-    isRecordEligibleGame,
+  const allGameResults = buildGameResults(historicalLeagueData);
+  const officialGameResults = filterGameResultsByScope(
+    allGameResults,
+    "official",
   );
   const summary = summarizeLeague(historicalLeagueData, officialGameResults);
-  const { records, standings } = summary;
+  const { records } = summary;
   const seasons = historicalLeagueData.seasons.map((season) => season.year);
   const managerActivities = getManagerActivities(historicalLeagueData);
   const activityByManagerId = new Map(
@@ -27,6 +36,22 @@ export default function Home() {
   ).length;
   const seasonRange = `${Math.min(...seasons)}-${Math.max(...seasons)}`;
   const officialMatchups = officialGameResults.length / 2;
+  const standingsByScope = (
+    ["official", "regular", "playoff", "consolation"] satisfies GameScope[]
+  ).reduce((scopes, scope) => {
+    const scopedGameResults = filterGameResultsByScope(allGameResults, scope);
+
+    return {
+      ...scopes,
+      [scope]: getManagerStandings(
+        historicalLeagueData,
+        scopedGameResults,
+      ).map((standing) => ({
+        ...standing,
+        activity: activityByManagerId.get(standing.managerId) ?? null,
+      })),
+    };
+  }, {} as LeagueStandingsByScope);
   const statCards = [
     {
       label: "Managers",
@@ -186,101 +211,10 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="overflow-hidden rounded-lg border border-[#d9dee4] bg-white shadow-sm">
-          <div className="flex items-center justify-between gap-4 border-b border-[#e8ebef] px-4 py-4">
-            <div>
-              <p className="text-sm font-semibold text-[#58606a]">
-                All-Time Standings
-              </p>
-              <h2 className="mt-1 text-2xl font-semibold text-[#17191f]">
-                Manager records
-              </h2>
-            </div>
-            <p className="hidden rounded-md bg-[#f0b429]/20 px-3 py-2 text-sm font-semibold text-[#7c5200] sm:block">
-              Regular + playoff
-            </p>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[940px] border-collapse text-left text-sm">
-              <thead className="bg-[#f8f9fb] text-[#58606a]">
-                <tr>
-                  <th className="px-4 py-3 font-semibold">Manager</th>
-                  <th className="px-4 py-3 font-semibold">Record</th>
-                  <th className="px-4 py-3 font-semibold">Win %</th>
-                  <th className="px-4 py-3 font-semibold">PF</th>
-                  <th className="px-4 py-3 font-semibold">PA</th>
-                  <th className="px-4 py-3 font-semibold">Avg PF</th>
-                  <th className="px-4 py-3 font-semibold">Avg PA</th>
-                  <th className="px-4 py-3 font-semibold">High</th>
-                  <th className="px-4 py-3 font-semibold">Low</th>
-                </tr>
-              </thead>
-              <tbody>
-                {standings.map((standing) => {
-                  const activity = activityByManagerId.get(standing.managerId);
-                  const isActive = activity?.isActive ?? false;
-
-                  return (
-                    <tr
-                      key={standing.managerId}
-                      className={getStandingRowClass(isActive)}
-                    >
-                      <td className="px-4 py-3 font-semibold">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <Link
-                            href={`/managers/${standing.managerId}`}
-                            className={getManagerLinkClass(isActive)}
-                          >
-                            {standing.managerName}
-                          </Link>
-                          <span className={getActivityBadgeClass(isActive)}>
-                            {formatActivityLabel(activity)}
-                          </span>
-                        </div>
-                      </td>
-                      <td className={getStandingCellClass(isActive)}>
-                        {standing.wins}-{standing.losses}
-                        {standing.ties > 0 ? `-${standing.ties}` : ""}
-                      </td>
-                      <td className={getStandingCellClass(isActive)}>
-                        {standing.winPercentage.toFixed(3)}
-                      </td>
-                      <td className={getStandingCellClass(isActive)}>
-                        {standing.pointsFor.toFixed(1)}
-                      </td>
-                      <td className={getStandingCellClass(isActive)}>
-                        {standing.pointsAgainst.toFixed(1)}
-                      </td>
-                      <td className={getStandingCellClass(isActive)}>
-                        {standing.averagePointsFor.toFixed(1)}
-                      </td>
-                      <td className={getStandingCellClass(isActive)}>
-                        {standing.averagePointsAgainst.toFixed(1)}
-                      </td>
-                      <td
-                        className={`px-4 py-3 ${isActive ? "text-[#2f6f50]" : "text-[#8a939e]"}`}
-                      >
-                        {formatNullableScore(standing.highestScore)}
-                      </td>
-                      <td
-                        className={`px-4 py-3 ${isActive ? "text-[#b23b4a]" : "text-[#8a939e]"}`}
-                      >
-                        {formatNullableScore(standing.lowestScore)}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </section>
+        <LeagueStandingsTable standingsByScope={standingsByScope} />
       </div>
     </main>
   );
-}
-
-function formatNullableScore(score: number | null) {
-  return score === null ? "0.0" : score.toFixed(1);
 }
 
 function formatScore(record: ScoreRecord | null) {
@@ -309,34 +243,4 @@ function formatMarginRecord(record: MarginRecord | null) {
 
 function formatMarginValue(margin: number) {
   return margin > 0 && margin < 1 ? margin.toFixed(2) : margin.toFixed(1);
-}
-
-function formatActivityLabel(
-  activity: { isActive: boolean; lastSeasonYear: number | null } | undefined,
-) {
-  if (activity?.isActive) {
-    return "Active";
-  }
-
-  return activity?.lastSeasonYear ? `Last ${activity.lastSeasonYear}` : "Inactive";
-}
-
-function getStandingRowClass(isActive: boolean) {
-  return `border-t border-[#e8ebef] ${isActive ? "" : "bg-[#fafafa]"}`;
-}
-
-function getStandingCellClass(isActive: boolean) {
-  return `px-4 py-3 ${isActive ? "text-[#424a53]" : "text-[#8a939e]"}`;
-}
-
-function getManagerLinkClass(isActive: boolean) {
-  return `underline-offset-4 hover:text-[#2f6f50] hover:underline ${
-    isActive ? "text-[#17191f]" : "text-[#7a828c]"
-  }`;
-}
-
-function getActivityBadgeClass(isActive: boolean) {
-  return `rounded-md px-2 py-1 text-xs font-semibold ${
-    isActive ? "bg-[#eef5f1] text-[#2f6f50]" : "bg-[#eceff3] text-[#7a828c]"
-  }`;
 }

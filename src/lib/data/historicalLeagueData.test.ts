@@ -10,6 +10,7 @@ import {
   isRecordEligibleGame,
   summarizeLeague,
 } from "../stats/leagueStats";
+import { filterGameResultsByScope } from "../stats/gameFilters";
 import { getManagerActivities } from "../stats/managerActivity";
 import { getManagerProfile } from "../stats/managerProfile";
 
@@ -148,6 +149,23 @@ describe("historical workbook data", () => {
     expect(summary.records.closestWin?.margin).toBeLessThan(0.1);
   });
 
+  it("filters game results by dashboard scope", () => {
+    const allGameResults = buildGameResults(historicalLeagueData);
+
+    expect(filterGameResultsByScope(allGameResults, "official")).toHaveLength(
+      (636 + 41) * 2,
+    );
+    expect(filterGameResultsByScope(allGameResults, "regular")).toHaveLength(
+      636 * 2,
+    );
+    expect(filterGameResultsByScope(allGameResults, "playoff")).toHaveLength(
+      41 * 2,
+    );
+    expect(
+      filterGameResultsByScope(allGameResults, "consolation"),
+    ).toHaveLength(102 * 2);
+  });
+
   it("marks managers active when they played in the latest imported season", () => {
     const activities = getManagerActivities(historicalLeagueData);
     const richard = activities.find(
@@ -244,6 +262,14 @@ describe("historical workbook data", () => {
         seasonYear: 2020,
         weekNumber: 1,
       },
+    });
+    expect(josh?.games).toHaveLength(130);
+    expect(
+      josh?.headToHead.find(
+        (row) => row.opponentManagerName === "Kevin Zhang",
+      ),
+    ).toMatchObject({
+      opponentIsActive: false,
     });
 
     const season2015 = josh?.seasonSplits.find(

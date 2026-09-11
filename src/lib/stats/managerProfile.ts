@@ -30,6 +30,7 @@ export type ManagerGameSummary = {
   gameType: MatchupGameType;
   opponentManagerId: EntityId;
   opponentManagerName: string;
+  opponentIsActive: boolean;
   pointsFor: number;
   pointsAgainst: number;
   margin: number;
@@ -82,6 +83,7 @@ export type ManagerProfile = {
   longestLosingStreak: ManagerStreak | null;
   seasonSplits: ManagerSeasonSplit[];
   headToHead: ManagerHeadToHeadSummary[];
+  games: ManagerGameSummary[];
   recentGames: ManagerGameSummary[];
 };
 
@@ -171,13 +173,18 @@ const compareGamesAscending = (first: GameResult, second: GameResult) => {
 const compareGamesDescending = (first: GameResult, second: GameResult) =>
   compareGamesAscending(second, first);
 
-const toManagerGameSummary = (game: GameResult): ManagerGameSummary => ({
+const toManagerGameSummary = (
+  game: GameResult,
+  activityByManagerId: Map<EntityId, ManagerActivity>,
+): ManagerGameSummary => ({
   matchupId: game.matchupId,
   seasonYear: game.seasonYear,
   weekNumber: game.weekNumber,
   gameType: game.gameType,
   opponentManagerId: game.opponentManagerId,
   opponentManagerName: game.opponentManagerName,
+  opponentIsActive:
+    activityByManagerId.get(game.opponentManagerId)?.isActive ?? false,
   pointsFor: game.pointsFor,
   pointsAgainst: game.pointsAgainst,
   margin: game.margin,
@@ -187,6 +194,7 @@ const toManagerGameSummary = (game: GameResult): ManagerGameSummary => ({
 const getLongestStreak = (
   games: GameResult[],
   outcome: Extract<GameOutcome, "win" | "loss">,
+  activityByManagerId: Map<EntityId, ManagerActivity>,
 ): ManagerStreak | null => {
   let current: GameResult[] = [];
   let best: GameResult[] = [];
@@ -213,8 +221,8 @@ const getLongestStreak = (
   return {
     outcome,
     games: best.length,
-    start: toManagerGameSummary(start),
-    end: toManagerGameSummary(end),
+    start: toManagerGameSummary(start, activityByManagerId),
+    end: toManagerGameSummary(end, activityByManagerId),
   };
 };
 
@@ -362,13 +370,24 @@ export const getManagerProfile = (
     records: getLeagueRecords(officialGames),
     bestRegularSeason: getSeasonMark(rankedRegularSeasons.at(-1)),
     worstRegularSeason: getSeasonMark(rankedRegularSeasons.at(0)),
-    longestWinningStreak: getLongestStreak(officialGames, "win"),
-    longestLosingStreak: getLongestStreak(officialGames, "loss"),
+    longestWinningStreak: getLongestStreak(
+      officialGames,
+      "win",
+      activityByManagerId,
+    ),
+    longestLosingStreak: getLongestStreak(
+      officialGames,
+      "loss",
+      activityByManagerId,
+    ),
     seasonSplits,
     headToHead: getManagerHeadToHead(officialGames, activityByManagerId),
+    games: [...managerGames]
+      .sort(compareGamesDescending)
+      .map((game) => toManagerGameSummary(game, activityByManagerId)),
     recentGames: [...officialGames]
       .sort(compareGamesDescending)
       .slice(0, 10)
-      .map(toManagerGameSummary),
+      .map((game) => toManagerGameSummary(game, activityByManagerId)),
   };
 };

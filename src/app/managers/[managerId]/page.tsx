@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { ManagerProfileTables } from "@/components/ManagerProfileTables";
 import { historicalLeagueData } from "@/lib/data/historicalLeagueData";
-import type { MatchupGameType } from "@/lib/domain/types";
 import {
   getManagerProfile,
-  type ManagerGameSummary,
   type ManagerRecordSummary,
   type ManagerStreak,
 } from "@/lib/stats/managerProfile";
@@ -249,118 +248,10 @@ export default async function ManagerPage({ params }: ManagerPageProps) {
           </div>
         </section>
 
-        <section className="grid gap-4 lg:grid-cols-[0.9fr_1.1fr]">
-          <div className="overflow-hidden rounded-lg border border-[#d9dee4] bg-white shadow-sm">
-            <div className="border-b border-[#e8ebef] px-4 py-4">
-              <p className="text-sm font-semibold text-[#58606a]">
-                Head-to-Head
-              </p>
-              <h2 className="mt-1 text-2xl font-semibold text-[#17191f]">
-                Opponent records
-              </h2>
-            </div>
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[560px] border-collapse text-left text-sm">
-                <thead className="bg-[#f8f9fb] text-[#58606a]">
-                  <tr>
-                    <th className="px-4 py-3 font-semibold">Opponent</th>
-                    <th className="px-4 py-3 font-semibold">Record</th>
-                    <th className="px-4 py-3 font-semibold">Win %</th>
-                    <th className="px-4 py-3 font-semibold">Avg PF</th>
-                    <th className="px-4 py-3 font-semibold">Avg PA</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {profile.headToHead.map((row) => (
-                    <tr
-                      key={row.opponentManagerId}
-                      className={getOpponentRowClass(row.opponentIsActive)}
-                    >
-                      <td className="px-4 py-3 font-semibold">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <Link
-                            href={`/managers/${row.opponentManagerId}`}
-                            className={getOpponentLinkClass(row.opponentIsActive)}
-                          >
-                            {row.opponentManagerName}
-                          </Link>
-                          {!row.opponentIsActive && (
-                            <span className="rounded-md bg-[#eceff3] px-2 py-1 text-xs font-semibold text-[#7a828c]">
-                              Inactive
-                            </span>
-                          )}
-                        </div>
-                      </td>
-                      <td className={getOpponentCellClass(row.opponentIsActive)}>
-                        {formatRecord(row.record)}
-                      </td>
-                      <td className={getOpponentCellClass(row.opponentIsActive)}>
-                        {row.record.winPercentage.toFixed(3)}
-                      </td>
-                      <td className={getOpponentCellClass(row.opponentIsActive)}>
-                        {formatScore(row.record.averagePointsFor)}
-                      </td>
-                      <td className={getOpponentCellClass(row.opponentIsActive)}>
-                        {formatScore(row.record.averagePointsAgainst)}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <div className="overflow-hidden rounded-lg border border-[#d9dee4] bg-white shadow-sm">
-            <div className="border-b border-[#e8ebef] px-4 py-4">
-              <p className="text-sm font-semibold text-[#58606a]">
-                Recent Games
-              </p>
-              <h2 className="mt-1 text-2xl font-semibold text-[#17191f]">
-                Latest official results
-              </h2>
-            </div>
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[640px] border-collapse text-left text-sm">
-                <thead className="bg-[#f8f9fb] text-[#58606a]">
-                  <tr>
-                    <th className="px-4 py-3 font-semibold">Game</th>
-                    <th className="px-4 py-3 font-semibold">Type</th>
-                    <th className="px-4 py-3 font-semibold">Opponent</th>
-                    <th className="px-4 py-3 font-semibold">Score</th>
-                    <th className="px-4 py-3 font-semibold">Result</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {profile.recentGames.map((game) => (
-                    <tr
-                      key={game.matchupId}
-                      className="border-t border-[#e8ebef]"
-                    >
-                      <td className="px-4 py-3 font-semibold text-[#17191f]">
-                        {game.seasonYear} W{game.weekNumber}
-                      </td>
-                      <td className="px-4 py-3 text-[#424a53]">
-                        {formatGameType(game.gameType)}
-                      </td>
-                      <td className="px-4 py-3 text-[#424a53]">
-                        {game.opponentManagerName}
-                      </td>
-                      <td className="px-4 py-3 text-[#424a53]">
-                        {formatScore(game.pointsFor)}-
-                        {formatScore(game.pointsAgainst)}
-                      </td>
-                      <td
-                        className={`px-4 py-3 font-semibold ${getOutcomeClass(game.outcome)}`}
-                      >
-                        {formatGameOutcome(game)}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </section>
+        <ManagerProfileTables
+          headToHead={profile.headToHead}
+          games={profile.games}
+        />
       </div>
     </main>
   );
@@ -386,18 +277,6 @@ function formatScoreOrEmpty(score: number) {
   return score === 0 ? "N/A" : formatScore(score);
 }
 
-function formatGameType(gameType: MatchupGameType) {
-  if (gameType === "regular") {
-    return "Regular";
-  }
-
-  if (gameType === "playoff") {
-    return "Playoff";
-  }
-
-  return "Consolation";
-}
-
 function formatStreakLength(streak: ManagerStreak | null) {
   return streak ? String(streak.games) : "N/A";
 }
@@ -410,48 +289,8 @@ function formatStreakRange(streak: ManagerStreak | null) {
   return `${streak.start.seasonYear} W${streak.start.weekNumber} to ${streak.end.seasonYear} W${streak.end.weekNumber}`;
 }
 
-function formatGameOutcome(game: ManagerGameSummary) {
-  if (game.outcome === "tie") {
-    return "T";
-  }
-
-  const margin = formatMarginValue(Math.abs(game.margin));
-
-  return game.outcome === "win" ? `W +${margin}` : `L -${margin}`;
-}
-
-function getOutcomeClass(outcome: ManagerGameSummary["outcome"]) {
-  if (outcome === "win") {
-    return "text-[#2f6f50]";
-  }
-
-  if (outcome === "loss") {
-    return "text-[#b23b4a]";
-  }
-
-  return "text-[#7c5200]";
-}
-
-function formatMarginValue(margin: number) {
-  return margin > 0 && margin < 1 ? margin.toFixed(2) : margin.toFixed(1);
-}
-
 function getProfileActivityBadgeClass(isActive: boolean) {
   return `rounded-md px-3 py-2 text-sm font-semibold ${
     isActive ? "bg-[#eef5f1] text-[#2f6f50]" : "bg-[#eceff3] text-[#7a828c]"
-  }`;
-}
-
-function getOpponentRowClass(isActive: boolean) {
-  return `border-t border-[#e8ebef] ${isActive ? "" : "bg-[#fafafa]"}`;
-}
-
-function getOpponentCellClass(isActive: boolean) {
-  return `px-4 py-3 ${isActive ? "text-[#424a53]" : "text-[#8a939e]"}`;
-}
-
-function getOpponentLinkClass(isActive: boolean) {
-  return `underline-offset-4 hover:text-[#2f6f50] hover:underline ${
-    isActive ? "text-[#17191f]" : "text-[#7a828c]"
   }`;
 }
