@@ -4,6 +4,7 @@ import {
 } from "@/lib/data/historicalLeagueData";
 import Link from "next/link";
 import type { MarginRecord, ScoreRecord } from "@/lib/stats/leagueStats";
+import { getManagerActivities } from "@/lib/stats/managerActivity";
 import {
   buildGameResults,
   isRecordEligibleGame,
@@ -17,13 +18,20 @@ export default function Home() {
   const summary = summarizeLeague(historicalLeagueData, officialGameResults);
   const { records, standings } = summary;
   const seasons = historicalLeagueData.seasons.map((season) => season.year);
+  const managerActivities = getManagerActivities(historicalLeagueData);
+  const activityByManagerId = new Map(
+    managerActivities.map((activity) => [activity.managerId, activity]),
+  );
+  const activeManagerCount = managerActivities.filter(
+    (activity) => activity.isActive,
+  ).length;
   const seasonRange = `${Math.min(...seasons)}-${Math.max(...seasons)}`;
   const officialMatchups = officialGameResults.length / 2;
   const statCards = [
     {
       label: "Managers",
       value: summary.managerCount,
-      detail: "historical owners",
+      detail: `${activeManagerCount} active / ${summary.managerCount} total`,
       tone: "bg-[#eef5f1]",
     },
     {
@@ -193,7 +201,7 @@ export default function Home() {
             </p>
           </div>
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[860px] border-collapse text-left text-sm">
+            <table className="w-full min-w-[940px] border-collapse text-left text-sm">
               <thead className="bg-[#f8f9fb] text-[#58606a]">
                 <tr>
                   <th className="px-4 py-3 font-semibold">Manager</th>
@@ -208,46 +216,60 @@ export default function Home() {
                 </tr>
               </thead>
               <tbody>
-                {standings.map((standing) => (
-                  <tr
-                    key={standing.managerId}
-                    className="border-t border-[#e8ebef]"
-                  >
-                    <td className="px-4 py-3 font-semibold text-[#17191f]">
-                      <Link
-                        href={`/managers/${standing.managerId}`}
-                        className="underline-offset-4 hover:text-[#2f6f50] hover:underline"
+                {standings.map((standing) => {
+                  const activity = activityByManagerId.get(standing.managerId);
+                  const isActive = activity?.isActive ?? false;
+
+                  return (
+                    <tr
+                      key={standing.managerId}
+                      className={getStandingRowClass(isActive)}
+                    >
+                      <td className="px-4 py-3 font-semibold">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <Link
+                            href={`/managers/${standing.managerId}`}
+                            className={getManagerLinkClass(isActive)}
+                          >
+                            {standing.managerName}
+                          </Link>
+                          <span className={getActivityBadgeClass(isActive)}>
+                            {formatActivityLabel(activity)}
+                          </span>
+                        </div>
+                      </td>
+                      <td className={getStandingCellClass(isActive)}>
+                        {standing.wins}-{standing.losses}
+                        {standing.ties > 0 ? `-${standing.ties}` : ""}
+                      </td>
+                      <td className={getStandingCellClass(isActive)}>
+                        {standing.winPercentage.toFixed(3)}
+                      </td>
+                      <td className={getStandingCellClass(isActive)}>
+                        {standing.pointsFor.toFixed(1)}
+                      </td>
+                      <td className={getStandingCellClass(isActive)}>
+                        {standing.pointsAgainst.toFixed(1)}
+                      </td>
+                      <td className={getStandingCellClass(isActive)}>
+                        {standing.averagePointsFor.toFixed(1)}
+                      </td>
+                      <td className={getStandingCellClass(isActive)}>
+                        {standing.averagePointsAgainst.toFixed(1)}
+                      </td>
+                      <td
+                        className={`px-4 py-3 ${isActive ? "text-[#2f6f50]" : "text-[#8a939e]"}`}
                       >
-                        {standing.managerName}
-                      </Link>
-                    </td>
-                    <td className="px-4 py-3 text-[#424a53]">
-                      {standing.wins}-{standing.losses}
-                      {standing.ties > 0 ? `-${standing.ties}` : ""}
-                    </td>
-                    <td className="px-4 py-3 text-[#424a53]">
-                      {standing.winPercentage.toFixed(3)}
-                    </td>
-                    <td className="px-4 py-3 text-[#424a53]">
-                      {standing.pointsFor.toFixed(1)}
-                    </td>
-                    <td className="px-4 py-3 text-[#424a53]">
-                      {standing.pointsAgainst.toFixed(1)}
-                    </td>
-                    <td className="px-4 py-3 text-[#424a53]">
-                      {standing.averagePointsFor.toFixed(1)}
-                    </td>
-                    <td className="px-4 py-3 text-[#424a53]">
-                      {standing.averagePointsAgainst.toFixed(1)}
-                    </td>
-                    <td className="px-4 py-3 text-[#2f6f50]">
-                      {formatNullableScore(standing.highestScore)}
-                    </td>
-                    <td className="px-4 py-3 text-[#b23b4a]">
-                      {formatNullableScore(standing.lowestScore)}
-                    </td>
-                  </tr>
-                ))}
+                        {formatNullableScore(standing.highestScore)}
+                      </td>
+                      <td
+                        className={`px-4 py-3 ${isActive ? "text-[#b23b4a]" : "text-[#8a939e]"}`}
+                      >
+                        {formatNullableScore(standing.lowestScore)}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -266,7 +288,7 @@ function formatScore(record: ScoreRecord | null) {
 }
 
 function formatMargin(record: MarginRecord | null) {
-  return record ? record.margin.toFixed(1) : "0.0";
+  return record ? formatMarginValue(record.margin) : "0.0";
 }
 
 function formatScoreRecord(record: ScoreRecord | null) {
@@ -282,5 +304,39 @@ function formatMarginRecord(record: MarginRecord | null) {
     return "No games logged";
   }
 
-  return `${record.managerName}, ${record.seasonYear} Week ${record.weekNumber} by ${record.margin.toFixed(1)}`;
+  return `${record.managerName}, ${record.seasonYear} Week ${record.weekNumber} by ${formatMarginValue(record.margin)}`;
+}
+
+function formatMarginValue(margin: number) {
+  return margin > 0 && margin < 1 ? margin.toFixed(2) : margin.toFixed(1);
+}
+
+function formatActivityLabel(
+  activity: { isActive: boolean; lastSeasonYear: number | null } | undefined,
+) {
+  if (activity?.isActive) {
+    return "Active";
+  }
+
+  return activity?.lastSeasonYear ? `Last ${activity.lastSeasonYear}` : "Inactive";
+}
+
+function getStandingRowClass(isActive: boolean) {
+  return `border-t border-[#e8ebef] ${isActive ? "" : "bg-[#fafafa]"}`;
+}
+
+function getStandingCellClass(isActive: boolean) {
+  return `px-4 py-3 ${isActive ? "text-[#424a53]" : "text-[#8a939e]"}`;
+}
+
+function getManagerLinkClass(isActive: boolean) {
+  return `underline-offset-4 hover:text-[#2f6f50] hover:underline ${
+    isActive ? "text-[#17191f]" : "text-[#7a828c]"
+  }`;
+}
+
+function getActivityBadgeClass(isActive: boolean) {
+  return `rounded-md px-2 py-1 text-xs font-semibold ${
+    isActive ? "bg-[#eef5f1] text-[#2f6f50]" : "bg-[#eceff3] text-[#7a828c]"
+  }`;
 }

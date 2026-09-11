@@ -7,6 +7,7 @@ import {
   type GameResult,
   type LeagueRecords,
 } from "./leagueStats";
+import { getManagerActivities, type ManagerActivity } from "./managerActivity";
 
 export type ManagerRecordSummary = {
   games: number;
@@ -59,12 +60,15 @@ export type ManagerSeasonMark = {
 export type ManagerHeadToHeadSummary = {
   opponentManagerId: EntityId;
   opponentManagerName: string;
+  opponentIsActive: boolean;
   record: ManagerRecordSummary;
 };
 
 export type ManagerProfile = {
   managerId: EntityId;
   managerName: string;
+  isActive: boolean;
+  lastSeasonYear: number | null;
   seasonsPlayed: number;
   seasonYears: number[];
   career: ManagerRecordSummary;
@@ -256,6 +260,7 @@ const getSeasonMark = (
 
 const getManagerHeadToHead = (
   officialGames: GameResult[],
+  activityByManagerId: Map<EntityId, ManagerActivity>,
 ): ManagerHeadToHeadSummary[] => {
   const gamesByOpponent = new Map<EntityId, GameResult[]>();
 
@@ -270,6 +275,8 @@ const getManagerHeadToHead = (
     .map(([opponentManagerId, games]) => ({
       opponentManagerId,
       opponentManagerName: games[0].opponentManagerName,
+      opponentIsActive:
+        activityByManagerId.get(opponentManagerId)?.isActive ?? false,
       record: summarizeManagerGames(games),
     }))
     .sort((first, second) => {
@@ -296,6 +303,11 @@ export const getManagerProfile = (
     return null;
   }
 
+  const activities = getManagerActivities(data);
+  const activityByManagerId = new Map(
+    activities.map((activity) => [activity.managerId, activity]),
+  );
+  const managerActivity = activityByManagerId.get(managerId);
   const managerGames = gameResults.filter((game) => game.managerId === managerId);
   const officialGames = managerGames.filter(isRecordEligibleGame);
   const regularSeasonGames = managerGames.filter(
@@ -339,6 +351,8 @@ export const getManagerProfile = (
   return {
     managerId,
     managerName: manager.displayName,
+    isActive: managerActivity?.isActive ?? false,
+    lastSeasonYear: managerActivity?.lastSeasonYear ?? null,
     seasonsPlayed: seasonYears.length,
     seasonYears,
     career: summarizeManagerGames(officialGames),
@@ -351,7 +365,7 @@ export const getManagerProfile = (
     longestWinningStreak: getLongestStreak(officialGames, "win"),
     longestLosingStreak: getLongestStreak(officialGames, "loss"),
     seasonSplits,
-    headToHead: getManagerHeadToHead(officialGames),
+    headToHead: getManagerHeadToHead(officialGames, activityByManagerId),
     recentGames: [...officialGames]
       .sort(compareGamesDescending)
       .slice(0, 10)

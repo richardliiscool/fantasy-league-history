@@ -315,7 +315,7 @@ const toScoreRecord = (game: GameResult): ScoreRecord => ({
 
 const toMarginRecord = (game: GameResult): MarginRecord => ({
   ...toScoreRecord(game),
-  margin: roundTo(Math.abs(game.margin), 1),
+  margin: roundTo(Math.abs(game.margin), 2),
 });
 
 export const getLeagueRecords = (gameResults: GameResult[]): LeagueRecords => {
@@ -342,7 +342,6 @@ export const summarizeLeague = (
   data: LeagueData,
   gameResults = buildGameResults(data),
 ): LeagueSummary => {
-
   return {
     managerCount: data.managers.length,
     seasonCount: data.seasons.length,

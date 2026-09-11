@@ -47,6 +47,8 @@ The homepage uses the generated historical data for the first real all-time lead
 - `/` shows the league-wide records dashboard and all-time manager standings.
 - `/managers/[managerId]` shows an individual manager profile with career totals, season splits, head-to-head records, and recent games.
 
+Managers are treated as active when they appear in the latest imported season. Historical managers remain visible but are shown with a softer inactive treatment in tables.
+
 ## Local Commands
 
 ```bash
@@ -74,3 +76,4 @@ npm run build
 - Initial stats engine and tests exist.
 - The home page renders a real league records dashboard from the stats engine.
 - Manager profile pages render from the shared stats engine.
+- Active/inactive manager status and close-game margin display are handled in the app.

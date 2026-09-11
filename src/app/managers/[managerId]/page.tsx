@@ -129,9 +129,16 @@ export default async function ManagerPage({ params }: ManagerPageProps) {
               <p className="text-sm font-semibold uppercase text-[#58606a]">
                 Manager Profile
               </p>
-              <h1 className="mt-2 text-4xl font-semibold leading-tight text-[#111614] sm:text-5xl">
-                {profile.managerName}
-              </h1>
+              <div className="mt-2 flex flex-wrap items-center gap-3">
+                <h1 className="text-4xl font-semibold leading-tight text-[#111614] sm:text-5xl">
+                  {profile.managerName}
+                </h1>
+                <span className={getProfileActivityBadgeClass(profile.isActive)}>
+                  {profile.isActive
+                    ? "Active"
+                    : `Last active ${profile.lastSeasonYear ?? "N/A"}`}
+                </span>
+              </div>
               <p className="mt-3 max-w-2xl text-sm leading-6 text-[#66707a]">
                 {profile.seasonsPlayed} seasons played:{" "}
                 {profile.seasonYears.join(", ")}
@@ -267,26 +274,33 @@ export default async function ManagerPage({ params }: ManagerPageProps) {
                   {profile.headToHead.map((row) => (
                     <tr
                       key={row.opponentManagerId}
-                      className="border-t border-[#e8ebef]"
+                      className={getOpponentRowClass(row.opponentIsActive)}
                     >
-                      <td className="px-4 py-3 font-semibold text-[#17191f]">
-                        <Link
-                          href={`/managers/${row.opponentManagerId}`}
-                          className="underline-offset-4 hover:text-[#2f6f50] hover:underline"
-                        >
-                          {row.opponentManagerName}
-                        </Link>
+                      <td className="px-4 py-3 font-semibold">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <Link
+                            href={`/managers/${row.opponentManagerId}`}
+                            className={getOpponentLinkClass(row.opponentIsActive)}
+                          >
+                            {row.opponentManagerName}
+                          </Link>
+                          {!row.opponentIsActive && (
+                            <span className="rounded-md bg-[#eceff3] px-2 py-1 text-xs font-semibold text-[#7a828c]">
+                              Inactive
+                            </span>
+                          )}
+                        </div>
                       </td>
-                      <td className="px-4 py-3 text-[#424a53]">
+                      <td className={getOpponentCellClass(row.opponentIsActive)}>
                         {formatRecord(row.record)}
                       </td>
-                      <td className="px-4 py-3 text-[#424a53]">
+                      <td className={getOpponentCellClass(row.opponentIsActive)}>
                         {row.record.winPercentage.toFixed(3)}
                       </td>
-                      <td className="px-4 py-3 text-[#424a53]">
+                      <td className={getOpponentCellClass(row.opponentIsActive)}>
                         {formatScore(row.record.averagePointsFor)}
                       </td>
-                      <td className="px-4 py-3 text-[#424a53]">
+                      <td className={getOpponentCellClass(row.opponentIsActive)}>
                         {formatScore(row.record.averagePointsAgainst)}
                       </td>
                     </tr>
@@ -401,7 +415,7 @@ function formatGameOutcome(game: ManagerGameSummary) {
     return "T";
   }
 
-  const margin = Math.abs(game.margin).toFixed(1);
+  const margin = formatMarginValue(Math.abs(game.margin));
 
   return game.outcome === "win" ? `W +${margin}` : `L -${margin}`;
 }
@@ -416,4 +430,28 @@ function getOutcomeClass(outcome: ManagerGameSummary["outcome"]) {
   }
 
   return "text-[#7c5200]";
+}
+
+function formatMarginValue(margin: number) {
+  return margin > 0 && margin < 1 ? margin.toFixed(2) : margin.toFixed(1);
+}
+
+function getProfileActivityBadgeClass(isActive: boolean) {
+  return `rounded-md px-3 py-2 text-sm font-semibold ${
+    isActive ? "bg-[#eef5f1] text-[#2f6f50]" : "bg-[#eceff3] text-[#7a828c]"
+  }`;
+}
+
+function getOpponentRowClass(isActive: boolean) {
+  return `border-t border-[#e8ebef] ${isActive ? "" : "bg-[#fafafa]"}`;
+}
+
+function getOpponentCellClass(isActive: boolean) {
+  return `px-4 py-3 ${isActive ? "text-[#424a53]" : "text-[#8a939e]"}`;
+}
+
+function getOpponentLinkClass(isActive: boolean) {
+  return `underline-offset-4 hover:text-[#2f6f50] hover:underline ${
+    isActive ? "text-[#17191f]" : "text-[#7a828c]"
+  }`;
 }

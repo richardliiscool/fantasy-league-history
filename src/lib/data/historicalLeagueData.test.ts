@@ -10,6 +10,7 @@ import {
   isRecordEligibleGame,
   summarizeLeague,
 } from "../stats/leagueStats";
+import { getManagerActivities } from "../stats/managerActivity";
 import { getManagerProfile } from "../stats/managerProfile";
 
 const countBy = <T extends string | number>(items: T[]) =>
@@ -143,6 +144,30 @@ describe("historical workbook data", () => {
       seasonYear: 2016,
       weekNumber: 5,
     });
+    expect(summary.records.closestWin?.margin).toBeGreaterThan(0);
+    expect(summary.records.closestWin?.margin).toBeLessThan(0.1);
+  });
+
+  it("marks managers active when they played in the latest imported season", () => {
+    const activities = getManagerActivities(historicalLeagueData);
+    const richard = activities.find(
+      (activity) => activity.managerName === "Richard Li",
+    );
+    const kevin = activities.find(
+      (activity) => activity.managerName === "Kevin Zhang",
+    );
+
+    expect(activities.filter((activity) => activity.isActive)).toHaveLength(12);
+    expect(richard).toMatchObject({
+      isActive: true,
+      firstSeasonYear: 2015,
+      lastSeasonYear: 2022,
+    });
+    expect(kevin).toMatchObject({
+      isActive: false,
+      firstSeasonYear: 2015,
+      lastSeasonYear: 2015,
+    });
   });
 
   it("builds a manager profile from the workbook-style team inquiry view", () => {
@@ -154,6 +179,8 @@ describe("historical workbook data", () => {
     expect(josh).not.toBeNull();
     expect(josh).toMatchObject({
       managerName: "Josh Charest",
+      isActive: true,
+      lastSeasonYear: 2022,
       seasonsPlayed: 8,
       career: {
         games: 118,
