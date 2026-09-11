@@ -46,10 +46,13 @@ The homepage uses the generated historical data for the first real all-time lead
 
 - `/` shows the league-wide records dashboard and all-time manager standings.
 - `/managers/[managerId]` shows an individual manager profile with career totals, season splits, head-to-head records, and recent games.
+- `/seasons/[seasonYear]` shows one season at a time with season standings, records, and weekly matchups.
 
 Managers are treated as active when they appear in the latest imported season. Historical managers remain visible but are shown with a softer inactive treatment in tables.
 
 Interactive table filters let the league standings switch between official, regular season, playoff, and consolation results, and let manager/profile tables focus on active or inactive managers. Table headers are clickable for sorting, percentages display in normal percent format, and manager game logs can be filtered by a specific opponent.
+
+Season archive pages are linked from the homepage. They currently calculate year-specific standings, records, and matchup logs from the imported workbook data. Champion/finish metadata can be layered in once that source mapping is explicit.
 
 ## Local Commands
 
@@ -82,3 +85,4 @@ npm run build
 - League standings and manager profile tables include interactive filters and sortable columns.
 - Manager game logs show the first 10 rows and can expand 10 more at a time.
 - Manager game logs can filter down to one opponent.
+- Season archive pages exist for each imported season from 2015 through 2022.

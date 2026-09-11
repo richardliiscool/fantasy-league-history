@@ -1,3 +1,4 @@
+import Link from "next/link";
 import {
   LeagueStandingsTable,
   type LeagueStandingsByScope,
@@ -34,6 +35,18 @@ export default function Home() {
   const activeManagerCount = managerActivities.filter(
     (activity) => activity.isActive,
   ).length;
+  const matchupCountBySeasonId = historicalLeagueData.matchups.reduce(
+    (counts, matchup) =>
+      counts.set(matchup.seasonId, (counts.get(matchup.seasonId) ?? 0) + 1),
+    new Map<string, number>(),
+  );
+  const seasonCards = [...historicalLeagueData.seasons]
+    .sort((first, second) => second.year - first.year)
+    .map((season) => ({
+      year: season.year,
+      label: season.label,
+      matchups: matchupCountBySeasonId.get(season.id) ?? 0,
+    }));
   const seasonRange = `${Math.min(...seasons)}-${Math.max(...seasons)}`;
   const officialMatchups = officialGameResults.length / 2;
   const standingsByScope = (
@@ -143,6 +156,33 @@ export default function Home() {
             ))}
           </div>
         </header>
+
+        <section className="overflow-hidden rounded-lg border border-[#d9dee4] bg-white shadow-sm">
+          <div className="flex flex-col gap-2 border-b border-[#e8ebef] px-4 py-4">
+            <p className="text-sm font-semibold text-[#58606a]">
+              Season Archive
+            </p>
+            <h2 className="text-2xl font-semibold text-[#17191f]">
+              Browse by year
+            </h2>
+          </div>
+          <div className="grid gap-2 p-2 sm:grid-cols-2 lg:grid-cols-4">
+            {seasonCards.map((season) => (
+              <Link
+                key={season.year}
+                href={`/seasons/${season.year}`}
+                className="rounded-md border border-[#e8ebef] bg-[#f8f9fb] p-3 underline-offset-4 transition hover:border-[#2f6f50] hover:bg-white hover:underline"
+              >
+                <span className="block text-xl font-semibold text-[#17191f]">
+                  {season.year}
+                </span>
+                <span className="mt-1 block text-sm text-[#66707a]">
+                  {season.matchups} matchups
+                </span>
+              </Link>
+            ))}
+          </div>
+        </section>
 
         <section className="grid gap-4 lg:grid-cols-[0.72fr_1fr]">
           <div className="rounded-lg border border-[#d9dee4] bg-white p-4 shadow-sm">
