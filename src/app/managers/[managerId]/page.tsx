@@ -1,0 +1,419 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { historicalLeagueData } from "@/lib/data/historicalLeagueData";
+import type { MatchupGameType } from "@/lib/domain/types";
+import {
+  getManagerProfile,
+  type ManagerGameSummary,
+  type ManagerRecordSummary,
+  type ManagerStreak,
+} from "@/lib/stats/managerProfile";
+
+type ManagerPageProps = {
+  params: Promise<{
+    managerId: string;
+  }>;
+};
+
+export function generateStaticParams() {
+  return historicalLeagueData.managers.map((manager) => ({
+    managerId: manager.id,
+  }));
+}
+
+export async function generateMetadata({
+  params,
+}: ManagerPageProps): Promise<Metadata> {
+  const { managerId } = await params;
+  const profile = getManagerProfile(historicalLeagueData, managerId);
+
+  return {
+    title: profile
+      ? `${profile.managerName} | Fantasy League History`
+      : "Manager | Fantasy League History",
+  };
+}
+
+export default async function ManagerPage({ params }: ManagerPageProps) {
+  const { managerId } = await params;
+  const profile = getManagerProfile(historicalLeagueData, managerId);
+
+  if (!profile) {
+    notFound();
+  }
+
+  const careerCards = [
+    {
+      label: "Official Record",
+      value: formatRecord(profile.career),
+      detail: `${profile.career.games} games`,
+      tone: "bg-[#eef5f1]",
+    },
+    {
+      label: "Win %",
+      value: profile.career.winPercentage.toFixed(3),
+      detail: "regular + playoff",
+      tone: "bg-[#fff4d6]",
+    },
+    {
+      label: "Avg PF",
+      value: formatScore(profile.career.averagePointsFor),
+      detail: `${formatScore(profile.career.pointsFor)} total`,
+      tone: "bg-[#e7f6f8]",
+    },
+    {
+      label: "Avg PA",
+      value: formatScore(profile.career.averagePointsAgainst),
+      detail: `${formatScore(profile.career.pointsAgainst)} total`,
+      tone: "bg-[#f5edf7]",
+    },
+  ];
+  const highlightCards = [
+    {
+      label: "Best Regular Season",
+      value: profile.bestRegularSeason
+        ? String(profile.bestRegularSeason.seasonYear)
+        : "N/A",
+      detail: profile.bestRegularSeason
+        ? formatRecord(profile.bestRegularSeason.record)
+        : "No season data",
+    },
+    {
+      label: "Worst Regular Season",
+      value: profile.worstRegularSeason
+        ? String(profile.worstRegularSeason.seasonYear)
+        : "N/A",
+      detail: profile.worstRegularSeason
+        ? formatRecord(profile.worstRegularSeason.record)
+        : "No season data",
+    },
+    {
+      label: "Highest Score",
+      value: formatOptionalScore(profile.records.highestScore?.points),
+      detail: profile.records.highestScore
+        ? `${profile.records.highestScore.seasonYear} Week ${profile.records.highestScore.weekNumber} vs ${profile.records.highestScore.opponentManagerName}`
+        : "No games logged",
+    },
+    {
+      label: "Lowest Score",
+      value: formatOptionalScore(profile.records.lowestScore?.points),
+      detail: profile.records.lowestScore
+        ? `${profile.records.lowestScore.seasonYear} Week ${profile.records.lowestScore.weekNumber} vs ${profile.records.lowestScore.opponentManagerName}`
+        : "No games logged",
+    },
+    {
+      label: "Longest Win Streak",
+      value: formatStreakLength(profile.longestWinningStreak),
+      detail: formatStreakRange(profile.longestWinningStreak),
+    },
+    {
+      label: "Longest Loss Streak",
+      value: formatStreakLength(profile.longestLosingStreak),
+      detail: formatStreakRange(profile.longestLosingStreak),
+    },
+  ];
+
+  return (
+    <main className="min-h-screen bg-[#f4f5f7] text-[#17191f]">
+      <div className="mx-auto flex w-full max-w-7xl flex-col gap-8 px-4 py-6 sm:px-6 lg:px-8">
+        <header className="border-b border-[#d9dee4] pb-6">
+          <Link
+            href="/"
+            className="text-sm font-semibold text-[#2f6f50] underline-offset-4 hover:underline"
+          >
+            Back to League Vault
+          </Link>
+          <div className="mt-5 grid gap-5 lg:grid-cols-[1fr_0.95fr] lg:items-end">
+            <div>
+              <p className="text-sm font-semibold uppercase text-[#58606a]">
+                Manager Profile
+              </p>
+              <h1 className="mt-2 text-4xl font-semibold leading-tight text-[#111614] sm:text-5xl">
+                {profile.managerName}
+              </h1>
+              <p className="mt-3 max-w-2xl text-sm leading-6 text-[#66707a]">
+                {profile.seasonsPlayed} seasons played:{" "}
+                {profile.seasonYears.join(", ")}
+              </p>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2 rounded-lg border border-[#d9dee4] bg-white p-2 shadow-sm sm:grid-cols-4">
+              {careerCards.map((card) => (
+                <div
+                  key={card.label}
+                  className={`rounded-md px-3 py-3 ${card.tone}`}
+                >
+                  <p className="text-xs font-semibold text-[#58606a]">
+                    {card.label}
+                  </p>
+                  <p className="mt-1 text-2xl font-semibold text-[#17191f]">
+                    {card.value}
+                  </p>
+                  <p className="mt-1 text-xs leading-4 text-[#66707a]">
+                    {card.detail}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </header>
+
+        <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          {highlightCards.map((card) => (
+            <article
+              key={card.label}
+              className="rounded-lg border border-[#d9dee4] bg-white p-4 shadow-sm"
+            >
+              <p className="text-sm font-semibold text-[#58606a]">
+                {card.label}
+              </p>
+              <p className="mt-2 text-3xl font-semibold text-[#17191f]">
+                {card.value}
+              </p>
+              <p className="mt-2 min-h-10 text-sm leading-5 text-[#66707a]">
+                {card.detail}
+              </p>
+            </article>
+          ))}
+        </section>
+
+        <section className="overflow-hidden rounded-lg border border-[#d9dee4] bg-white shadow-sm">
+          <div className="flex items-center justify-between gap-4 border-b border-[#e8ebef] px-4 py-4">
+            <div>
+              <p className="text-sm font-semibold text-[#58606a]">
+                Season Breakdown
+              </p>
+              <h2 className="mt-1 text-2xl font-semibold text-[#17191f]">
+                Regular season and playoffs
+              </h2>
+            </div>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[900px] border-collapse text-left text-sm">
+              <thead className="bg-[#f8f9fb] text-[#58606a]">
+                <tr>
+                  <th className="px-4 py-3 font-semibold">Season</th>
+                  <th className="px-4 py-3 font-semibold">Regular</th>
+                  <th className="px-4 py-3 font-semibold">Reg Win %</th>
+                  <th className="px-4 py-3 font-semibold">Reg Avg PF</th>
+                  <th className="px-4 py-3 font-semibold">Reg Avg PA</th>
+                  <th className="px-4 py-3 font-semibold">Playoffs</th>
+                  <th className="px-4 py-3 font-semibold">Playoff Avg PF</th>
+                  <th className="px-4 py-3 font-semibold">High</th>
+                </tr>
+              </thead>
+              <tbody>
+                {profile.seasonSplits.map((season) => (
+                  <tr
+                    key={season.seasonId}
+                    className="border-t border-[#e8ebef]"
+                  >
+                    <td className="px-4 py-3 font-semibold text-[#17191f]">
+                      {season.seasonYear}
+                    </td>
+                    <td className="px-4 py-3 text-[#424a53]">
+                      {formatRecord(season.regular)}
+                    </td>
+                    <td className="px-4 py-3 text-[#424a53]">
+                      {season.regular.games
+                        ? season.regular.winPercentage.toFixed(3)
+                        : "N/A"}
+                    </td>
+                    <td className="px-4 py-3 text-[#424a53]">
+                      {formatScoreOrEmpty(season.regular.averagePointsFor)}
+                    </td>
+                    <td className="px-4 py-3 text-[#424a53]">
+                      {formatScoreOrEmpty(season.regular.averagePointsAgainst)}
+                    </td>
+                    <td className="px-4 py-3 text-[#424a53]">
+                      {formatRecordOrEmpty(season.playoff)}
+                    </td>
+                    <td className="px-4 py-3 text-[#424a53]">
+                      {formatScoreOrEmpty(season.playoff.averagePointsFor)}
+                    </td>
+                    <td className="px-4 py-3 text-[#2f6f50]">
+                      {formatOptionalScore(season.official.highestScore)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section className="grid gap-4 lg:grid-cols-[0.9fr_1.1fr]">
+          <div className="overflow-hidden rounded-lg border border-[#d9dee4] bg-white shadow-sm">
+            <div className="border-b border-[#e8ebef] px-4 py-4">
+              <p className="text-sm font-semibold text-[#58606a]">
+                Head-to-Head
+              </p>
+              <h2 className="mt-1 text-2xl font-semibold text-[#17191f]">
+                Opponent records
+              </h2>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[560px] border-collapse text-left text-sm">
+                <thead className="bg-[#f8f9fb] text-[#58606a]">
+                  <tr>
+                    <th className="px-4 py-3 font-semibold">Opponent</th>
+                    <th className="px-4 py-3 font-semibold">Record</th>
+                    <th className="px-4 py-3 font-semibold">Win %</th>
+                    <th className="px-4 py-3 font-semibold">Avg PF</th>
+                    <th className="px-4 py-3 font-semibold">Avg PA</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {profile.headToHead.map((row) => (
+                    <tr
+                      key={row.opponentManagerId}
+                      className="border-t border-[#e8ebef]"
+                    >
+                      <td className="px-4 py-3 font-semibold text-[#17191f]">
+                        <Link
+                          href={`/managers/${row.opponentManagerId}`}
+                          className="underline-offset-4 hover:text-[#2f6f50] hover:underline"
+                        >
+                          {row.opponentManagerName}
+                        </Link>
+                      </td>
+                      <td className="px-4 py-3 text-[#424a53]">
+                        {formatRecord(row.record)}
+                      </td>
+                      <td className="px-4 py-3 text-[#424a53]">
+                        {row.record.winPercentage.toFixed(3)}
+                      </td>
+                      <td className="px-4 py-3 text-[#424a53]">
+                        {formatScore(row.record.averagePointsFor)}
+                      </td>
+                      <td className="px-4 py-3 text-[#424a53]">
+                        {formatScore(row.record.averagePointsAgainst)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div className="overflow-hidden rounded-lg border border-[#d9dee4] bg-white shadow-sm">
+            <div className="border-b border-[#e8ebef] px-4 py-4">
+              <p className="text-sm font-semibold text-[#58606a]">
+                Recent Games
+              </p>
+              <h2 className="mt-1 text-2xl font-semibold text-[#17191f]">
+                Latest official results
+              </h2>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[640px] border-collapse text-left text-sm">
+                <thead className="bg-[#f8f9fb] text-[#58606a]">
+                  <tr>
+                    <th className="px-4 py-3 font-semibold">Game</th>
+                    <th className="px-4 py-3 font-semibold">Type</th>
+                    <th className="px-4 py-3 font-semibold">Opponent</th>
+                    <th className="px-4 py-3 font-semibold">Score</th>
+                    <th className="px-4 py-3 font-semibold">Result</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {profile.recentGames.map((game) => (
+                    <tr
+                      key={game.matchupId}
+                      className="border-t border-[#e8ebef]"
+                    >
+                      <td className="px-4 py-3 font-semibold text-[#17191f]">
+                        {game.seasonYear} W{game.weekNumber}
+                      </td>
+                      <td className="px-4 py-3 text-[#424a53]">
+                        {formatGameType(game.gameType)}
+                      </td>
+                      <td className="px-4 py-3 text-[#424a53]">
+                        {game.opponentManagerName}
+                      </td>
+                      <td className="px-4 py-3 text-[#424a53]">
+                        {formatScore(game.pointsFor)}-
+                        {formatScore(game.pointsAgainst)}
+                      </td>
+                      <td
+                        className={`px-4 py-3 font-semibold ${getOutcomeClass(game.outcome)}`}
+                      >
+                        {formatGameOutcome(game)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  );
+}
+
+function formatRecord(record: ManagerRecordSummary) {
+  return `${record.wins}-${record.losses}${record.ties > 0 ? `-${record.ties}` : ""}`;
+}
+
+function formatRecordOrEmpty(record: ManagerRecordSummary) {
+  return record.games === 0 ? "N/A" : formatRecord(record);
+}
+
+function formatScore(score: number) {
+  return score.toFixed(1);
+}
+
+function formatOptionalScore(score: number | null | undefined) {
+  return score === null || score === undefined ? "N/A" : formatScore(score);
+}
+
+function formatScoreOrEmpty(score: number) {
+  return score === 0 ? "N/A" : formatScore(score);
+}
+
+function formatGameType(gameType: MatchupGameType) {
+  if (gameType === "regular") {
+    return "Regular";
+  }
+
+  if (gameType === "playoff") {
+    return "Playoff";
+  }
+
+  return "Consolation";
+}
+
+function formatStreakLength(streak: ManagerStreak | null) {
+  return streak ? String(streak.games) : "N/A";
+}
+
+function formatStreakRange(streak: ManagerStreak | null) {
+  if (!streak) {
+    return "No streak logged";
+  }
+
+  return `${streak.start.seasonYear} W${streak.start.weekNumber} to ${streak.end.seasonYear} W${streak.end.weekNumber}`;
+}
+
+function formatGameOutcome(game: ManagerGameSummary) {
+  if (game.outcome === "tie") {
+    return "T";
+  }
+
+  const margin = Math.abs(game.margin).toFixed(1);
+
+  return game.outcome === "win" ? `W +${margin}` : `L -${margin}`;
+}
+
+function getOutcomeClass(outcome: ManagerGameSummary["outcome"]) {
+  if (outcome === "win") {
+    return "text-[#2f6f50]";
+  }
+
+  if (outcome === "loss") {
+    return "text-[#b23b4a]";
+  }
+
+  return "text-[#7c5200]";
+}

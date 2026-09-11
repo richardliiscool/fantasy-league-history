@@ -10,6 +10,7 @@ import {
   isRecordEligibleGame,
   summarizeLeague,
 } from "../stats/leagueStats";
+import { getManagerProfile } from "../stats/managerProfile";
 
 const countBy = <T extends string | number>(items: T[]) =>
   items.reduce<Record<string, number>>((counts, item) => {
@@ -141,6 +142,113 @@ describe("historical workbook data", () => {
       points: 48.4,
       seasonYear: 2016,
       weekNumber: 5,
+    });
+  });
+
+  it("builds a manager profile from the workbook-style team inquiry view", () => {
+    const josh = getManagerProfile(
+      historicalLeagueData,
+      "manager-josh-charest",
+    );
+
+    expect(josh).not.toBeNull();
+    expect(josh).toMatchObject({
+      managerName: "Josh Charest",
+      seasonsPlayed: 8,
+      career: {
+        games: 118,
+        wins: 62,
+        losses: 55,
+        ties: 1,
+        pointsFor: 13905.8,
+        pointsAgainst: 13466.44,
+        averagePointsFor: 117.8,
+        averagePointsAgainst: 114.1,
+      },
+      regularSeason: {
+        games: 106,
+        wins: 57,
+        losses: 49,
+        ties: 0,
+      },
+      playoffs: {
+        games: 12,
+        wins: 5,
+        losses: 6,
+        ties: 1,
+      },
+    });
+    expect(josh?.bestRegularSeason).toMatchObject({
+      seasonYear: 2016,
+      record: {
+        wins: 9,
+        losses: 4,
+        ties: 0,
+      },
+    });
+    expect(josh?.worstRegularSeason).toMatchObject({
+      seasonYear: 2019,
+      record: {
+        wins: 2,
+        losses: 11,
+        ties: 0,
+      },
+    });
+    expect(josh?.records.highestScore).toMatchObject({
+      points: 201.98,
+      seasonYear: 2015,
+      weekNumber: 3,
+    });
+    expect(josh?.records.lowestScore).toMatchObject({
+      points: 59.3,
+      seasonYear: 2019,
+      weekNumber: 12,
+    });
+    expect(josh?.longestWinningStreak).toMatchObject({
+      games: 4,
+    });
+    expect(josh?.longestLosingStreak).toMatchObject({
+      games: 10,
+      start: {
+        seasonYear: 2019,
+        weekNumber: 5,
+      },
+      end: {
+        seasonYear: 2020,
+        weekNumber: 1,
+      },
+    });
+
+    const season2015 = josh?.seasonSplits.find(
+      (season) => season.seasonYear === 2015,
+    );
+    const season2022 = josh?.seasonSplits.find(
+      (season) => season.seasonYear === 2022,
+    );
+
+    expect(season2015).toMatchObject({
+      regular: {
+        wins: 8,
+        losses: 5,
+        ties: 0,
+        pointsFor: 1612.54,
+        averagePointsFor: 124,
+      },
+      playoff: {
+        wins: 2,
+        losses: 2,
+        ties: 0,
+        pointsFor: 587.2,
+        averagePointsFor: 146.8,
+      },
+    });
+    expect(season2022).toMatchObject({
+      playoff: {
+        wins: 2,
+        losses: 0,
+        ties: 1,
+        pointsFor: 347.12,
+      },
     });
   });
 });

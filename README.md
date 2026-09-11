@@ -42,6 +42,11 @@ The raw `.xlsx` archive files in `reference/workbooks` are ignored by Git so the
 
 The homepage uses the generated historical data for the first real all-time leaderboard. The smaller sample data file remains useful for tiny unit tests.
 
+## App Views
+
+- `/` shows the league-wide records dashboard and all-time manager standings.
+- `/managers/[managerId]` shows an individual manager profile with career totals, season splits, head-to-head records, and recent games.
+
 ## Local Commands
 
 ```bash
@@ -68,3 +73,4 @@ npm run build
 - Historical workbook data is generated into app-shaped data.
 - Initial stats engine and tests exist.
 - The home page renders a real league records dashboard from the stats engine.
+- Manager profile pages render from the shared stats engine.

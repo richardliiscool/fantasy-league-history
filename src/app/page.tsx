@@ -2,6 +2,7 @@ import {
   historicalImportSummary,
   historicalLeagueData,
 } from "@/lib/data/historicalLeagueData";
+import Link from "next/link";
 import type { MarginRecord, ScoreRecord } from "@/lib/stats/leagueStats";
 import {
   buildGameResults,
@@ -192,7 +193,7 @@ export default function Home() {
             </p>
           </div>
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[760px] border-collapse text-left text-sm">
+            <table className="w-full min-w-[860px] border-collapse text-left text-sm">
               <thead className="bg-[#f8f9fb] text-[#58606a]">
                 <tr>
                   <th className="px-4 py-3 font-semibold">Manager</th>
@@ -213,7 +214,12 @@ export default function Home() {
                     className="border-t border-[#e8ebef]"
                   >
                     <td className="px-4 py-3 font-semibold text-[#17191f]">
-                      {standing.managerName}
+                      <Link
+                        href={`/managers/${standing.managerId}`}
+                        className="underline-offset-4 hover:text-[#2f6f50] hover:underline"
+                      >
+                        {standing.managerName}
+                      </Link>
                     </td>
                     <td className="px-4 py-3 text-[#424a53]">
                       {standing.wins}-{standing.losses}
