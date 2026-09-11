@@ -5,6 +5,7 @@ import type {
   ManagerRecordSummary,
   ManagerSeasonSplit,
 } from "@/lib/stats/managerProfile";
+import { formatPercentage } from "@/lib/formatters";
 import { SortableHeader, type SortDirection } from "./SortableHeader";
 
 type SeasonSortKey =
@@ -144,7 +145,7 @@ export function ManagerSeasonBreakdownTable({
                 </td>
                 <td className="px-4 py-3 text-[#424a53]">
                   {season.regular.games
-                    ? season.regular.winPercentage.toFixed(3)
+                    ? formatPercentage(season.regular.winPercentage)
                     : "N/A"}
                 </td>
                 <td className="px-4 py-3 text-[#424a53]">

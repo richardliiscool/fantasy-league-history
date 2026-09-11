@@ -6,6 +6,7 @@ import {
   GAME_SCOPE_LABELS,
   type GameScope,
 } from "@/lib/stats/gameFilters";
+import { formatPercentage } from "@/lib/formatters";
 import type {
   ManagerGameSummary,
   ManagerHeadToHeadSummary,
@@ -14,9 +15,14 @@ import {
   SegmentedControl,
   type SegmentOption,
 } from "./SegmentedControl";
+import {
+  SelectControl,
+  type SelectOption,
+} from "./SelectControl";
 import { SortableHeader, type SortDirection } from "./SortableHeader";
 
 type OpponentStatusFilter = "all" | "active" | "inactive";
+type GameOpponentFilter = "all" | string;
 type HeadToHeadSortKey =
   | "opponentManagerName"
   | "record"
@@ -67,6 +73,8 @@ export function ManagerProfileTables({
   const [gameScope, setGameScope] = useState<GameScope>("official");
   const [gameOpponentStatus, setGameOpponentStatus] =
     useState<OpponentStatusFilter>("all");
+  const [gameOpponentId, setGameOpponentId] =
+    useState<GameOpponentFilter>("all");
   const [headToHeadSortKey, setHeadToHeadSortKey] =
     useState<HeadToHeadSortKey>("games");
   const [headToHeadSortDirection, setHeadToHeadSortDirection] =
@@ -98,14 +106,42 @@ export function ManagerProfileTables({
       const filteredRows = games.filter(
         (game) =>
           matchesGameScope(game, gameScope) &&
-          matchesOpponentStatus(game.opponentIsActive, gameOpponentStatus),
+          matchesOpponentStatus(game.opponentIsActive, gameOpponentStatus) &&
+          matchesGameOpponent(game, gameOpponentId),
       );
 
       return [...filteredRows].sort((first, second) =>
         compareGameRows(first, second, gameSortKey, gameSortDirection),
       );
     },
-    [gameOpponentStatus, gameScope, gameSortDirection, gameSortKey, games],
+    [
+      gameOpponentId,
+      gameOpponentStatus,
+      gameScope,
+      gameSortDirection,
+      gameSortKey,
+      games,
+    ],
+  );
+  const gameOpponentOptions = useMemo<SelectOption<GameOpponentFilter>[]>(
+    () => {
+      const opponentsById = new Map<string, SelectOption<GameOpponentFilter>>();
+
+      for (const game of games) {
+        opponentsById.set(game.opponentManagerId, {
+          value: game.opponentManagerId,
+          label: game.opponentManagerName,
+        });
+      }
+
+      return [
+        { value: "all", label: "All opponents" },
+        ...Array.from(opponentsById.values()).sort((first, second) =>
+          first.label.localeCompare(second.label),
+        ),
+      ];
+    },
+    [games],
   );
   const visibleGames = useMemo(
     () => filteredGames.slice(0, visibleGameCount),
@@ -131,6 +167,11 @@ export function ManagerProfileTables({
     nextOpponentStatus: OpponentStatusFilter,
   ) => {
     setGameOpponentStatus(nextOpponentStatus);
+    setVisibleGameCount(GAME_LOG_BATCH_SIZE);
+  };
+
+  const handleGameOpponentIdChange = (nextOpponentId: GameOpponentFilter) => {
+    setGameOpponentId(nextOpponentId);
     setVisibleGameCount(GAME_LOG_BATCH_SIZE);
   };
 
@@ -254,7 +295,7 @@ export function ManagerProfileTables({
                     {row.record.games}
                   </td>
                   <td className={getOpponentCellClass(row.opponentIsActive)}>
-                    {row.record.winPercentage.toFixed(3)}
+                    {formatPercentage(row.record.winPercentage)}
                   </td>
                   <td className={getOpponentCellClass(row.opponentIsActive)}>
                     {formatScore(row.record.averagePointsFor)}
@@ -287,8 +328,14 @@ export function ManagerProfileTables({
               options={gameScopeOptions}
               onChange={handleGameScopeChange}
             />
+            <SelectControl
+              label="Opponent"
+              value={gameOpponentId}
+              options={gameOpponentOptions}
+              onChange={handleGameOpponentIdChange}
+            />
             <SegmentedControl
-              label="Opponents"
+              label="Status"
               value={gameOpponentStatus}
               options={opponentStatusOptions}
               onChange={handleGameOpponentStatusChange}
@@ -437,6 +484,13 @@ function matchesGameScope(game: ManagerGameSummary, scope: GameScope) {
   }
 
   return game.gameType === scope;
+}
+
+function matchesGameOpponent(
+  game: ManagerGameSummary,
+  opponentId: GameOpponentFilter,
+) {
+  return opponentId === "all" || game.opponentManagerId === opponentId;
 }
 
 function compareHeadToHeadRows(

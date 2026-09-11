@@ -6,6 +6,7 @@ import {
   GAME_SCOPE_LABELS,
   type GameScope,
 } from "@/lib/stats/gameFilters";
+import { formatPercentage } from "@/lib/formatters";
 import type { ManagerActivity } from "@/lib/stats/managerActivity";
 import type { ManagerStanding } from "@/lib/stats/leagueStats";
 import {
@@ -246,7 +247,7 @@ export function LeagueStandingsTable({
                     {standing.games}
                   </td>
                   <td className={getStandingCellClass(isActive)}>
-                    {standing.winPercentage.toFixed(3)}
+                    {formatPercentage(standing.winPercentage)}
                   </td>
                   <td className={getStandingCellClass(isActive)}>
                     {standing.pointsFor.toFixed(1)}

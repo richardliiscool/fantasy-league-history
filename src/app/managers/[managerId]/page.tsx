@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { ManagerProfileTables } from "@/components/ManagerProfileTables";
 import { ManagerSeasonBreakdownTable } from "@/components/ManagerSeasonBreakdownTable";
 import { historicalLeagueData } from "@/lib/data/historicalLeagueData";
+import { formatPercentage } from "@/lib/formatters";
 import {
   getManagerProfile,
   type ManagerRecordSummary,
@@ -52,7 +53,7 @@ export default async function ManagerPage({ params }: ManagerPageProps) {
     },
     {
       label: "Win %",
-      value: profile.career.winPercentage.toFixed(3),
+      value: formatPercentage(profile.career.winPercentage),
       detail: "regular + playoff",
       tone: "bg-[#fff4d6]",
     },

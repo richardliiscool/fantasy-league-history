@@ -49,7 +49,7 @@ The homepage uses the generated historical data for the first real all-time lead
 
 Managers are treated as active when they appear in the latest imported season. Historical managers remain visible but are shown with a softer inactive treatment in tables.
 
-Interactive table filters let the league standings switch between official, regular season, playoff, and consolation results, and let manager/profile tables focus on active or inactive managers. Table headers are clickable for sorting, and manager game logs load in batches so long histories stay readable.
+Interactive table filters let the league standings switch between official, regular season, playoff, and consolation results, and let manager/profile tables focus on active or inactive managers. Table headers are clickable for sorting, percentages display in normal percent format, and manager game logs can be filtered by a specific opponent.
 
 ## Local Commands
 
@@ -81,3 +81,4 @@ npm run build
 - Active/inactive manager status and close-game margin display are handled in the app.
 - League standings and manager profile tables include interactive filters and sortable columns.
 - Manager game logs show the first 10 rows and can expand 10 more at a time.
+- Manager game logs can filter down to one opponent.
