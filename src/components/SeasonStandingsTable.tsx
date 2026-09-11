@@ -1,15 +1,54 @@
+"use client";
+
 import Link from "next/link";
+import { useMemo, useState } from "react";
 import { formatPercentage } from "@/lib/formatters";
 import type { SeasonFinalStandingRow } from "@/lib/stats/seasonProfile";
+import { SortableHeader, type SortDirection } from "./SortableHeader";
 
 type SeasonStandingsTableProps = {
   finalStandings: SeasonFinalStandingRow[];
 };
 
+type StandingSortKey = "finish";
+
 export function SeasonStandingsTable({
   finalStandings,
 }: SeasonStandingsTableProps) {
+  const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
   const finishCounts = getFinishCounts(finalStandings);
+  const originalPositionByManagerId = useMemo(
+    () =>
+      new Map(
+        finalStandings.map((standing, index) => [standing.managerId, index]),
+      ),
+    [finalStandings],
+  );
+  const sortedStandings = useMemo(
+    () =>
+      [...finalStandings].sort((first, second) => {
+        const finishComparison =
+          sortDirection === "asc"
+            ? first.finish - second.finish
+            : second.finish - first.finish;
+
+        if (finishComparison !== 0) {
+          return finishComparison;
+        }
+
+        return (
+          (originalPositionByManagerId.get(first.managerId) ?? 0) -
+          (originalPositionByManagerId.get(second.managerId) ?? 0)
+        );
+      }),
+    [finalStandings, originalPositionByManagerId, sortDirection],
+  );
+
+  const handleSort = () => {
+    setSortDirection((currentDirection) =>
+      currentDirection === "asc" ? "desc" : "asc",
+    );
+  };
 
   return (
     <section className="overflow-hidden rounded-lg border border-[#d9dee4] bg-white shadow-sm">
@@ -28,7 +67,15 @@ export function SeasonStandingsTable({
         <table className="w-full min-w-[980px] border-collapse text-left text-sm">
           <thead className="bg-[#f8f9fb] text-[#58606a]">
             <tr>
-              <th className="px-4 py-3 font-semibold">Finish</th>
+              <th className="px-4 py-3">
+                <SortableHeader<StandingSortKey>
+                  label="Finish"
+                  sortKey="finish"
+                  activeSortKey="finish"
+                  direction={sortDirection}
+                  onSort={handleSort}
+                />
+              </th>
               <th className="px-4 py-3 font-semibold">Manager</th>
               <th className="px-4 py-3 font-semibold">Team</th>
               <th className="px-4 py-3 font-semibold">Regular</th>
@@ -40,7 +87,7 @@ export function SeasonStandingsTable({
             </tr>
           </thead>
           <tbody>
-            {finalStandings.map((standing) => (
+            {sortedStandings.map((standing) => (
               <tr
                 key={standing.managerId}
                 className={`border-t border-[#e8ebef] ${

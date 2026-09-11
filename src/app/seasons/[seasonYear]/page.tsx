@@ -7,7 +7,6 @@ import { historicalLeagueData } from "@/lib/data/historicalLeagueData";
 import {
   getSeasonProfile,
   type SeasonGameRecord,
-  type SeasonMarginRecord,
   type SeasonMatchupSummary,
   type SeasonScoreRecord,
 } from "@/lib/stats/seasonProfile";
@@ -82,16 +81,10 @@ export default async function SeasonPage({ params }: SeasonPageProps) {
       scoreLine: formatFeaturedScoreLine(profile.records.lowestScore),
     },
     {
-      label: "Biggest Win",
-      value: formatMargin(profile.records.biggestWin),
-      detail: formatFeaturedRecordDetail(profile.records.biggestWin),
-      scoreLine: formatFeaturedScoreLine(profile.records.biggestWin),
-    },
-    {
-      label: "Biggest Loss",
-      value: formatMargin(profile.records.biggestLoss),
-      detail: formatFeaturedRecordDetail(profile.records.biggestLoss),
-      scoreLine: formatFeaturedScoreLine(profile.records.biggestLoss),
+      label: "Biggest Margin",
+      value: formatMargin(profile.records.biggestMargin),
+      detail: formatGameRecordDetail(profile.records.biggestMargin),
+      scoreLine: formatGameRecordScoreLine(profile.records.biggestMargin),
     },
     {
       label: "Closest Game",
@@ -169,7 +162,7 @@ export default async function SeasonPage({ params }: SeasonPageProps) {
           <SeasonStandingsTable finalStandings={profile.finalStandings} />
         </section>
 
-        <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+        <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           {recordCards.map((record) => (
             <article
               key={record.label}
@@ -201,12 +194,12 @@ function formatScore(score: number | null | undefined) {
   return score === null || score === undefined ? "0.0" : score.toFixed(1);
 }
 
-function formatMargin(record: SeasonMarginRecord | SeasonGameRecord | null) {
+function formatMargin(record: SeasonGameRecord | null) {
   return record ? formatMarginValue(record.margin) : "0.0";
 }
 
 function formatFeaturedRecordDetail(
-  record: SeasonScoreRecord | SeasonMarginRecord | null,
+  record: SeasonScoreRecord | null,
 ) {
   if (!record) {
     return "No games logged";
@@ -216,7 +209,7 @@ function formatFeaturedRecordDetail(
 }
 
 function formatFeaturedScoreLine(
-  record: SeasonScoreRecord | SeasonMarginRecord | null,
+  record: SeasonScoreRecord | null,
 ) {
   if (!record) {
     return "";

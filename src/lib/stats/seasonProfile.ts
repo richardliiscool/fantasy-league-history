@@ -63,13 +63,6 @@ export type SeasonScoreRecord = {
   points: number;
 };
 
-export type SeasonMarginRecord = {
-  matchup: SeasonMatchupSummary;
-  featured: SeasonMatchupParticipant;
-  opponent: SeasonMatchupParticipant;
-  margin: number;
-};
-
 export type SeasonGameRecord = {
   matchup: SeasonMatchupSummary;
   margin: number;
@@ -78,8 +71,7 @@ export type SeasonGameRecord = {
 export type SeasonRecordSet = {
   highestScore: SeasonScoreRecord | null;
   lowestScore: SeasonScoreRecord | null;
-  biggestWin: SeasonMarginRecord | null;
-  biggestLoss: SeasonMarginRecord | null;
+  biggestMargin: SeasonGameRecord | null;
   closestGame: SeasonGameRecord | null;
 };
 
@@ -292,53 +284,20 @@ const getSeasonScoreRecords = (
     },
   ]);
 
-const getSeasonWinRecords = (
-  matchups: SeasonMatchupSummary[],
-): SeasonMarginRecord[] =>
-  matchups.flatMap((matchup) => {
-    if (!matchup.winner) {
-      return [];
-    }
-
-    const loser =
-      matchup.winner.managerId === matchup.first.managerId
-        ? matchup.second
-        : matchup.first;
-
-    return [
-      {
-        matchup,
-        featured: matchup.winner,
-        opponent: loser,
-        margin: matchup.margin,
-      },
-    ];
-  });
-
-const getSeasonLossRecords = (
-  matchups: SeasonMatchupSummary[],
-): SeasonMarginRecord[] =>
-  getSeasonWinRecords(matchups).map((record) => ({
-    matchup: record.matchup,
-    featured: record.opponent,
-    opponent: record.featured,
-    margin: record.margin,
-  }));
-
 const getSeasonRecords = (
   matchups: SeasonMatchupSummary[],
 ): SeasonRecordSet => {
   const officialMatchups = matchups.filter(isOfficialMatchup);
   const scoreRecords = getSeasonScoreRecords(officialMatchups);
-  const winRecords = getSeasonWinRecords(officialMatchups);
-  const lossRecords = getSeasonLossRecords(officialMatchups);
+  const biggestMargin = maxBy(officialMatchups, (matchup) => matchup.margin);
   const closestGame = minBy(officialMatchups, (matchup) => matchup.margin);
 
   return {
     highestScore: maxBy(scoreRecords, (record) => record.points),
     lowestScore: minBy(scoreRecords, (record) => record.points),
-    biggestWin: maxBy(winRecords, (record) => record.margin),
-    biggestLoss: maxBy(lossRecords, (record) => record.margin),
+    biggestMargin: biggestMargin
+      ? { matchup: biggestMargin, margin: biggestMargin.margin }
+      : null,
     closestGame: closestGame
       ? { matchup: closestGame, margin: closestGame.margin }
       : null,

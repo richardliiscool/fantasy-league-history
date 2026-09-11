@@ -129,7 +129,14 @@ describe("season profile", () => {
 
     expect(profile.records.highestScore?.matchup.weekNumber).toBeGreaterThan(0);
     expect(profile.records.highestScore?.opponent.managerName).toBeTruthy();
-    expect(profile.records.biggestWin?.matchup.matchupId).toBeTruthy();
+    expect(profile.records.biggestMargin).toMatchObject({
+      margin: 74.24,
+      matchup: {
+        weekNumber: 13,
+        first: { managerName: "Billy Kim", points: 162.4 },
+        second: { managerName: "Nick Bello", points: 88.16 },
+      },
+    });
     expect(profile.records.closestGame).toMatchObject({
       margin: 0,
       matchup: {
