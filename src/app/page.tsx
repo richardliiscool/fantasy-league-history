@@ -135,6 +135,14 @@ export default function Home() {
             <h1 className="mt-2 max-w-3xl text-4xl font-semibold leading-tight text-[#111614] sm:text-5xl">
               League Vault
             </h1>
+            <div className="mt-4 flex flex-wrap gap-2">
+              <Link
+                href="/records"
+                className="rounded-md border border-[#b8c0c9] bg-white px-3 py-2 text-sm font-semibold text-[#17191f] underline-offset-4 hover:border-[#2f6f50] hover:text-[#2f6f50] hover:underline"
+              >
+                Records
+              </Link>
+            </div>
           </div>
 
           <div className="grid grid-cols-2 gap-2 rounded-lg border border-[#d9dee4] bg-white p-2 shadow-sm sm:grid-cols-4">
