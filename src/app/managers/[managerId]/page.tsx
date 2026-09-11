@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ManagerProfileTables } from "@/components/ManagerProfileTables";
+import { ManagerSeasonBreakdownTable } from "@/components/ManagerSeasonBreakdownTable";
 import { historicalLeagueData } from "@/lib/data/historicalLeagueData";
 import {
   getManagerProfile,
@@ -184,69 +185,7 @@ export default async function ManagerPage({ params }: ManagerPageProps) {
           ))}
         </section>
 
-        <section className="overflow-hidden rounded-lg border border-[#d9dee4] bg-white shadow-sm">
-          <div className="flex items-center justify-between gap-4 border-b border-[#e8ebef] px-4 py-4">
-            <div>
-              <p className="text-sm font-semibold text-[#58606a]">
-                Season Breakdown
-              </p>
-              <h2 className="mt-1 text-2xl font-semibold text-[#17191f]">
-                Regular season and playoffs
-              </h2>
-            </div>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[900px] border-collapse text-left text-sm">
-              <thead className="bg-[#f8f9fb] text-[#58606a]">
-                <tr>
-                  <th className="px-4 py-3 font-semibold">Season</th>
-                  <th className="px-4 py-3 font-semibold">Regular</th>
-                  <th className="px-4 py-3 font-semibold">Reg Win %</th>
-                  <th className="px-4 py-3 font-semibold">Reg Avg PF</th>
-                  <th className="px-4 py-3 font-semibold">Reg Avg PA</th>
-                  <th className="px-4 py-3 font-semibold">Playoffs</th>
-                  <th className="px-4 py-3 font-semibold">Playoff Avg PF</th>
-                  <th className="px-4 py-3 font-semibold">High</th>
-                </tr>
-              </thead>
-              <tbody>
-                {profile.seasonSplits.map((season) => (
-                  <tr
-                    key={season.seasonId}
-                    className="border-t border-[#e8ebef]"
-                  >
-                    <td className="px-4 py-3 font-semibold text-[#17191f]">
-                      {season.seasonYear}
-                    </td>
-                    <td className="px-4 py-3 text-[#424a53]">
-                      {formatRecord(season.regular)}
-                    </td>
-                    <td className="px-4 py-3 text-[#424a53]">
-                      {season.regular.games
-                        ? season.regular.winPercentage.toFixed(3)
-                        : "N/A"}
-                    </td>
-                    <td className="px-4 py-3 text-[#424a53]">
-                      {formatScoreOrEmpty(season.regular.averagePointsFor)}
-                    </td>
-                    <td className="px-4 py-3 text-[#424a53]">
-                      {formatScoreOrEmpty(season.regular.averagePointsAgainst)}
-                    </td>
-                    <td className="px-4 py-3 text-[#424a53]">
-                      {formatRecordOrEmpty(season.playoff)}
-                    </td>
-                    <td className="px-4 py-3 text-[#424a53]">
-                      {formatScoreOrEmpty(season.playoff.averagePointsFor)}
-                    </td>
-                    <td className="px-4 py-3 text-[#2f6f50]">
-                      {formatOptionalScore(season.official.highestScore)}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </section>
+        <ManagerSeasonBreakdownTable seasons={profile.seasonSplits} />
 
         <ManagerProfileTables
           headToHead={profile.headToHead}
@@ -261,20 +200,12 @@ function formatRecord(record: ManagerRecordSummary) {
   return `${record.wins}-${record.losses}${record.ties > 0 ? `-${record.ties}` : ""}`;
 }
 
-function formatRecordOrEmpty(record: ManagerRecordSummary) {
-  return record.games === 0 ? "N/A" : formatRecord(record);
-}
-
 function formatScore(score: number) {
   return score.toFixed(1);
 }
 
 function formatOptionalScore(score: number | null | undefined) {
   return score === null || score === undefined ? "N/A" : formatScore(score);
-}
-
-function formatScoreOrEmpty(score: number) {
-  return score === 0 ? "N/A" : formatScore(score);
 }
 
 function formatStreakLength(streak: ManagerStreak | null) {

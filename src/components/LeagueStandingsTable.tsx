@@ -12,6 +12,7 @@ import {
   SegmentedControl,
   type SegmentOption,
 } from "./SegmentedControl";
+import { SortableHeader, type SortDirection } from "./SortableHeader";
 
 export type LeagueStandingRow = ManagerStanding & {
   activity: ManagerActivity | null;
@@ -20,6 +21,17 @@ export type LeagueStandingRow = ManagerStanding & {
 export type LeagueStandingsByScope = Record<GameScope, LeagueStandingRow[]>;
 
 type ManagerStatusFilter = "all" | "active" | "inactive";
+type StandingSortKey =
+  | "managerName"
+  | "wins"
+  | "games"
+  | "winPercentage"
+  | "pointsFor"
+  | "pointsAgainst"
+  | "averagePointsFor"
+  | "averagePointsAgainst"
+  | "highestScore"
+  | "lowestScore";
 
 type LeagueStandingsTableProps = {
   standingsByScope: LeagueStandingsByScope;
@@ -44,9 +56,12 @@ export function LeagueStandingsTable({
   const [gameScope, setGameScope] = useState<GameScope>("official");
   const [managerStatus, setManagerStatus] =
     useState<ManagerStatusFilter>("all");
+  const [sortKey, setSortKey] =
+    useState<StandingSortKey>("winPercentage");
+  const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
   const rows = useMemo(
-    () =>
-      standingsByScope[gameScope].filter((standing) => {
+    () => {
+      const filteredRows = standingsByScope[gameScope].filter((standing) => {
         if (standing.games === 0) {
           return false;
         }
@@ -60,9 +75,22 @@ export function LeagueStandingsTable({
         }
 
         return true;
-      }),
-    [gameScope, managerStatus, standingsByScope],
+      });
+
+      return [...filteredRows].sort((first, second) =>
+        compareStandingRows(first, second, sortKey, sortDirection),
+      );
+    },
+    [gameScope, managerStatus, sortDirection, sortKey, standingsByScope],
   );
+  const handleSort = (nextSortKey: StandingSortKey) => {
+    setSortDirection((currentDirection) =>
+      sortKey === nextSortKey
+        ? flipSortDirection(currentDirection)
+        : getDefaultSortDirection(nextSortKey),
+    );
+    setSortKey(nextSortKey);
+  };
 
   return (
     <section className="overflow-hidden rounded-lg border border-[#d9dee4] bg-white shadow-sm">
@@ -94,18 +122,99 @@ export function LeagueStandingsTable({
         </div>
       </div>
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[940px] border-collapse text-left text-sm">
+        <table className="w-full min-w-[1040px] border-collapse text-left text-sm">
           <thead className="bg-[#f8f9fb] text-[#58606a]">
             <tr>
-              <th className="px-4 py-3 font-semibold">Manager</th>
-              <th className="px-4 py-3 font-semibold">Record</th>
-              <th className="px-4 py-3 font-semibold">Win %</th>
-              <th className="px-4 py-3 font-semibold">PF</th>
-              <th className="px-4 py-3 font-semibold">PA</th>
-              <th className="px-4 py-3 font-semibold">Avg PF</th>
-              <th className="px-4 py-3 font-semibold">Avg PA</th>
-              <th className="px-4 py-3 font-semibold">High</th>
-              <th className="px-4 py-3 font-semibold">Low</th>
+              <th className="px-4 py-3">
+                <SortableHeader
+                  label="Manager"
+                  sortKey="managerName"
+                  activeSortKey={sortKey}
+                  direction={sortDirection}
+                  onSort={handleSort}
+                />
+              </th>
+              <th className="px-4 py-3">
+                <SortableHeader
+                  label="Record"
+                  sortKey="wins"
+                  activeSortKey={sortKey}
+                  direction={sortDirection}
+                  onSort={handleSort}
+                />
+              </th>
+              <th className="px-4 py-3">
+                <SortableHeader
+                  label="Games"
+                  sortKey="games"
+                  activeSortKey={sortKey}
+                  direction={sortDirection}
+                  onSort={handleSort}
+                />
+              </th>
+              <th className="px-4 py-3">
+                <SortableHeader
+                  label="Win %"
+                  sortKey="winPercentage"
+                  activeSortKey={sortKey}
+                  direction={sortDirection}
+                  onSort={handleSort}
+                />
+              </th>
+              <th className="px-4 py-3">
+                <SortableHeader
+                  label="PF"
+                  sortKey="pointsFor"
+                  activeSortKey={sortKey}
+                  direction={sortDirection}
+                  onSort={handleSort}
+                />
+              </th>
+              <th className="px-4 py-3">
+                <SortableHeader
+                  label="PA"
+                  sortKey="pointsAgainst"
+                  activeSortKey={sortKey}
+                  direction={sortDirection}
+                  onSort={handleSort}
+                />
+              </th>
+              <th className="px-4 py-3">
+                <SortableHeader
+                  label="Avg PF"
+                  sortKey="averagePointsFor"
+                  activeSortKey={sortKey}
+                  direction={sortDirection}
+                  onSort={handleSort}
+                />
+              </th>
+              <th className="px-4 py-3">
+                <SortableHeader
+                  label="Avg PA"
+                  sortKey="averagePointsAgainst"
+                  activeSortKey={sortKey}
+                  direction={sortDirection}
+                  onSort={handleSort}
+                />
+              </th>
+              <th className="px-4 py-3">
+                <SortableHeader
+                  label="High"
+                  sortKey="highestScore"
+                  activeSortKey={sortKey}
+                  direction={sortDirection}
+                  onSort={handleSort}
+                />
+              </th>
+              <th className="px-4 py-3">
+                <SortableHeader
+                  label="Low"
+                  sortKey="lowestScore"
+                  activeSortKey={sortKey}
+                  direction={sortDirection}
+                  onSort={handleSort}
+                />
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -132,6 +241,9 @@ export function LeagueStandingsTable({
                   </td>
                   <td className={getStandingCellClass(isActive)}>
                     {formatRecord(standing)}
+                  </td>
+                  <td className={getStandingCellClass(isActive)}>
+                    {standing.games}
                   </td>
                   <td className={getStandingCellClass(isActive)}>
                     {standing.winPercentage.toFixed(3)}
@@ -174,6 +286,60 @@ export function LeagueStandingsTable({
 
 function formatRecord(record: Pick<ManagerStanding, "wins" | "losses" | "ties">) {
   return `${record.wins}-${record.losses}${record.ties > 0 ? `-${record.ties}` : ""}`;
+}
+
+function compareStandingRows(
+  first: LeagueStandingRow,
+  second: LeagueStandingRow,
+  sortKey: StandingSortKey,
+  direction: SortDirection,
+) {
+  const primaryComparison =
+    compareSortValues(
+      getStandingSortValue(first, sortKey),
+      getStandingSortValue(second, sortKey),
+    ) * getSortDirectionMultiplier(direction);
+
+  if (primaryComparison !== 0) {
+    return primaryComparison;
+  }
+
+  return (
+    compareSortValues(second.winPercentage, first.winPercentage) ||
+    compareSortValues(second.pointsFor, first.pointsFor) ||
+    compareSortValues(first.managerName, second.managerName)
+  );
+}
+
+function getStandingSortValue(
+  standing: LeagueStandingRow,
+  sortKey: StandingSortKey,
+) {
+  if (sortKey === "highestScore" || sortKey === "lowestScore") {
+    return standing[sortKey] ?? Number.NEGATIVE_INFINITY;
+  }
+
+  return standing[sortKey];
+}
+
+function compareSortValues(first: number | string, second: number | string) {
+  if (typeof first === "string" && typeof second === "string") {
+    return first.localeCompare(second);
+  }
+
+  return Number(first) - Number(second);
+}
+
+function getSortDirectionMultiplier(direction: SortDirection) {
+  return direction === "asc" ? 1 : -1;
+}
+
+function flipSortDirection(direction: SortDirection): SortDirection {
+  return direction === "asc" ? "desc" : "asc";
+}
+
+function getDefaultSortDirection(sortKey: StandingSortKey): SortDirection {
+  return sortKey === "managerName" ? "asc" : "desc";
 }
 
 function formatNullableScore(score: number | null) {
