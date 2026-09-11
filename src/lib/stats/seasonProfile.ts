@@ -11,10 +11,8 @@ import type {
 } from "../domain/types";
 import {
   buildGameResults,
-  getLeagueRecords,
   getManagerStandings,
   type GameResult,
-  type LeagueRecords,
   type ManagerStanding,
 } from "./leagueStats";
 import {
@@ -40,6 +38,7 @@ export type SeasonMatchupParticipant = {
   managerId: EntityId;
   managerName: string;
   points: number;
+  finalFinish: number | null;
 };
 
 export type SeasonMatchupSummary = {
@@ -50,10 +49,45 @@ export type SeasonMatchupSummary = {
   weekNumber: number;
   gameType: MatchupGameType;
   isFinalSeedingGame: boolean;
+  finalSeedingRank: number | null;
   first: SeasonMatchupParticipant;
   second: SeasonMatchupParticipant;
   winner: SeasonMatchupParticipant | null;
   margin: number;
+};
+
+export type SeasonScoreRecord = {
+  matchup: SeasonMatchupSummary;
+  featured: SeasonMatchupParticipant;
+  opponent: SeasonMatchupParticipant;
+  points: number;
+};
+
+export type SeasonMarginRecord = {
+  matchup: SeasonMatchupSummary;
+  featured: SeasonMatchupParticipant;
+  opponent: SeasonMatchupParticipant;
+  margin: number;
+};
+
+export type SeasonGameRecord = {
+  matchup: SeasonMatchupSummary;
+  margin: number;
+};
+
+export type SeasonRecordSet = {
+  highestScore: SeasonScoreRecord | null;
+  lowestScore: SeasonScoreRecord | null;
+  biggestWin: SeasonMarginRecord | null;
+  biggestLoss: SeasonMarginRecord | null;
+  closestGame: SeasonGameRecord | null;
+};
+
+export type SeasonFinalStandingRow = SeasonTeamSummary & {
+  finish: number;
+  regular: ManagerStanding;
+  playoffs: ManagerStanding;
+  official: ManagerStanding;
 };
 
 export type SeasonProfile = {
@@ -61,13 +95,15 @@ export type SeasonProfile = {
   seasonYear: number;
   label: string;
   teams: SeasonTeamSummary[];
-  champion: SeasonTeamSummary | null;
+  champions: SeasonTeamSummary[];
+  championshipMatchup: SeasonMatchupSummary | null;
+  finalStandings: SeasonFinalStandingRow[];
   matchupCount: number;
   officialMatchupCount: number;
   regularMatchupCount: number;
   playoffMatchupCount: number;
   consolationMatchupCount: number;
-  records: LeagueRecords;
+  records: SeasonRecordSet;
   standingsByScope: Record<GameScope, SeasonStandingRow[]>;
   matchups: SeasonMatchupSummary[];
 };
@@ -148,6 +184,7 @@ const toSeasonStandingRows = (
 const toSeasonMatchupParticipant = (
   score: Score,
   indexes: SeasonIndexes,
+  finalFinish: number | null,
 ): SeasonMatchupParticipant => {
   const team = requireFromIndex(indexes.teams, score.teamId, "team");
   const manager = requireFromIndex(indexes.managers, team.managerId, "manager");
@@ -158,6 +195,7 @@ const toSeasonMatchupParticipant = (
     managerId: manager.id,
     managerName: manager.displayName,
     points: score.points,
+    finalFinish,
   };
 };
 
@@ -168,8 +206,16 @@ const toSeasonMatchupSummary = (
 ): SeasonMatchupSummary => {
   const week = requireFromIndex(indexes.weeks, matchup.weekId, "week");
   const [firstScore, secondScore] = matchup.scores;
-  const first = toSeasonMatchupParticipant(firstScore, indexes);
-  const second = toSeasonMatchupParticipant(secondScore, indexes);
+  const first = toSeasonMatchupParticipant(
+    firstScore,
+    indexes,
+    matchup.finalStanding?.firstTeamFinish ?? null,
+  );
+  const second = toSeasonMatchupParticipant(
+    secondScore,
+    indexes,
+    matchup.finalStanding?.secondTeamFinish ?? null,
+  );
   const winner =
     first.points === second.points
       ? null
@@ -185,6 +231,7 @@ const toSeasonMatchupSummary = (
     weekNumber: week.number,
     gameType: matchup.gameType,
     isFinalSeedingGame: matchup.isFinalSeedingGame ?? false,
+    finalSeedingRank: matchup.finalSeedingRank ?? null,
     first,
     second,
     winner,
@@ -212,6 +259,186 @@ const countMatchupsByType = (
   gameType: MatchupGameType,
 ) => matchups.filter((matchup) => matchup.gameType === gameType).length;
 
+const isOfficialMatchup = (matchup: Pick<SeasonMatchupSummary, "gameType">) =>
+  matchup.gameType === "regular" || matchup.gameType === "playoff";
+
+const maxBy = <T>(items: T[], score: (item: T) => number) =>
+  items.reduce<T | null>(
+    (best, item) => (best === null || score(item) > score(best) ? item : best),
+    null,
+  );
+
+const minBy = <T>(items: T[], score: (item: T) => number) =>
+  items.reduce<T | null>(
+    (best, item) => (best === null || score(item) < score(best) ? item : best),
+    null,
+  );
+
+const getSeasonScoreRecords = (
+  matchups: SeasonMatchupSummary[],
+): SeasonScoreRecord[] =>
+  matchups.flatMap((matchup) => [
+    {
+      matchup,
+      featured: matchup.first,
+      opponent: matchup.second,
+      points: matchup.first.points,
+    },
+    {
+      matchup,
+      featured: matchup.second,
+      opponent: matchup.first,
+      points: matchup.second.points,
+    },
+  ]);
+
+const getSeasonWinRecords = (
+  matchups: SeasonMatchupSummary[],
+): SeasonMarginRecord[] =>
+  matchups.flatMap((matchup) => {
+    if (!matchup.winner) {
+      return [];
+    }
+
+    const loser =
+      matchup.winner.managerId === matchup.first.managerId
+        ? matchup.second
+        : matchup.first;
+
+    return [
+      {
+        matchup,
+        featured: matchup.winner,
+        opponent: loser,
+        margin: matchup.margin,
+      },
+    ];
+  });
+
+const getSeasonLossRecords = (
+  matchups: SeasonMatchupSummary[],
+): SeasonMarginRecord[] =>
+  getSeasonWinRecords(matchups).map((record) => ({
+    matchup: record.matchup,
+    featured: record.opponent,
+    opponent: record.featured,
+    margin: record.margin,
+  }));
+
+const getSeasonRecords = (
+  matchups: SeasonMatchupSummary[],
+): SeasonRecordSet => {
+  const officialMatchups = matchups.filter(isOfficialMatchup);
+  const scoreRecords = getSeasonScoreRecords(officialMatchups);
+  const winRecords = getSeasonWinRecords(officialMatchups);
+  const lossRecords = getSeasonLossRecords(officialMatchups);
+  const closestGame = minBy(officialMatchups, (matchup) => matchup.margin);
+
+  return {
+    highestScore: maxBy(scoreRecords, (record) => record.points),
+    lowestScore: minBy(scoreRecords, (record) => record.points),
+    biggestWin: maxBy(winRecords, (record) => record.margin),
+    biggestLoss: maxBy(lossRecords, (record) => record.margin),
+    closestGame: closestGame
+      ? { matchup: closestGame, margin: closestGame.margin }
+      : null,
+  };
+};
+
+const mapStandingsByManagerId = (standings: SeasonStandingRow[]) =>
+  new Map(standings.map((standing) => [standing.managerId, standing]));
+
+const requireStanding = (
+  standings: Map<EntityId, SeasonStandingRow>,
+  managerId: EntityId,
+  label: string,
+) => requireFromIndex(standings, managerId, label);
+
+const getChampionshipMatchup = (matchups: SeasonMatchupSummary[]) =>
+  matchups.find((matchup) => matchup.finalSeedingRank === 1) ??
+  matchups.find(
+    (matchup) =>
+      matchup.first.finalFinish === 1 || matchup.second.finalFinish === 1,
+  ) ??
+  null;
+
+const getChampions = (
+  championshipMatchup: SeasonMatchupSummary | null,
+): SeasonTeamSummary[] => {
+  if (!championshipMatchup) {
+    return [];
+  }
+
+  return [championshipMatchup.first, championshipMatchup.second]
+    .filter((participant) => participant.finalFinish === 1)
+    .map((participant) => ({
+      teamId: participant.teamId,
+      teamName: participant.teamName,
+      managerId: participant.managerId,
+      managerName: participant.managerName,
+    }));
+};
+
+const getFinalStandings = (
+  matchups: SeasonMatchupSummary[],
+  standingsByScope: Record<GameScope, SeasonStandingRow[]>,
+): SeasonFinalStandingRow[] => {
+  const regularStandings = mapStandingsByManagerId(standingsByScope.regular);
+  const playoffStandings = mapStandingsByManagerId(standingsByScope.playoff);
+  const officialStandings = mapStandingsByManagerId(standingsByScope.official);
+  const seenManagerIds = new Set<EntityId>();
+  const finalStandingRows: Array<{
+    sourceOrder: number;
+    standing: SeasonFinalStandingRow;
+  }> = [];
+
+  for (const matchup of matchups.filter((item) => item.isFinalSeedingGame)) {
+    for (const participant of [matchup.first, matchup.second]) {
+      if (
+        participant.finalFinish === null ||
+        seenManagerIds.has(participant.managerId)
+      ) {
+        continue;
+      }
+
+      seenManagerIds.add(participant.managerId);
+      finalStandingRows.push({
+        sourceOrder: finalStandingRows.length,
+        standing: {
+          teamId: participant.teamId,
+          teamName: participant.teamName,
+          managerId: participant.managerId,
+          managerName: participant.managerName,
+          finish: participant.finalFinish,
+          regular: requireStanding(
+            regularStandings,
+            participant.managerId,
+            "regular standing",
+          ),
+          playoffs: requireStanding(
+            playoffStandings,
+            participant.managerId,
+            "playoff standing",
+          ),
+          official: requireStanding(
+            officialStandings,
+            participant.managerId,
+            "official standing",
+          ),
+        },
+      });
+    }
+  }
+
+  return finalStandingRows
+    .sort(
+      (first, second) =>
+        first.standing.finish - second.standing.finish ||
+        first.sourceOrder - second.sourceOrder,
+    )
+    .map((item) => item.standing);
+};
+
 export const getSeasonProfile = (
   data: LeagueData,
   seasonYear: number,
@@ -236,11 +463,6 @@ export const getSeasonProfile = (
   const seasonMatchups = data.matchups.filter(
     (matchup) => matchup.seasonId === season.id,
   );
-  const champion =
-    season.championManagerId === undefined
-      ? null
-      : teams.find((team) => team.managerId === season.championManagerId) ??
-        null;
   const matchups = seasonMatchups
     .map((matchup) => toSeasonMatchupSummary(matchup, season, indexes))
     .sort(compareMatchupsAscending);
@@ -254,13 +476,18 @@ export const getSeasonProfile = (
       [scope]: toSeasonStandingRows(data, teams, scopedResults),
     };
   }, {} as Record<GameScope, SeasonStandingRow[]>);
+  const championshipMatchup = getChampionshipMatchup(matchups);
+  const champions = getChampions(championshipMatchup);
+  const finalStandings = getFinalStandings(matchups, standingsByScope);
 
   return {
     seasonId: season.id,
     seasonYear: season.year,
     label: season.label,
     teams,
-    champion,
+    champions,
+    championshipMatchup,
+    finalStandings,
     matchupCount: seasonMatchups.length,
     officialMatchupCount:
       countMatchupsByType(seasonMatchups, "regular") +
@@ -268,9 +495,7 @@ export const getSeasonProfile = (
     regularMatchupCount: countMatchupsByType(seasonMatchups, "regular"),
     playoffMatchupCount: countMatchupsByType(seasonMatchups, "playoff"),
     consolationMatchupCount: countMatchupsByType(seasonMatchups, "consolation"),
-    records: getLeagueRecords(
-      filterGameResultsByScope(seasonGameResults, "official"),
-    ),
+    records: getSeasonRecords(matchups),
     standingsByScope,
     matchups,
   };

@@ -56,14 +56,14 @@ describe("historical workbook data", () => {
       regular: 636,
     });
     expect(historicalImportSummary.seasonFinalSeedingCounts).toEqual({
-      "2015": 1,
-      "2016": 1,
-      "2017": 1,
-      "2018": 1,
-      "2019": 1,
-      "2020": 1,
-      "2021": 1,
-      "2022": 1,
+      "2015": 6,
+      "2016": 6,
+      "2017": 6,
+      "2018": 6,
+      "2019": 6,
+      "2020": 6,
+      "2021": 6,
+      "2022": 6,
     });
 
     const seasonTeamCounts = countBy(
@@ -95,7 +95,34 @@ describe("historical workbook data", () => {
       seasonId: "season-2022",
       weekId: "week-2022-17",
       gameType: "consolation",
+      isFinalSeedingGame: true,
+      finalSeedingRank: 11,
+      finalStanding: {
+        firstTeamFinish: 11,
+        secondTeamFinish: 12,
+      },
       source: { rowNumber: 782 },
+    });
+  });
+
+  it("preserves the tied 2022 championship finish", () => {
+    const championship = historicalLeagueData.matchups.find(
+      (matchup) =>
+        matchup.seasonId === "season-2022" && matchup.finalSeedingRank === 1,
+    );
+
+    expect(championship).toMatchObject({
+      id: "matchup-2022-w17-01",
+      gameType: "playoff",
+      isFinalSeedingGame: true,
+      finalStanding: {
+        firstTeamFinish: 1,
+        secondTeamFinish: 1,
+      },
+      scores: [
+        { teamId: "team-2022-ld-lu", points: 103.66 },
+        { teamId: "team-2022-josh-charest", points: 103.66 },
+      ],
     });
   });
 

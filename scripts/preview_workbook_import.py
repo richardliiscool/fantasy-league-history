@@ -40,17 +40,19 @@ RAW_COLUMNS = {
     "playoff": 16,
     "consolation": 17,
     "final_seeding": 18,
+    "team1_finish": 19,
+    "team2_finish": 21,
 }
 
 EXPECTED_SEASONS = {
-    2015: {"rows": 102, "weeks": (1, 17), "teams": 12, "regular": 78, "playoff": 6, "consolation": 18, "final_seeding": 1},
-    2016: {"rows": 95, "weeks": (1, 16), "teams": 12, "regular": 78, "playoff": 5, "consolation": 12, "final_seeding": 1},
-    2017: {"rows": 95, "weeks": (1, 16), "teams": 12, "regular": 78, "playoff": 5, "consolation": 12, "final_seeding": 1},
-    2018: {"rows": 95, "weeks": (1, 16), "teams": 12, "regular": 78, "playoff": 5, "consolation": 12, "final_seeding": 1},
-    2019: {"rows": 95, "weeks": (1, 16), "teams": 12, "regular": 78, "playoff": 5, "consolation": 12, "final_seeding": 1},
-    2020: {"rows": 95, "weeks": (1, 16), "teams": 12, "regular": 78, "playoff": 5, "consolation": 12, "final_seeding": 1},
-    2021: {"rows": 101, "weeks": (1, 17), "teams": 12, "regular": 84, "playoff": 5, "consolation": 12, "final_seeding": 1},
-    2022: {"rows": 101, "weeks": (1, 17), "teams": 12, "regular": 84, "playoff": 5, "consolation": 12, "final_seeding": 1},
+    2015: {"rows": 102, "weeks": (1, 17), "teams": 12, "regular": 78, "playoff": 6, "consolation": 18, "final_seeding": 6},
+    2016: {"rows": 95, "weeks": (1, 16), "teams": 12, "regular": 78, "playoff": 5, "consolation": 12, "final_seeding": 6},
+    2017: {"rows": 95, "weeks": (1, 16), "teams": 12, "regular": 78, "playoff": 5, "consolation": 12, "final_seeding": 6},
+    2018: {"rows": 95, "weeks": (1, 16), "teams": 12, "regular": 78, "playoff": 5, "consolation": 12, "final_seeding": 6},
+    2019: {"rows": 95, "weeks": (1, 16), "teams": 12, "regular": 78, "playoff": 5, "consolation": 12, "final_seeding": 6},
+    2020: {"rows": 95, "weeks": (1, 16), "teams": 12, "regular": 78, "playoff": 5, "consolation": 12, "final_seeding": 6},
+    2021: {"rows": 101, "weeks": (1, 17), "teams": 12, "regular": 84, "playoff": 5, "consolation": 12, "final_seeding": 6},
+    2022: {"rows": 101, "weeks": (1, 17), "teams": 12, "regular": 84, "playoff": 5, "consolation": 12, "final_seeding": 6},
 }
 
 
@@ -65,6 +67,9 @@ class RawMatchupPreview:
     team2_score: float
     game_type: str
     final_seeding_game: bool
+    final_seeding_rank: int | None
+    team1_finish: int | None
+    team2_finish: int | None
     result: str
     margin: float
 
@@ -93,6 +98,13 @@ def to_int(value: Any, label: str, row_number: int, issues: list[str]) -> int | 
         return None
 
     return numeric_value
+
+
+def to_optional_int(value: Any, label: str, row_number: int, issues: list[str]) -> int | None:
+    if value in (None, ""):
+        return None
+
+    return to_int(value, label, row_number, issues)
 
 
 def to_score(value: Any, label: str, row_number: int, issues: list[str]) -> float | None:
@@ -148,6 +160,15 @@ def parse_workbook(workbook_path: Path) -> tuple[list[RawMatchupPreview], list[s
         team1_score = to_score(raw_values["team1_score"], "Team 1 Score", row_number, issues)
         team2_score = to_score(raw_values["team2_score"], "Team 2 Score", row_number, issues)
         game_type = get_game_type(row, row_number, issues)
+        final_seeding_rank = to_optional_int(
+            raw_values["final_seeding"], "final seeding rank", row_number, issues
+        )
+        team1_finish = to_optional_int(
+            raw_values["team1_finish"], "Team 1 Finish", row_number, issues
+        )
+        team2_finish = to_optional_int(
+            raw_values["team2_finish"], "Team 2 Finish", row_number, issues
+        )
 
         if not isinstance(team1, str) or not team1.strip():
             issues.append(f"Row {row_number}: missing Team 1.")
@@ -157,6 +178,8 @@ def parse_workbook(workbook_path: Path) -> tuple[list[RawMatchupPreview], list[s
             team2 = None
         if team1 == team2 and team1 is not None:
             issues.append(f"Row {row_number}: Team 1 and Team 2 are the same.")
+        if final_seeding_rank is not None and None in (team1_finish, team2_finish):
+            issues.append(f"Row {row_number}: final seeding game is missing finish data.")
 
         if None in (season, week, team1, team2, team1_score, team2_score, game_type):
             continue
@@ -178,7 +201,10 @@ def parse_workbook(workbook_path: Path) -> tuple[list[RawMatchupPreview], list[s
                 team1_score=team1_score,
                 team2_score=team2_score,
                 game_type=game_type,
-                final_seeding_game=enabled(raw_values["final_seeding"]),
+                final_seeding_game=final_seeding_rank is not None,
+                final_seeding_rank=final_seeding_rank,
+                team1_finish=team1_finish,
+                team2_finish=team2_finish,
                 result=result,
                 margin=round(abs(team1_score - team2_score), 2),
             )

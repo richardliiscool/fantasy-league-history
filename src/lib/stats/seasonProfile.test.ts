@@ -25,6 +25,7 @@ describe("season profile", () => {
       matchupCount: historicalImportSummary.seasonMatchupCounts["2022"],
     });
     expect(profile.teams).toHaveLength(12);
+    expect(profile.finalStandings).toHaveLength(12);
     expect(profile.matchups).toHaveLength(profile.matchupCount);
     expect(
       new Set(profile.matchups.map((matchup) => matchup.matchupId)).size,
@@ -72,6 +73,71 @@ describe("season profile", () => {
       weekNumber: 1,
     });
     expect(profile.matchups.at(-1)?.weekNumber).toBe(17);
+  });
+
+  it("preserves the tied 2022 championship as co-champions", () => {
+    const profile = requireSeasonProfile(2022);
+
+    expect(profile.champions.map((champion) => champion.managerName)).toEqual([
+      "LD Lu",
+      "Josh Charest",
+    ]);
+    expect(profile.championshipMatchup).toMatchObject({
+      weekNumber: 17,
+      gameType: "playoff",
+      finalSeedingRank: 1,
+      margin: 0,
+      first: {
+        managerName: "LD Lu",
+        points: 103.66,
+        finalFinish: 1,
+      },
+      second: {
+        managerName: "Josh Charest",
+        points: 103.66,
+        finalFinish: 1,
+      },
+      winner: null,
+    });
+    expect(
+      profile.finalStandings
+        .slice(0, 2)
+        .map((standing) => [standing.finish, standing.managerName]),
+    ).toEqual([
+      [1, "LD Lu"],
+      [1, "Josh Charest"],
+    ]);
+    expect(profile.finalStandings.map((standing) => standing.finish)).toEqual([
+      1, 1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+    ]);
+  });
+
+  it("reads a normal season champion from the final placement rows", () => {
+    const profile = requireSeasonProfile(2021);
+
+    expect(profile.champions.map((champion) => champion.managerName)).toEqual([
+      "LD Lu",
+    ]);
+    expect(profile.finalStandings[0]).toMatchObject({
+      finish: 1,
+      managerName: "LD Lu",
+    });
+  });
+
+  it("keeps season records attached to their source matchup", () => {
+    const profile = requireSeasonProfile(2022);
+
+    expect(profile.records.highestScore?.matchup.weekNumber).toBeGreaterThan(0);
+    expect(profile.records.highestScore?.opponent.managerName).toBeTruthy();
+    expect(profile.records.biggestWin?.matchup.matchupId).toBeTruthy();
+    expect(profile.records.closestGame).toMatchObject({
+      margin: 0,
+      matchup: {
+        weekNumber: 17,
+        first: { managerName: "LD Lu", points: 103.66 },
+        second: { managerName: "Josh Charest", points: 103.66 },
+      },
+    });
   });
 
   it("returns null for seasons that are not imported yet", () => {

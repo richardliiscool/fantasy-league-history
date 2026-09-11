@@ -4,8 +4,13 @@ import { notFound } from "next/navigation";
 import { SeasonMatchupsTable } from "@/components/SeasonMatchupsTable";
 import { SeasonStandingsTable } from "@/components/SeasonStandingsTable";
 import { historicalLeagueData } from "@/lib/data/historicalLeagueData";
-import type { MarginRecord, ScoreRecord } from "@/lib/stats/leagueStats";
-import { getSeasonProfile } from "@/lib/stats/seasonProfile";
+import {
+  getSeasonProfile,
+  type SeasonGameRecord,
+  type SeasonMarginRecord,
+  type SeasonMatchupSummary,
+  type SeasonScoreRecord,
+} from "@/lib/stats/seasonProfile";
 
 type SeasonPageProps = {
   params: Promise<{
@@ -57,62 +62,42 @@ export default async function SeasonPage({ params }: SeasonPageProps) {
   );
   const previousSeason = sortedSeasons[seasonIndex - 1] ?? null;
   const nextSeason = sortedSeasons[seasonIndex + 1] ?? null;
-  const summaryCards = [
-    {
-      label: "Teams",
-      value: profile.teams.length,
-      detail: "managers in this season",
-      tone: "bg-[#eef5f1]",
-    },
-    {
-      label: "Matchups",
-      value: profile.matchupCount,
-      detail: `${profile.officialMatchupCount} official`,
-      tone: "bg-[#fff4d6]",
-    },
-    {
-      label: "Regular",
-      value: profile.regularMatchupCount,
-      detail: "regular season matchups",
-      tone: "bg-[#e7f6f8]",
-    },
-    {
-      label: "Postseason",
-      value: profile.playoffMatchupCount,
-      detail: `${profile.consolationMatchupCount} consolation`,
-      tone: "bg-[#f5edf7]",
-    },
-  ];
+  const championshipLabel =
+    profile.champions.length > 1 ? "Championship Tie" : "Champion";
+  const championNames =
+    profile.champions.length > 0
+      ? profile.champions.map((champion) => champion.managerName).join(" + ")
+      : "Not recorded";
   const recordCards = [
     {
       label: "Highest Score",
-      value: formatScore(profile.records.highestScore),
-      detail: formatScoreRecord(profile.records.highestScore),
+      value: formatScore(profile.records.highestScore?.points),
+      detail: formatFeaturedRecordDetail(profile.records.highestScore),
+      scoreLine: formatFeaturedScoreLine(profile.records.highestScore),
     },
     {
       label: "Lowest Score",
-      value: formatScore(profile.records.lowestScore),
-      detail: formatScoreRecord(profile.records.lowestScore),
+      value: formatScore(profile.records.lowestScore?.points),
+      detail: formatFeaturedRecordDetail(profile.records.lowestScore),
+      scoreLine: formatFeaturedScoreLine(profile.records.lowestScore),
     },
     {
       label: "Biggest Win",
       value: formatMargin(profile.records.biggestWin),
-      detail: formatMarginRecord(profile.records.biggestWin),
+      detail: formatFeaturedRecordDetail(profile.records.biggestWin),
+      scoreLine: formatFeaturedScoreLine(profile.records.biggestWin),
     },
     {
       label: "Biggest Loss",
       value: formatMargin(profile.records.biggestLoss),
-      detail: formatMarginRecord(profile.records.biggestLoss),
+      detail: formatFeaturedRecordDetail(profile.records.biggestLoss),
+      scoreLine: formatFeaturedScoreLine(profile.records.biggestLoss),
     },
     {
-      label: "Closest Win",
-      value: formatMargin(profile.records.closestWin),
-      detail: formatMarginRecord(profile.records.closestWin),
-    },
-    {
-      label: "Closest Loss",
-      value: formatMargin(profile.records.closestLoss),
-      detail: formatMarginRecord(profile.records.closestLoss),
+      label: "Closest Game",
+      value: formatMargin(profile.records.closestGame),
+      detail: formatGameRecordDetail(profile.records.closestGame),
+      scoreLine: formatGameRecordScoreLine(profile.records.closestGame),
     },
   ];
 
@@ -136,9 +121,8 @@ export default async function SeasonPage({ params }: SeasonPageProps) {
                 {profile.seasonYear} Season
               </h1>
               <p className="mt-3 max-w-2xl text-sm leading-6 text-[#66707a]">
-                {profile.teams.length} teams, {profile.matchupCount} matchups,
-                and {profile.regularMatchupCount} regular season games from the
-                historical workbook.
+                A year-specific archive with the final finish order, record
+                games, and weekly matchup log from the historical workbook.
               </p>
             </div>
 
@@ -166,23 +150,23 @@ export default async function SeasonPage({ params }: SeasonPageProps) {
           </div>
         </header>
 
-        <section className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
-          {summaryCards.map((card) => (
-            <article
-              key={card.label}
-              className={`rounded-lg border border-[#d9dee4] p-4 shadow-sm ${card.tone}`}
-            >
-              <p className="text-sm font-semibold text-[#58606a]">
-                {card.label}
-              </p>
-              <p className="mt-2 text-3xl font-semibold text-[#17191f]">
-                {card.value}
-              </p>
-              <p className="mt-2 text-sm leading-5 text-[#66707a]">
-                {card.detail}
-              </p>
-            </article>
-          ))}
+        <section className="grid gap-4 xl:grid-cols-[0.78fr_1.42fr]">
+          <article className="rounded-lg border border-[#c5d8cc] bg-[#eef5f1] p-5 shadow-sm">
+            <p className="text-sm font-semibold text-[#58606a]">
+              {championshipLabel}
+            </p>
+            <h2 className="mt-2 text-3xl font-semibold leading-tight text-[#17191f]">
+              {championNames}
+            </h2>
+            <p className="mt-3 text-sm leading-5 text-[#66707a]">
+              {formatChampionshipDetail(profile.championshipMatchup)}
+            </p>
+            <p className="mt-4 text-sm font-semibold leading-5 text-[#17191f]">
+              {formatMatchupScoreLine(profile.championshipMatchup)}
+            </p>
+          </article>
+
+          <SeasonStandingsTable finalStandings={profile.finalStandings} />
         </section>
 
         <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
@@ -200,11 +184,12 @@ export default async function SeasonPage({ params }: SeasonPageProps) {
               <p className="mt-2 min-h-10 text-sm leading-5 text-[#66707a]">
                 {record.detail}
               </p>
+              <p className="mt-2 text-sm font-semibold leading-5 text-[#17191f]">
+                {record.scoreLine}
+              </p>
             </article>
           ))}
         </section>
-
-        <SeasonStandingsTable standingsByScope={profile.standingsByScope} />
 
         <SeasonMatchupsTable matchups={profile.matchups} />
       </div>
@@ -212,28 +197,74 @@ export default async function SeasonPage({ params }: SeasonPageProps) {
   );
 }
 
-function formatScore(record: ScoreRecord | null) {
-  return record ? record.points.toFixed(1) : "0.0";
+function formatScore(score: number | null | undefined) {
+  return score === null || score === undefined ? "0.0" : score.toFixed(1);
 }
 
-function formatMargin(record: MarginRecord | null) {
+function formatMargin(record: SeasonMarginRecord | SeasonGameRecord | null) {
   return record ? formatMarginValue(record.margin) : "0.0";
 }
 
-function formatScoreRecord(record: ScoreRecord | null) {
+function formatFeaturedRecordDetail(
+  record: SeasonScoreRecord | SeasonMarginRecord | null,
+) {
   if (!record) {
     return "No games logged";
   }
 
-  return `${record.managerName}, Week ${record.weekNumber} vs ${record.opponentManagerName}`;
+  return `${record.featured.managerName}, Week ${record.matchup.weekNumber} vs ${record.opponent.managerName}`;
 }
 
-function formatMarginRecord(record: MarginRecord | null) {
+function formatFeaturedScoreLine(
+  record: SeasonScoreRecord | SeasonMarginRecord | null,
+) {
+  if (!record) {
+    return "";
+  }
+
+  return `${record.featured.managerName} ${formatScore(record.featured.points)} - ${record.opponent.managerName} ${formatScore(record.opponent.points)}`;
+}
+
+function formatGameRecordDetail(record: SeasonGameRecord | null) {
   if (!record) {
     return "No games logged";
   }
 
-  return `${record.managerName}, Week ${record.weekNumber} by ${formatMarginValue(record.margin)}`;
+  return `Week ${record.matchup.weekNumber} ${formatGameType(record.matchup.gameType)} game`;
+}
+
+function formatGameRecordScoreLine(record: SeasonGameRecord | null) {
+  return record ? formatMatchupScoreLine(record.matchup) : "";
+}
+
+function formatChampionshipDetail(matchup: SeasonMatchupSummary | null) {
+  if (!matchup) {
+    return "No championship placement game recorded";
+  }
+
+  return matchup.winner
+    ? `Week ${matchup.weekNumber} title game`
+    : `Week ${matchup.weekNumber} title game tied`;
+}
+
+function formatMatchupScoreLine(matchup: SeasonMatchupSummary | null) {
+  if (!matchup) {
+    return "";
+  }
+
+  return `${matchup.first.managerName} ${formatScore(matchup.first.points)} - ${matchup.second.managerName} ${formatScore(matchup.second.points)}`;
+}
+
+function formatGameType(gameType: SeasonMatchupSummary["gameType"]) {
+  if (gameType === "regular") {
+    return "regular";
+  }
+
+  if (gameType === "playoff") {
+    return "playoff";
+  }
+
+  return "consolation";
 }
 
 function formatMarginValue(margin: number) {

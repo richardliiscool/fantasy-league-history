@@ -39,12 +39,19 @@ export type Score = {
   points: number;
 };
 
+export type MatchupFinalStanding = {
+  firstTeamFinish: number;
+  secondTeamFinish: number;
+};
+
 export type Matchup = {
   id: EntityId;
   seasonId: EntityId;
   weekId: EntityId;
   gameType: MatchupGameType;
   isFinalSeedingGame?: boolean;
+  finalSeedingRank?: number;
+  finalStanding?: MatchupFinalStanding;
   source?: WorkbookSource;
   scores: [Score, Score];
 };

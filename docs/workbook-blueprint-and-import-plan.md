@@ -27,7 +27,7 @@ The workbook is organized around one core input table and many derived views.
 Core input:
 
 - `Game Log`
-- Manual/raw columns: `Year`, `Week`, `Team 1`, `Team 2`, `Team 1 Score`, `Team 2 Score`, `Reg. Season`, `Playoffs`, `Consolation`, `Final Seeding Game`
+- Manual/raw columns: `Year`, `Week`, `Team 1`, `Team 2`, `Team 1 Score`, `Team 2 Score`, `Reg. Season`, `Playoffs`, `Consolation`, `Final Seeding Game`, `Team 1 Finish`, `Team 2 Finish`
 - These columns are the data backbone for the app.
 
 Derived/helper areas:
