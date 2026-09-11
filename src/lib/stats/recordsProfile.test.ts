@@ -43,6 +43,55 @@ describe("records profile", () => {
     });
   });
 
+  it("builds a podium tally from final placement rows", () => {
+    const profile = getRecordsProfile(historicalLeagueData);
+    const ld = profile.trophyTallies.find(
+      (row) => row.managerName === "LD Lu",
+    );
+    const josh = profile.trophyTallies.find(
+      (row) => row.managerName === "Josh Charest",
+    );
+    const richard = profile.trophyTallies.find(
+      (row) => row.managerName === "Richard Li",
+    );
+
+    expect(profile.trophyTallies[0]).toMatchObject({
+      managerName: "LD Lu",
+      gold: 3,
+      silver: 0,
+      bronze: 0,
+      totalPodiums: 3,
+      firstPlaceYears: [2019, 2021, 2022],
+    });
+    expect(josh).toMatchObject({
+      gold: 1,
+      silver: 1,
+      bronze: 2,
+      totalPodiums: 4,
+      firstPlaceYears: [2022],
+      secondPlaceYears: [2015],
+      thirdPlaceYears: [2016, 2017],
+    });
+    expect(richard).toMatchObject({
+      gold: 2,
+      silver: 0,
+      bronze: 2,
+      totalPodiums: 4,
+      firstPlaceYears: [2015, 2017],
+      thirdPlaceYears: [2020, 2021],
+    });
+    expect(ld?.secondPlaceYears).toEqual([]);
+    expect(
+      profile.trophyTallies.reduce((total, row) => total + row.gold, 0),
+    ).toBe(9);
+    expect(
+      profile.trophyTallies.reduce((total, row) => total + row.silver, 0),
+    ).toBe(7);
+    expect(
+      profile.trophyTallies.reduce((total, row) => total + row.bronze, 0),
+    ).toBe(8);
+  });
+
   it("supports official, regular, playoff, consolation, and all scopes", () => {
     const profile = getRecordsProfile(historicalLeagueData);
 

@@ -65,8 +65,21 @@ export type SeasonPerformanceRowsByScope = Record<
   SeasonPerformanceRow[]
 >;
 
+export type TrophyTallyRow = {
+  managerId: EntityId;
+  managerName: string;
+  gold: number;
+  silver: number;
+  bronze: number;
+  totalPodiums: number;
+  firstPlaceYears: number[];
+  secondPlaceYears: number[];
+  thirdPlaceYears: number[];
+};
+
 export type RecordsProfile = {
   seasons: RecordsSeason[];
+  trophyTallies: TrophyTallyRow[];
   gameRows: GameRecordRow[];
   matchupRows: MatchupRecordRow[];
   seasonPerformanceRowsByScope: SeasonPerformanceRowsByScope;
@@ -198,6 +211,116 @@ const getSeasonPerformanceRows = (
       });
   });
 
+const emptyTrophyTally = (
+  managerId: EntityId,
+  managerName: string,
+): TrophyTallyRow => ({
+  managerId,
+  managerName,
+  gold: 0,
+  silver: 0,
+  bronze: 0,
+  totalPodiums: 0,
+  firstPlaceYears: [],
+  secondPlaceYears: [],
+  thirdPlaceYears: [],
+});
+
+const addPodiumFinish = (
+  tally: TrophyTallyRow,
+  finish: number,
+  seasonYear: number,
+) => {
+  if (finish === 1) {
+    tally.gold += 1;
+    tally.firstPlaceYears.push(seasonYear);
+  } else if (finish === 2) {
+    tally.silver += 1;
+    tally.secondPlaceYears.push(seasonYear);
+  } else if (finish === 3) {
+    tally.bronze += 1;
+    tally.thirdPlaceYears.push(seasonYear);
+  }
+
+  tally.totalPodiums = tally.gold + tally.silver + tally.bronze;
+};
+
+const getTrophyTallies = (data: LeagueData): TrophyTallyRow[] => {
+  const managerById = new Map(
+    data.managers.map((manager) => [manager.id, manager]),
+  );
+  const seasonById = new Map(
+    data.seasons.map((season) => [season.id, season]),
+  );
+  const teamById = new Map(data.teams.map((team) => [team.id, team]));
+  const tallies = new Map<EntityId, TrophyTallyRow>();
+  const countedPlacements = new Set<string>();
+
+  for (const matchup of data.matchups) {
+    if (!matchup.isFinalSeedingGame || !matchup.finalStanding) {
+      continue;
+    }
+
+    const season = seasonById.get(matchup.seasonId);
+
+    if (!season) {
+      throw new Error(`Missing season for matchup "${matchup.id}".`);
+    }
+
+    const placements = [
+      {
+        score: matchup.scores[0],
+        finish: matchup.finalStanding.firstTeamFinish,
+      },
+      {
+        score: matchup.scores[1],
+        finish: matchup.finalStanding.secondTeamFinish,
+      },
+    ];
+
+    for (const placement of placements) {
+      if (![1, 2, 3].includes(placement.finish)) {
+        continue;
+      }
+
+      const team = teamById.get(placement.score.teamId);
+
+      if (!team) {
+        throw new Error(`Missing team for score "${placement.score.teamId}".`);
+      }
+
+      const manager = managerById.get(team.managerId);
+
+      if (!manager) {
+        throw new Error(`Missing manager for team "${team.id}".`);
+      }
+
+      const placementKey = `${season.id}:${manager.id}`;
+
+      if (countedPlacements.has(placementKey)) {
+        continue;
+      }
+
+      countedPlacements.add(placementKey);
+
+      const existingTally =
+        tallies.get(manager.id) ??
+        emptyTrophyTally(manager.id, manager.displayName);
+      addPodiumFinish(existingTally, placement.finish, season.year);
+      tallies.set(manager.id, existingTally);
+    }
+  }
+
+  return Array.from(tallies.values()).sort(
+    (first, second) =>
+      second.gold - first.gold ||
+      second.silver - first.silver ||
+      second.bronze - first.bronze ||
+      second.totalPodiums - first.totalPodiums ||
+      first.managerName.localeCompare(second.managerName),
+  );
+};
+
 export const matchesRecordGameScope = (
   row: Pick<GameRecordRow | MatchupRecordRow, "gameType">,
   scope: RecordGameScope,
@@ -224,6 +347,7 @@ export const getRecordsProfile = (data: LeagueData): RecordsProfile => {
         label: season.label,
       }))
       .sort((first, second) => first.seasonYear - second.seasonYear),
+    trophyTallies: getTrophyTallies(data),
     gameRows: gameResults.map(toGameRecordRow).sort(compareGamesAscending),
     matchupRows: getMatchupRows(gameResults),
     seasonPerformanceRowsByScope: GAME_SCOPES.reduce(

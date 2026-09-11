@@ -45,7 +45,7 @@ The homepage uses the generated historical data for the first real all-time lead
 ## App Views
 
 - `/` shows the league-wide records dashboard and all-time manager standings.
-- `/records` shows the record book with single-game records, matchup margins, filters, and sortable manager-season stat lines.
+- `/records` shows the record book with trophy tallies, single-game records, matchup margins, filters, and sortable manager-season stat lines.
 - `/managers/[managerId]` shows an individual manager profile with career totals, season splits, head-to-head records, and recent games.
 - `/seasons/[seasonYear]` shows one season at a time with champions/co-champions, final standings, season records, and weekly matchups.
 
@@ -89,4 +89,4 @@ npm run build
 - Season archive pages exist for each imported season from 2015 through 2022.
 - Season archive pages use workbook finish-order data, including tied finishers when the historical result calls for it, and the final standings table can be sorted by finish, manager, team, records, PF, PA, Avg PF, and Avg PA.
 - Season archive pages consolidate biggest win/loss into a single biggest-margin game card.
-- Records page exists with global filters, top-10 score and margin tables, and sortable manager-season records.
+- Records page exists with podium trophy tallies, global filters, top-10 score and margin tables, and sortable manager-season records.

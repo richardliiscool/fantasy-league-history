@@ -13,6 +13,7 @@ import type {
   RecordGameScope,
   RecordsProfile,
   SeasonPerformanceRow,
+  TrophyTallyRow,
 } from "@/lib/stats/recordsProfile";
 import {
   SegmentedControl,
@@ -183,6 +184,8 @@ export function RecordsDashboard({ profile }: RecordsDashboardProps) {
 
   return (
     <div className="flex flex-col gap-8">
+      <TrophyTallyTable rows={profile.trophyTallies} />
+
       <section className="overflow-hidden rounded-lg border border-[#d9dee4] bg-white shadow-sm">
         <div className="flex flex-col gap-4 px-4 py-4 xl:flex-row xl:items-end xl:justify-between">
           <div>
@@ -255,6 +258,95 @@ export function RecordsDashboard({ profile }: RecordsDashboardProps) {
         onSort={handlePerformanceSort}
       />
     </div>
+  );
+}
+
+function TrophyTallyTable({ rows }: { rows: TrophyTallyRow[] }) {
+  return (
+    <section className="overflow-hidden rounded-lg border border-[#d9dee4] bg-white shadow-sm">
+      <div className="border-b border-[#e8ebef] px-4 py-4">
+        <p className="text-sm font-semibold text-[#58606a]">
+          Trophy Tally
+        </p>
+        <h2 className="mt-1 text-2xl font-semibold text-[#17191f]">
+          Gold, silver, bronze
+        </h2>
+        <p className="mt-2 text-sm leading-5 text-[#66707a]">
+          Counted from official final placement rows, so tied finishes are kept
+          as tied finishes.
+        </p>
+      </div>
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-[900px] border-collapse text-left text-sm">
+          <thead className="bg-[#f8f9fb] text-[#58606a]">
+            <tr>
+              <th className="px-4 py-3 font-semibold">Rank</th>
+              <th className="px-4 py-3 font-semibold">Manager</th>
+              <th className="px-4 py-3 font-semibold">Gold</th>
+              <th className="px-4 py-3 font-semibold">Silver</th>
+              <th className="px-4 py-3 font-semibold">Bronze</th>
+              <th className="px-4 py-3 font-semibold">Podiums</th>
+              <th className="px-4 py-3 font-semibold">Seasons</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((row, index) => (
+              <tr key={row.managerId} className="border-t border-[#e8ebef]">
+                <td className="px-4 py-3 font-semibold text-[#17191f]">
+                  {index + 1}
+                </td>
+                <td className="px-4 py-3 font-semibold">
+                  <Link
+                    href={`/managers/${row.managerId}`}
+                    className="text-[#17191f] underline-offset-4 hover:text-[#2f6f50] hover:underline"
+                  >
+                    {row.managerName}
+                  </Link>
+                </td>
+                <td className="px-4 py-3">
+                  <PodiumCount value={row.gold} tone="gold" />
+                </td>
+                <td className="px-4 py-3">
+                  <PodiumCount value={row.silver} tone="silver" />
+                </td>
+                <td className="px-4 py-3">
+                  <PodiumCount value={row.bronze} tone="bronze" />
+                </td>
+                <td className="px-4 py-3 font-semibold text-[#17191f]">
+                  {row.totalPodiums}
+                </td>
+                <td className="px-4 py-3 text-[#424a53]">
+                  {formatPodiumYears(row)}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  );
+}
+
+function PodiumCount({
+  value,
+  tone,
+}: {
+  value: number;
+  tone: "gold" | "silver" | "bronze";
+}) {
+  const toneClass =
+    tone === "gold"
+      ? "bg-[#fff4d6] text-[#7c5200]"
+      : tone === "silver"
+        ? "bg-[#eef2f6] text-[#4b5563]"
+        : "bg-[#f7eadf] text-[#7a3f1d]";
+
+  return (
+    <span
+      className={`inline-flex min-w-10 justify-center rounded-md px-2 py-1 text-sm font-semibold ${toneClass}`}
+    >
+      {value}
+    </span>
   );
 }
 
@@ -775,6 +867,20 @@ function formatGameRecordDetail(row: GameRecordRow | undefined) {
   }
 
   return `${row.managerName}, ${row.seasonYear} Week ${row.weekNumber} vs ${row.opponentManagerName}`;
+}
+
+function formatPodiumYears(row: TrophyTallyRow) {
+  const parts = [
+    formatPodiumYearGroup("1st", row.firstPlaceYears),
+    formatPodiumYearGroup("2nd", row.secondPlaceYears),
+    formatPodiumYearGroup("3rd", row.thirdPlaceYears),
+  ].filter(Boolean);
+
+  return parts.length > 0 ? parts.join(" / ") : "No podiums";
+}
+
+function formatPodiumYearGroup(label: string, years: number[]) {
+  return years.length > 0 ? `${label}: ${years.join(", ")}` : "";
 }
 
 function formatGameRecordScoreLine(row: GameRecordRow | undefined) {
