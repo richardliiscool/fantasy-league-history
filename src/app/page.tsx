@@ -1,28 +1,47 @@
-import { sampleLeagueData } from "@/lib/data/sampleLeague";
+import {
+  historicalImportSummary,
+  historicalLeagueData,
+} from "@/lib/data/historicalLeagueData";
 import type { MarginRecord, ScoreRecord } from "@/lib/stats/leagueStats";
-import { summarizeLeague } from "@/lib/stats/leagueStats";
+import {
+  buildGameResults,
+  isRecordEligibleGame,
+  summarizeLeague,
+} from "@/lib/stats/leagueStats";
 
 export default function Home() {
-  const summary = summarizeLeague(sampleLeagueData);
+  const officialGameResults = buildGameResults(historicalLeagueData).filter(
+    isRecordEligibleGame,
+  );
+  const summary = summarizeLeague(historicalLeagueData, officialGameResults);
   const { records, standings } = summary;
+  const seasons = historicalLeagueData.seasons.map((season) => season.year);
+  const seasonRange = `${Math.min(...seasons)}-${Math.max(...seasons)}`;
+  const officialMatchups = officialGameResults.length / 2;
   const statCards = [
     {
       label: "Managers",
       value: summary.managerCount,
-      detail: "tracked across sample history",
+      detail: "historical owners",
       tone: "bg-[#eef5f1]",
     },
     {
       label: "Seasons",
       value: summary.seasonCount,
-      detail: "ready for historical import",
+      detail: seasonRange,
       tone: "bg-[#fff4d6]",
     },
     {
-      label: "Matchups",
+      label: "Raw Matchups",
       value: summary.matchupCount,
-      detail: `${summary.gameCount} team results`,
+      detail: "from the workbook",
       tone: "bg-[#e7f6f8]",
+    },
+    {
+      label: "Official Games",
+      value: officialMatchups,
+      detail: `${summary.gameCount} team results`,
+      tone: "bg-[#f5edf7]",
     },
   ];
   const recordCards = [
@@ -71,7 +90,7 @@ export default function Home() {
             </h1>
           </div>
 
-          <div className="grid grid-cols-3 gap-2 rounded-lg border border-[#d9dee4] bg-white p-2 shadow-sm">
+          <div className="grid grid-cols-2 gap-2 rounded-lg border border-[#d9dee4] bg-white p-2 shadow-sm sm:grid-cols-4">
             {statCards.map((card) => (
               <div
                 key={card.label}
@@ -99,7 +118,7 @@ export default function Home() {
                   Data Source
                 </p>
                 <h2 className="mt-1 text-2xl font-semibold text-[#17191f]">
-                  Sample history
+                  Historical workbook
                 </h2>
               </div>
               <div className="flex h-16 w-24 shrink-0 items-center justify-center rounded-md border border-[#244c39] bg-[#2f6f50] p-2">
@@ -114,19 +133,25 @@ export default function Home() {
               <div className="flex items-center justify-between border-t border-[#e8ebef] pt-3">
                 <dt className="text-sm text-[#58606a]">Current input</dt>
                 <dd className="text-sm font-semibold text-[#17191f]">
-                  Manual/fake data
+                  Excel Game Log
                 </dd>
               </div>
               <div className="flex items-center justify-between border-t border-[#e8ebef] pt-3">
-                <dt className="text-sm text-[#58606a]">Next input</dt>
+                <dt className="text-sm text-[#58606a]">Regular season</dt>
                 <dd className="text-sm font-semibold text-[#17191f]">
-                  Excel workbook
+                  {historicalImportSummary.gameTypeCounts.regular}
                 </dd>
               </div>
               <div className="flex items-center justify-between border-t border-[#e8ebef] pt-3">
-                <dt className="text-sm text-[#58606a]">Later input</dt>
+                <dt className="text-sm text-[#58606a]">Playoff</dt>
                 <dd className="text-sm font-semibold text-[#17191f]">
-                  Sleeper API
+                  {historicalImportSummary.gameTypeCounts.playoff}
+                </dd>
+              </div>
+              <div className="flex items-center justify-between border-t border-[#e8ebef] pt-3">
+                <dt className="text-sm text-[#58606a]">Consolation kept</dt>
+                <dd className="text-sm font-semibold text-[#17191f]">
+                  {historicalImportSummary.gameTypeCounts.consolation}
                 </dd>
               </div>
             </dl>
@@ -163,7 +188,7 @@ export default function Home() {
               </h2>
             </div>
             <p className="hidden rounded-md bg-[#f0b429]/20 px-3 py-2 text-sm font-semibold text-[#7c5200] sm:block">
-              MVP data model
+              Regular + playoff
             </p>
           </div>
           <div className="overflow-x-auto">
@@ -176,6 +201,7 @@ export default function Home() {
                   <th className="px-4 py-3 font-semibold">PF</th>
                   <th className="px-4 py-3 font-semibold">PA</th>
                   <th className="px-4 py-3 font-semibold">Avg PF</th>
+                  <th className="px-4 py-3 font-semibold">Avg PA</th>
                   <th className="px-4 py-3 font-semibold">High</th>
                   <th className="px-4 py-3 font-semibold">Low</th>
                 </tr>
@@ -204,6 +230,9 @@ export default function Home() {
                     </td>
                     <td className="px-4 py-3 text-[#424a53]">
                       {standing.averagePointsFor.toFixed(1)}
+                    </td>
+                    <td className="px-4 py-3 text-[#424a53]">
+                      {standing.averagePointsAgainst.toFixed(1)}
                     </td>
                     <td className="px-4 py-3 text-[#2f6f50]">
                       {formatNullableScore(standing.highestScore)}

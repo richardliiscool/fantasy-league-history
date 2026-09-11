@@ -1,5 +1,13 @@
 export type EntityId = string;
 
+export type MatchupGameType = "regular" | "playoff" | "consolation";
+
+export type WorkbookSource = {
+  workbook: string;
+  sheet: string;
+  rowNumber: number;
+};
+
 export type Manager = {
   id: EntityId;
   displayName: string;
@@ -35,6 +43,9 @@ export type Matchup = {
   id: EntityId;
   seasonId: EntityId;
   weekId: EntityId;
+  gameType: MatchupGameType;
+  isFinalSeedingGame?: boolean;
+  source?: WorkbookSource;
   scores: [Score, Score];
 };
 

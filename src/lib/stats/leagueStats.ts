@@ -3,6 +3,8 @@ import type {
   FantasyTeam,
   LeagueData,
   Manager,
+  Matchup,
+  MatchupGameType,
   Score,
   Season,
   Week,
@@ -10,12 +12,19 @@ import type {
 
 export type GameOutcome = "win" | "loss" | "tie";
 
+export const RECORD_ELIGIBLE_GAME_TYPES: MatchupGameType[] = [
+  "regular",
+  "playoff",
+];
+
 export type GameResult = {
   matchupId: EntityId;
   seasonId: EntityId;
   seasonYear: number;
   weekId: EntityId;
   weekNumber: number;
+  gameType: MatchupGameType;
+  isFinalSeedingGame: boolean;
   teamId: EntityId;
   teamName: string;
   managerId: EntityId;
@@ -41,6 +50,7 @@ export type ManagerStanding = {
   pointsFor: number;
   pointsAgainst: number;
   averagePointsFor: number;
+  averagePointsAgainst: number;
   highestScore: number | null;
   lowestScore: number | null;
 };
@@ -137,7 +147,7 @@ const getOutcome = (pointsFor: number, pointsAgainst: number): GameOutcome => {
 };
 
 const toGameResult = (
-  matchupId: EntityId,
+  matchup: Matchup,
   season: Season,
   week: Week,
   indexes: LeagueIndexes,
@@ -159,11 +169,13 @@ const toGameResult = (
   const margin = roundTo(score.points - opponentScore.points, 2);
 
   return {
-    matchupId,
+    matchupId: matchup.id,
     seasonId: season.id,
     seasonYear: season.year,
     weekId: week.id,
     weekNumber: week.number,
+    gameType: matchup.gameType,
+    isFinalSeedingGame: matchup.isFinalSeedingGame ?? false,
     teamId: team.id,
     teamName: team.name,
     managerId: manager.id,
@@ -192,8 +204,8 @@ export const buildGameResults = (data: LeagueData): GameResult[] => {
     const [firstScore, secondScore] = matchup.scores;
 
     return [
-      toGameResult(matchup.id, season, week, indexes, firstScore, secondScore),
-      toGameResult(matchup.id, season, week, indexes, secondScore, firstScore),
+      toGameResult(matchup, season, week, indexes, firstScore, secondScore),
+      toGameResult(matchup, season, week, indexes, secondScore, firstScore),
     ];
   });
 };
@@ -262,6 +274,10 @@ export const getManagerStandings = (
         standing.games === 0
           ? 0
           : roundTo(standing.pointsFor / standing.games, 1),
+      averagePointsAgainst:
+        standing.games === 0
+          ? 0
+          : roundTo(standing.pointsAgainst / standing.games, 1),
     }))
     .sort((first, second) => {
       if (second.winPercentage !== first.winPercentage) {
@@ -271,6 +287,9 @@ export const getManagerStandings = (
       return second.pointsFor - first.pointsFor;
     });
 };
+
+export const isRecordEligibleGame = (game: Pick<GameResult, "gameType">) =>
+  RECORD_ELIGIBLE_GAME_TYPES.includes(game.gameType);
 
 const maxBy = <T>(items: T[], score: (item: T) => number) =>
   items.reduce<T | null>(
@@ -319,8 +338,10 @@ export const getLeagueRecords = (gameResults: GameResult[]): LeagueRecords => {
   };
 };
 
-export const summarizeLeague = (data: LeagueData): LeagueSummary => {
-  const gameResults = buildGameResults(data);
+export const summarizeLeague = (
+  data: LeagueData,
+  gameResults = buildGameResults(data),
+): LeagueSummary => {
 
   return {
     managerCount: data.managers.length,

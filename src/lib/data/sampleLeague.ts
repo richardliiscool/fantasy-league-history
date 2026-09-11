@@ -83,6 +83,7 @@ export const sampleLeagueData = {
     {
       id: "matchup-2023-1-a",
       seasonId: "season-2023",
+      gameType: "regular",
       weekId: "week-2023-1",
       scores: [
         { teamId: "team-2023-richard", points: 132.4 },
@@ -92,6 +93,7 @@ export const sampleLeagueData = {
     {
       id: "matchup-2023-1-b",
       seasonId: "season-2023",
+      gameType: "regular",
       weekId: "week-2023-1",
       scores: [
         { teamId: "team-2023-jamal", points: 95.7 },
@@ -101,6 +103,7 @@ export const sampleLeagueData = {
     {
       id: "matchup-2023-2-a",
       seasonId: "season-2023",
+      gameType: "regular",
       weekId: "week-2023-2",
       scores: [
         { teamId: "team-2023-richard", points: 88.6 },
@@ -110,6 +113,7 @@ export const sampleLeagueData = {
     {
       id: "matchup-2023-2-b",
       seasonId: "season-2023",
+      gameType: "regular",
       weekId: "week-2023-2",
       scores: [
         { teamId: "team-2023-maya", points: 150.8 },
@@ -119,6 +123,7 @@ export const sampleLeagueData = {
     {
       id: "matchup-2023-3-a",
       seasonId: "season-2023",
+      gameType: "regular",
       weekId: "week-2023-3",
       scores: [
         { teamId: "team-2023-richard", points: 164.3 },
@@ -128,6 +133,7 @@ export const sampleLeagueData = {
     {
       id: "matchup-2023-3-b",
       seasonId: "season-2023",
+      gameType: "regular",
       weekId: "week-2023-3",
       scores: [
         { teamId: "team-2023-maya", points: 112.2 },
@@ -137,6 +143,7 @@ export const sampleLeagueData = {
     {
       id: "matchup-2023-4-a",
       seasonId: "season-2023",
+      gameType: "regular",
       weekId: "week-2023-4",
       scores: [
         { teamId: "team-2023-richard", points: 117.9 },
@@ -146,6 +153,7 @@ export const sampleLeagueData = {
     {
       id: "matchup-2023-4-b",
       seasonId: "season-2023",
+      gameType: "regular",
       weekId: "week-2023-4",
       scores: [
         { teamId: "team-2023-jamal", points: 130.5 },
@@ -155,6 +163,7 @@ export const sampleLeagueData = {
     {
       id: "matchup-2024-1-a",
       seasonId: "season-2024",
+      gameType: "regular",
       weekId: "week-2024-1",
       scores: [
         { teamId: "team-2024-richard", points: 143.2 },
@@ -164,6 +173,7 @@ export const sampleLeagueData = {
     {
       id: "matchup-2024-1-b",
       seasonId: "season-2024",
+      gameType: "regular",
       weekId: "week-2024-1",
       scores: [
         { teamId: "team-2024-maya", points: 101.6 },
@@ -173,6 +183,7 @@ export const sampleLeagueData = {
     {
       id: "matchup-2024-2-a",
       seasonId: "season-2024",
+      gameType: "regular",
       weekId: "week-2024-2",
       scores: [
         { teamId: "team-2024-richard", points: 109.8 },
@@ -182,6 +193,7 @@ export const sampleLeagueData = {
     {
       id: "matchup-2024-2-b",
       seasonId: "season-2024",
+      gameType: "regular",
       weekId: "week-2024-2",
       scores: [
         { teamId: "team-2024-maya", points: 133.7 },
@@ -191,6 +203,7 @@ export const sampleLeagueData = {
     {
       id: "matchup-2024-3-a",
       seasonId: "season-2024",
+      gameType: "regular",
       weekId: "week-2024-3",
       scores: [
         { teamId: "team-2024-richard", points: 76.4 },
@@ -200,6 +213,7 @@ export const sampleLeagueData = {
     {
       id: "matchup-2024-3-b",
       seasonId: "season-2024",
+      gameType: "regular",
       weekId: "week-2024-3",
       scores: [
         { teamId: "team-2024-jamal", points: 147.9 },

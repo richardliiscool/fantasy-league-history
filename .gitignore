@@ -39,3 +39,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# python tooling
+__pycache__/
+*.pyc
+
+# local archival source files
+/reference/workbooks/*.xlsx

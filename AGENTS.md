@@ -35,7 +35,10 @@ The core domain model is:
 ## Data Rules
 
 - Start with fake/manual sample data until the stats engine is trustworthy.
-- Treat any Excel workbook import as untrusted raw input. Map it into the normalized `LeagueData` shape before running stats.
+- Treat the historical Excel workbooks as authoritative league history. Preserve manually collected teams, scores, managers, weeks, and game types exactly.
+- Parse workbook data defensively, then map it into the normalized `LeagueData` shape before running stats.
+- Use workbook formulas as a behavior blueprint, not as app implementation.
+- Do not add financial tracking features. Financial workbook tabs are archival context only and are out of scope for this app.
 - Do not add the Sleeper API until the manual/imported data path and stats calculations are validated.
 - Prefer explicit IDs for managers, seasons, teams, weeks, and matchups so historical team-name changes do not break records.
 

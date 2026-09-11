@@ -22,15 +22,25 @@ Core entities:
 
 ## Data Plan
 
-This project starts with sample data so the records engine can be proven before any real import work.
+This project starts with sample data so the records engine can be proven before any real import work. The archived Excel workbooks are the authoritative source for historical league data.
 
 Next data milestones:
 
-1. Inspect the old Excel workbook.
+1. Preview the workbook import without changing app data.
 2. Map workbook columns into the normalized league model.
 3. Validate imported totals against known league records.
-4. Add manual correction tools for messy historical data.
+4. Generate local seed data from the workbook.
 5. Add Sleeper API ingestion after the historical model is stable.
+
+Financial tracking is intentionally out of scope for this app.
+
+## Historical Data
+
+The real historical data is generated from the archived workbook into `src/lib/data/historicalLeagueData.ts`. That generated file is app-shaped data and should not be edited by hand.
+
+The raw `.xlsx` archive files in `reference/workbooks` are ignored by Git so they stay local unless explicitly approved for sharing.
+
+The homepage uses the generated historical data for the first real all-time leaderboard. The smaller sample data file remains useful for tiny unit tests.
 
 ## Local Commands
 
@@ -55,5 +65,6 @@ npm run build
 - Next.js app scaffold is created.
 - Project-specific `AGENTS.md` is in place.
 - Sample league data exists.
+- Historical workbook data is generated into app-shaped data.
 - Initial stats engine and tests exist.
-- The home page renders a league records dashboard from the stats engine.
+- The home page renders a real league records dashboard from the stats engine.
