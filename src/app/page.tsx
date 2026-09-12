@@ -142,6 +142,12 @@ export default function Home() {
               >
                 Records
               </Link>
+              <Link
+                href="/head-to-head"
+                className="rounded-md border border-[#b8c0c9] bg-white px-3 py-2 text-sm font-semibold text-[#17191f] underline-offset-4 hover:border-[#2f6f50] hover:text-[#2f6f50] hover:underline"
+              >
+                Head-to-Head
+              </Link>
             </div>
           </div>
 
