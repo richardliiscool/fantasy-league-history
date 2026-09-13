@@ -11,13 +11,23 @@ import {
   filterGameResultsByScope,
   type GameScope,
 } from "@/lib/stats/gameFilters";
-import type { MarginRecord, ScoreRecord } from "@/lib/stats/leagueStats";
+import type { ScoreRecord } from "@/lib/stats/leagueStats";
 import { getManagerActivities } from "@/lib/stats/managerActivity";
 import {
   buildGameResults,
   getManagerStandings,
   summarizeLeague,
 } from "@/lib/stats/leagueStats";
+import {
+  getRecordsProfile,
+  matchesRecordGameScope,
+  type MatchupRecordRow,
+} from "@/lib/stats/recordsProfile";
+import {
+  getSeasonProfile,
+  type SeasonFinalStandingRow,
+  type SeasonProfile,
+} from "@/lib/stats/seasonProfile";
 
 export default function Home() {
   const allGameResults = buildGameResults(historicalLeagueData);
@@ -27,7 +37,23 @@ export default function Home() {
   );
   const summary = summarizeLeague(historicalLeagueData, officialGameResults);
   const { records } = summary;
+  const recordsProfile = getRecordsProfile(historicalLeagueData);
+  const officialMatchupRecords = recordsProfile.matchupRows.filter((row) =>
+    matchesRecordGameScope(row, "official"),
+  );
+  const biggestMarginRecord =
+    [...officialMatchupRecords].sort(compareMatchupsByMarginDescending)[0] ??
+    null;
+  const closestGameRecord =
+    [...officialMatchupRecords].sort(compareMatchupsByMarginAscending)[0] ??
+    null;
   const seasons = historicalLeagueData.seasons.map((season) => season.year);
+  const latestSeasonYear = Math.max(...seasons);
+  const latestSeasonProfile = getSeasonProfile(
+    historicalLeagueData,
+    latestSeasonYear,
+    allGameResults,
+  );
   const managerActivities = getManagerActivities(historicalLeagueData);
   const activityByManagerId = new Map(
     managerActivities.map((activity) => [activity.managerId, activity]),
@@ -103,85 +129,77 @@ export default function Home() {
       detail: formatScoreRecord(records.lowestScore),
     },
     {
-      label: "Biggest Win",
-      value: formatMargin(records.biggestWin),
-      detail: formatMarginRecord(records.biggestWin),
+      label: "Biggest Margin",
+      value: formatMatchupMargin(biggestMarginRecord),
+      detail: formatMatchupRecord(biggestMarginRecord),
     },
     {
-      label: "Biggest Loss",
-      value: formatMargin(records.biggestLoss),
-      detail: formatMarginRecord(records.biggestLoss),
-    },
-    {
-      label: "Closest Win",
-      value: formatMargin(records.closestWin),
-      detail: formatMarginRecord(records.closestWin),
-    },
-    {
-      label: "Closest Loss",
-      value: formatMargin(records.closestLoss),
-      detail: formatMarginRecord(records.closestLoss),
+      label: "Closest Game",
+      value: formatMatchupMargin(closestGameRecord),
+      detail: formatMatchupRecord(closestGameRecord),
     },
   ];
 
   return (
     <main className="min-h-screen bg-[#f4f5f7] text-[#17191f]">
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-8 px-4 py-6 sm:px-6 lg:px-8">
-        <header className="grid gap-5 border-b border-[#d9dee4] pb-6 lg:grid-cols-[1.4fr_0.8fr] lg:items-end">
-          <div>
-            <p className="text-sm font-semibold uppercase text-[#2f6f50]">
-              Fantasy League History
-            </p>
-            <h1 className="mt-2 max-w-3xl text-4xl font-semibold leading-tight text-[#111614] sm:text-5xl">
-              League Vault
-            </h1>
-            <div className="mt-4 flex flex-wrap gap-2">
-              <Link
-                href="/managers"
-                className="rounded-md border border-[#b8c0c9] bg-white px-3 py-2 text-sm font-semibold text-[#17191f] underline-offset-4 hover:border-[#2f6f50] hover:text-[#2f6f50] hover:underline"
-              >
-                Managers
-              </Link>
-              <Link
-                href="/records"
-                className="rounded-md border border-[#b8c0c9] bg-white px-3 py-2 text-sm font-semibold text-[#17191f] underline-offset-4 hover:border-[#2f6f50] hover:text-[#2f6f50] hover:underline"
-              >
-                Records
-              </Link>
-              <Link
-                href="/head-to-head"
-                className="rounded-md border border-[#b8c0c9] bg-white px-3 py-2 text-sm font-semibold text-[#17191f] underline-offset-4 hover:border-[#2f6f50] hover:text-[#2f6f50] hover:underline"
-              >
-                Head-to-Head
-              </Link>
-              <Link
-                href="/head-to-head/matrix"
-                className="rounded-md border border-[#b8c0c9] bg-white px-3 py-2 text-sm font-semibold text-[#17191f] underline-offset-4 hover:border-[#2f6f50] hover:text-[#2f6f50] hover:underline"
-              >
-                H2H Matrix
-              </Link>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-2 rounded-lg border border-[#d9dee4] bg-white p-2 shadow-sm sm:grid-cols-4">
-            {statCards.map((card) => (
-              <div
-                key={card.label}
-                className={`rounded-md px-3 py-3 ${card.tone}`}
-              >
-                <p className="text-xs font-semibold text-[#58606a]">
-                  {card.label}
-                </p>
-                <p className="mt-1 text-2xl font-semibold text-[#17191f]">
-                  {card.value}
-                </p>
-                <p className="mt-1 text-xs leading-4 text-[#66707a]">
-                  {card.detail}
-                </p>
-              </div>
-            ))}
+        <header className="border-b border-[#d9dee4] pb-6">
+          <p className="text-sm font-semibold uppercase text-[#2f6f50]">
+            Fantasy League History
+          </p>
+          <h1 className="mt-2 max-w-3xl text-4xl font-semibold leading-tight text-[#111614] sm:text-5xl">
+            League Vault
+          </h1>
+          <div className="mt-4 flex flex-wrap gap-2">
+            <Link
+              href="/managers"
+              className="rounded-md border border-[#b8c0c9] bg-white px-3 py-2 text-sm font-semibold text-[#17191f] underline-offset-4 hover:border-[#2f6f50] hover:text-[#2f6f50] hover:underline"
+            >
+              Managers
+            </Link>
+            <Link
+              href="/records"
+              className="rounded-md border border-[#b8c0c9] bg-white px-3 py-2 text-sm font-semibold text-[#17191f] underline-offset-4 hover:border-[#2f6f50] hover:text-[#2f6f50] hover:underline"
+            >
+              Records
+            </Link>
+            <Link
+              href="/head-to-head"
+              className="rounded-md border border-[#b8c0c9] bg-white px-3 py-2 text-sm font-semibold text-[#17191f] underline-offset-4 hover:border-[#2f6f50] hover:text-[#2f6f50] hover:underline"
+            >
+              Head-to-Head
+            </Link>
+            <Link
+              href="/head-to-head/matrix"
+              className="rounded-md border border-[#b8c0c9] bg-white px-3 py-2 text-sm font-semibold text-[#17191f] underline-offset-4 hover:border-[#2f6f50] hover:text-[#2f6f50] hover:underline"
+            >
+              H2H Matrix
+            </Link>
           </div>
         </header>
+
+        {latestSeasonProfile && (
+          <LatestSeasonSection profile={latestSeasonProfile} />
+        )}
+
+        <section className="grid grid-cols-2 gap-2 rounded-lg border border-[#d9dee4] bg-white p-2 shadow-sm sm:grid-cols-4">
+          {statCards.map((card) => (
+            <div
+              key={card.label}
+              className={`rounded-md px-3 py-3 ${card.tone}`}
+            >
+              <p className="text-xs font-semibold text-[#58606a]">
+                {card.label}
+              </p>
+              <p className="mt-1 text-2xl font-semibold text-[#17191f]">
+                {card.value}
+              </p>
+              <p className="mt-1 text-xs leading-4 text-[#66707a]">
+                {card.detail}
+              </p>
+            </div>
+          ))}
+        </section>
 
         <section className="overflow-hidden rounded-lg border border-[#d9dee4] bg-white shadow-sm">
           <div className="flex flex-col gap-2 border-b border-[#e8ebef] px-4 py-4">
@@ -257,7 +275,7 @@ export default function Home() {
             </dl>
           </div>
 
-          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+          <div className="grid gap-3 sm:grid-cols-2">
             {recordCards.map((record) => (
               <article
                 key={record.label}
@@ -283,11 +301,134 @@ export default function Home() {
   );
 }
 
-function formatScore(record: ScoreRecord | null) {
-  return record ? record.points.toFixed(1) : "0.0";
+function LatestSeasonSection({ profile }: { profile: SeasonProfile }) {
+  return (
+    <section className="overflow-hidden rounded-lg border border-[#d9dee4] bg-white shadow-sm">
+      <div className="flex flex-col gap-2 border-b border-[#e8ebef] px-4 py-4">
+        <p className="text-sm font-semibold text-[#58606a]">
+          Most Recent Season
+        </p>
+        <h2 className="text-2xl font-semibold text-[#17191f]">
+          {profile.seasonYear} final results
+        </h2>
+      </div>
+      <div className="grid gap-4 p-4 lg:grid-cols-[0.42fr_1fr]">
+        <div className="rounded-md border border-[#e8ebef] bg-[#eef5f1] p-4">
+          <p className="text-sm font-semibold text-[#58606a]">
+            {profile.champions.length > 1 ? "Co-Champions" : "Champion"}
+          </p>
+          <p className="mt-2 text-3xl font-semibold text-[#17191f]">
+            {formatChampionNames(profile)}
+          </p>
+          <p className="mt-2 text-sm leading-5 text-[#66707a]">
+            {formatChampionshipDetail(profile)}
+          </p>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[760px] border-collapse text-left text-sm">
+            <thead className="bg-[#f8f9fb] text-[#58606a]">
+              <tr>
+                <th className="px-3 py-3 font-semibold">Finish</th>
+                <th className="px-3 py-3 font-semibold">Manager</th>
+                <th className="px-3 py-3 font-semibold">Team</th>
+                <th className="px-3 py-3 font-semibold">Official Record</th>
+                <th className="px-3 py-3 font-semibold">PF</th>
+              </tr>
+            </thead>
+            <tbody>
+              {profile.finalStandings.map((standing) => (
+                <tr
+                  key={`${standing.managerId}-${standing.finish}`}
+                  className="border-t border-[#e8ebef]"
+                >
+                  <td className="px-3 py-3 font-semibold text-[#17191f]">
+                    {formatFinish(standing.finish)}
+                  </td>
+                  <td className="px-3 py-3 font-semibold">
+                    <Link
+                      href={`/managers/${standing.managerId}`}
+                      className="text-[#17191f] underline-offset-4 hover:text-[#2f6f50] hover:underline"
+                    >
+                      {standing.managerName}
+                    </Link>
+                  </td>
+                  <td className="px-3 py-3 text-[#424a53]">
+                    {standing.teamName}
+                  </td>
+                  <td className="px-3 py-3 text-[#424a53]">
+                    {formatStandingRecord(standing)}
+                  </td>
+                  <td className="px-3 py-3 text-[#424a53]">
+                    {standing.official.pointsFor.toFixed(1)}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  );
 }
 
-function formatMargin(record: MarginRecord | null) {
+function formatChampionNames(profile: SeasonProfile) {
+  return profile.champions.length > 0
+    ? profile.champions.map((champion) => champion.managerName).join(" + ")
+    : "No champion logged";
+}
+
+function formatChampionshipDetail(profile: SeasonProfile) {
+  if (!profile.championshipMatchup) {
+    return "No championship matchup found";
+  }
+
+  const { first, second } = profile.championshipMatchup;
+
+  return `${first.managerName} ${formatScoreValue(first.points)} - ${formatScoreValue(
+    second.points,
+  )} ${second.managerName}`;
+}
+
+function compareMatchupsByMarginDescending(
+  first: MatchupRecordRow,
+  second: MatchupRecordRow,
+) {
+  return second.margin - first.margin || compareMatchupsAscending(first, second);
+}
+
+function compareMatchupsByMarginAscending(
+  first: MatchupRecordRow,
+  second: MatchupRecordRow,
+) {
+  return first.margin - second.margin || compareMatchupsAscending(first, second);
+}
+
+function compareMatchupsAscending(
+  first: MatchupRecordRow,
+  second: MatchupRecordRow,
+) {
+  return (
+    first.seasonYear - second.seasonYear ||
+    first.weekNumber - second.weekNumber ||
+    first.matchupId.localeCompare(second.matchupId)
+  );
+}
+
+function formatFinish(finish: number) {
+  return `#${finish}`;
+}
+
+function formatStandingRecord(standing: SeasonFinalStandingRow) {
+  const { wins, losses, ties } = standing.official;
+
+  return `${wins}-${losses}${ties > 0 ? `-${ties}` : ""}`;
+}
+
+function formatScore(record: ScoreRecord | null) {
+  return record ? formatScoreValue(record.points) : "0.0";
+}
+
+function formatMatchupMargin(record: MatchupRecordRow | null) {
   return record ? formatMarginValue(record.margin) : "0.0";
 }
 
@@ -299,12 +440,25 @@ function formatScoreRecord(record: ScoreRecord | null) {
   return `${record.managerName}, ${record.seasonYear} Week ${record.weekNumber} vs ${record.opponentManagerName}`;
 }
 
-function formatMarginRecord(record: MarginRecord | null) {
+function formatMatchupRecord(record: MatchupRecordRow | null) {
   if (!record) {
     return "No games logged";
   }
 
-  return `${record.managerName}, ${record.seasonYear} Week ${record.weekNumber} by ${formatMarginValue(record.margin)}`;
+  const [first, second] =
+    record.first.points >= record.second.points
+      ? [record.first, record.second]
+      : [record.second, record.first];
+
+  return `${record.seasonYear} Week ${record.weekNumber}: ${
+    first.managerName
+  } ${formatScoreValue(first.points)} - ${formatScoreValue(second.points)} ${
+    second.managerName
+  }`;
+}
+
+function formatScoreValue(score: number) {
+  return score.toFixed(1);
 }
 
 function formatMarginValue(margin: number) {
