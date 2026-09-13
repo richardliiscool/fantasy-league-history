@@ -284,7 +284,7 @@ function MatrixCellLink({
       <span className="text-sm font-semibold leading-5">
         {formatCellPrimaryValue(record, displayMode)}
       </span>
-      <span className="mt-1 text-[11px] leading-4 text-[#66707a]">
+      <span className="mt-1 text-[11px] leading-4 opacity-80">
         {formatCellSecondaryValue(record, displayMode)}
       </span>
     </Link>
@@ -449,24 +449,22 @@ function getCellLinkClass(
   columnManager: HeadToHeadManagerOption,
 ) {
   const baseClass =
-    "flex min-h-16 flex-col items-center justify-center rounded-md border px-2 py-2 text-center underline-offset-4 transition hover:border-[#2f6f50] hover:bg-white hover:text-[#2f6f50] hover:underline";
-  const inactiveClass = columnManager.isActive
-    ? "border-[#d9dee4] bg-[#f8f9fb] text-[#17191f]"
-    : "border-[#e8ebef] bg-[#fafafa] text-[#8a939e]";
+    "flex min-h-16 flex-col items-center justify-center rounded-md border px-2 py-2 text-center underline-offset-4 transition hover:border-[#2f6f50] hover:shadow-sm hover:brightness-[0.98] hover:underline";
+  const inactiveClass = columnManager.isActive ? "" : "opacity-75";
 
   if (record.games === 0) {
-    return `${baseClass} ${inactiveClass} opacity-70`;
+    return `${baseClass} border-[#d9dee4] bg-[#f1f3f5] text-[#8a939e] ${inactiveClass}`;
   }
 
-  if (record.winPercentage > 0.5) {
-    return `${baseClass} ${inactiveClass} ring-1 ring-[#d5eadf]`;
+  if (record.winPercentage < 0.4) {
+    return `${baseClass} border-[#c75a68] bg-[#f8dadd] text-[#5d1f2b] ${inactiveClass}`;
   }
 
-  if (record.winPercentage < 0.5) {
-    return `${baseClass} ${inactiveClass} ring-1 ring-[#f3d9de]`;
+  if (record.winPercentage >= 0.6) {
+    return `${baseClass} border-[#6aa982] bg-[#dff3e8] text-[#123b2a] ${inactiveClass}`;
   }
 
-  return `${baseClass} ${inactiveClass}`;
+  return `${baseClass} border-[#d59a2d] bg-[#fff1bf] text-[#4f3700] ${inactiveClass}`;
 }
 
 function getColumnHeaderClass(manager: HeadToHeadManagerOption) {
