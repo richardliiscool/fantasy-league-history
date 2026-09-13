@@ -1,13 +1,15 @@
 "use client";
 
-import Link from "next/link";
 import { useMemo, useState } from "react";
 import { formatPercentage } from "@/lib/formatters";
+import type { ManagerActivity } from "@/lib/stats/managerActivity";
 import type { SeasonFinalStandingRow } from "@/lib/stats/seasonProfile";
+import { ManagerLink } from "./ManagerLink";
 import { SortableHeader, type SortDirection } from "./SortableHeader";
 
 type SeasonStandingsTableProps = {
   finalStandings: SeasonFinalStandingRow[];
+  managerActivities: ManagerActivity[];
 };
 
 type StandingSortKey =
@@ -25,9 +27,17 @@ type StandingSortKey =
 
 export function SeasonStandingsTable({
   finalStandings,
+  managerActivities,
 }: SeasonStandingsTableProps) {
   const [sortKey, setSortKey] = useState<StandingSortKey>("finish");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
+  const activityByManagerId = useMemo(
+    () =>
+      new Map(
+        managerActivities.map((activity) => [activity.managerId, activity]),
+      ),
+    [managerActivities],
+  );
   const finishCounts = getFinishCounts(finalStandings);
   const originalPositionByManagerId = useMemo(
     () =>
@@ -178,58 +188,62 @@ export function SeasonStandingsTable({
             </tr>
           </thead>
           <tbody>
-            {sortedStandings.map((standing) => (
-              <tr
-                key={standing.managerId}
-                className={`border-t border-[#e8ebef] ${
-                  standing.finish === 1 ? "bg-[#eef5f1]" : ""
-                }`}
-              >
-                <td className="px-4 py-3">
-                  <span className="inline-flex min-w-12 justify-center rounded-md bg-[#f8f9fb] px-2 py-1 text-sm font-semibold text-[#17191f]">
-                    {formatFinish(
-                      standing.finish,
-                      finishCounts.get(standing.finish) ?? 0,
-                    )}
-                  </span>
-                </td>
-                <td className="px-4 py-3 font-semibold">
-                  <Link
-                    href={`/managers/${standing.managerId}`}
-                    className="text-[#17191f] underline-offset-4 hover:text-[#2f6f50] hover:underline"
-                  >
-                    {standing.managerName}
-                  </Link>
-                </td>
-                <td className="px-4 py-3 text-[#424a53]">
-                  {standing.teamName}
-                </td>
-                <td className="px-4 py-3 text-[#424a53]">
-                  {formatRecord(standing.regular)}
-                </td>
-                <td className="px-4 py-3 text-[#424a53]">
-                  {formatRecord(standing.playoffs)}
-                </td>
-                <td className="px-4 py-3 text-[#424a53]">
-                  {formatRecord(standing.official)}
-                </td>
-                <td className="px-4 py-3 text-[#424a53]">
-                  {formatPercentage(standing.official.winPercentage)}
-                </td>
-                <td className="px-4 py-3 text-[#424a53]">
-                  {formatScore(standing.official.pointsFor)}
-                </td>
-                <td className="px-4 py-3 text-[#424a53]">
-                  {formatScore(standing.official.pointsAgainst)}
-                </td>
-                <td className="px-4 py-3 text-[#424a53]">
-                  {formatScore(standing.official.averagePointsFor)}
-                </td>
-                <td className="px-4 py-3 text-[#424a53]">
-                  {formatScore(standing.official.averagePointsAgainst)}
-                </td>
-              </tr>
-            ))}
+            {sortedStandings.map((standing) => {
+              const isActive = getManagerIsActive(
+                activityByManagerId,
+                standing.managerId,
+              );
+
+              return (
+                <tr
+                  key={standing.managerId}
+                  className={getStandingRowClass(standing, isActive)}
+                >
+                  <td className="px-4 py-3">
+                    <span className="inline-flex min-w-12 justify-center rounded-md bg-[#f8f9fb] px-2 py-1 text-sm font-semibold text-[#17191f]">
+                      {formatFinish(
+                        standing.finish,
+                        finishCounts.get(standing.finish) ?? 0,
+                      )}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3">
+                    <ManagerLink
+                      managerId={standing.managerId}
+                      managerName={standing.managerName}
+                      isActive={isActive}
+                    />
+                  </td>
+                  <td className={getStandingCellClass(isActive)}>
+                    {standing.teamName}
+                  </td>
+                  <td className={getStandingCellClass(isActive)}>
+                    {formatRecord(standing.regular)}
+                  </td>
+                  <td className={getStandingCellClass(isActive)}>
+                    {formatRecord(standing.playoffs)}
+                  </td>
+                  <td className={getStandingCellClass(isActive)}>
+                    {formatRecord(standing.official)}
+                  </td>
+                  <td className={getStandingCellClass(isActive)}>
+                    {formatPercentage(standing.official.winPercentage)}
+                  </td>
+                  <td className={getStandingCellClass(isActive)}>
+                    {formatScore(standing.official.pointsFor)}
+                  </td>
+                  <td className={getStandingCellClass(isActive)}>
+                    {formatScore(standing.official.pointsAgainst)}
+                  </td>
+                  <td className={getStandingCellClass(isActive)}>
+                    {formatScore(standing.official.averagePointsFor)}
+                  </td>
+                  <td className={getStandingCellClass(isActive)}>
+                    {formatScore(standing.official.averagePointsAgainst)}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
@@ -242,6 +256,28 @@ function getFinishCounts(finalStandings: SeasonFinalStandingRow[]) {
     counts.set(standing.finish, (counts.get(standing.finish) ?? 0) + 1);
     return counts;
   }, new Map());
+}
+
+function getManagerIsActive(
+  activityByManagerId: Map<string, ManagerActivity>,
+  managerId: string,
+) {
+  return activityByManagerId.get(managerId)?.isActive ?? false;
+}
+
+function getStandingRowClass(
+  standing: SeasonFinalStandingRow,
+  isActive: boolean,
+) {
+  if (standing.finish === 1) {
+    return "border-t border-[#e8ebef] bg-[#eef5f1]";
+  }
+
+  return `border-t border-[#e8ebef] ${isActive ? "" : "bg-[#fafafa]"}`;
+}
+
+function getStandingCellClass(isActive: boolean) {
+  return `px-4 py-3 ${isActive ? "text-[#424a53]" : "text-[#8a939e]"}`;
 }
 
 function formatFinish(finish: number, count: number) {

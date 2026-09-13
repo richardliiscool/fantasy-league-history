@@ -28,6 +28,7 @@ type HeadToHeadDashboardProps = {
   profile: HeadToHeadProfile;
   initialFirstManagerId?: string | null;
   initialSecondManagerId?: string | null;
+  initialGameScope?: GameScope | null;
 };
 
 type GameLogSortKey =
@@ -57,6 +58,7 @@ export function HeadToHeadDashboard({
   profile,
   initialFirstManagerId,
   initialSecondManagerId,
+  initialGameScope,
 }: HeadToHeadDashboardProps) {
   const resolvedInitialFirstManagerId = getInitialFirstManagerId(
     profile,
@@ -73,7 +75,9 @@ export function HeadToHeadDashboard({
   const [secondManagerId, setSecondManagerId] = useState(
     resolvedInitialSecondManagerId,
   );
-  const [gameScope, setGameScope] = useState<GameScope>("official");
+  const [gameScope, setGameScope] = useState<GameScope>(
+    initialGameScope ?? "official",
+  );
   const [gameSortKey, setGameSortKey] = useState<GameLogSortKey>("game");
   const [gameSortDirection, setGameSortDirection] =
     useState<SortDirection>("desc");

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { HeadToHeadDashboard } from "@/components/HeadToHeadDashboard";
 import { historicalLeagueData } from "@/lib/data/historicalLeagueData";
+import type { GameScope } from "@/lib/stats/gameFilters";
 import { getHeadToHeadProfile } from "@/lib/stats/headToHeadProfile";
 
 export const metadata: Metadata = {
@@ -12,6 +13,7 @@ type HeadToHeadPageProps = {
   searchParams: Promise<{
     manager?: string | string[];
     opponent?: string | string[];
+    scope?: string | string[];
   }>;
 };
 
@@ -22,6 +24,7 @@ export default async function HeadToHeadPage({
   const query = await searchParams;
   const initialFirstManagerId = getSingleQueryValue(query.manager);
   const initialSecondManagerId = getSingleQueryValue(query.opponent);
+  const initialGameScope = getGameScopeQueryValue(query.scope);
 
   return (
     <main className="min-h-screen bg-[#f4f5f7] text-[#17191f]">
@@ -59,6 +62,7 @@ export default async function HeadToHeadPage({
           profile={profile}
           initialFirstManagerId={initialFirstManagerId}
           initialSecondManagerId={initialSecondManagerId}
+          initialGameScope={initialGameScope}
         />
       </div>
     </main>
@@ -67,4 +71,19 @@ export default async function HeadToHeadPage({
 
 function getSingleQueryValue(value: string | string[] | undefined) {
   return Array.isArray(value) ? value[0] : value;
+}
+
+function getGameScopeQueryValue(value: string | string[] | undefined) {
+  const scope = getSingleQueryValue(value);
+
+  return isGameScope(scope) ? scope : null;
+}
+
+function isGameScope(value: string | undefined): value is GameScope {
+  return (
+    value === "official" ||
+    value === "regular" ||
+    value === "playoff" ||
+    value === "consolation"
+  );
 }

@@ -1,12 +1,13 @@
 "use client";
 
-import Link from "next/link";
 import { useMemo, useState } from "react";
 import {
   GAME_SCOPE_LABELS,
   type GameScope,
 } from "@/lib/stats/gameFilters";
+import type { ManagerActivity } from "@/lib/stats/managerActivity";
 import type { SeasonMatchupSummary } from "@/lib/stats/seasonProfile";
+import { ManagerLink } from "./ManagerLink";
 import {
   SegmentedControl,
   type SegmentOption,
@@ -21,6 +22,7 @@ type WeekFilter = "all" | string;
 
 type SeasonMatchupsTableProps = {
   matchups: SeasonMatchupSummary[];
+  managerActivities: ManagerActivity[];
 };
 
 const MATCHUP_BATCH_SIZE = 24;
@@ -33,11 +35,21 @@ const matchupScopeOptions: SegmentOption<MatchupScope>[] = [
   { value: "consolation", label: GAME_SCOPE_LABELS.consolation },
 ];
 
-export function SeasonMatchupsTable({ matchups }: SeasonMatchupsTableProps) {
+export function SeasonMatchupsTable({
+  matchups,
+  managerActivities,
+}: SeasonMatchupsTableProps) {
   const [matchupScope, setMatchupScope] = useState<MatchupScope>("all");
   const [weekFilter, setWeekFilter] = useState<WeekFilter>("all");
   const [visibleMatchupCount, setVisibleMatchupCount] =
     useState(MATCHUP_BATCH_SIZE);
+  const activityByManagerId = useMemo(
+    () =>
+      new Map(
+        managerActivities.map((activity) => [activity.managerId, activity]),
+      ),
+    [managerActivities],
+  );
   const weekOptions = useMemo<SelectOption<WeekFilter>[]>(
     () => [
       { value: "all", label: "All weeks" },
@@ -117,56 +129,81 @@ export function SeasonMatchupsTable({ matchups }: SeasonMatchupsTableProps) {
             </tr>
           </thead>
           <tbody>
-            {visibleMatchups.map((matchup) => (
-              <tr key={matchup.matchupId} className="border-t border-[#e8ebef]">
-                <td className="px-4 py-3 font-semibold text-[#17191f]">
-                  Week {matchup.weekNumber}
-                </td>
-                <td className="px-4 py-3 text-[#424a53]">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span>{formatGameType(matchup.gameType)}</span>
-                    {matchup.isFinalSeedingGame && (
-                      <span className="rounded-md bg-[#fff4d6] px-2 py-1 text-xs font-semibold text-[#7c5200]">
-                        Final seeding
+            {visibleMatchups.map((matchup) => {
+              const firstIsActive = getManagerIsActive(
+                activityByManagerId,
+                matchup.first.managerId,
+              );
+              const secondIsActive = getManagerIsActive(
+                activityByManagerId,
+                matchup.second.managerId,
+              );
+              const rowIsActive = firstIsActive && secondIsActive;
+
+              return (
+                <tr
+                  key={matchup.matchupId}
+                  className={getMatchupRowClass(rowIsActive)}
+                >
+                  <td className="px-4 py-3 font-semibold text-[#17191f]">
+                    Week {matchup.weekNumber}
+                  </td>
+                  <td className={getMatchupCellClass(rowIsActive)}>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span>{formatGameType(matchup.gameType)}</span>
+                      {matchup.isFinalSeedingGame && (
+                        <span className="rounded-md bg-[#fff4d6] px-2 py-1 text-xs font-semibold text-[#7c5200]">
+                          Final seeding
+                        </span>
+                      )}
+                    </div>
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex flex-col gap-1">
+                      <ManagerTeamLine
+                        managerId={matchup.first.managerId}
+                        managerName={matchup.first.managerName}
+                        teamName={matchup.first.teamName}
+                        isActive={firstIsActive}
+                      />
+                      <ManagerTeamLine
+                        managerId={matchup.second.managerId}
+                        managerName={matchup.second.managerName}
+                        teamName={matchup.second.teamName}
+                        isActive={secondIsActive}
+                      />
+                    </div>
+                  </td>
+                  <td className={getMatchupCellClass(rowIsActive)}>
+                    {formatScore(matchup.first.points)}-
+                    {formatScore(matchup.second.points)}
+                  </td>
+                  <td className="px-4 py-3">
+                    {matchup.winner ? (
+                      <ManagerLink
+                        managerId={matchup.winner.managerId}
+                        managerName={matchup.winner.managerName}
+                        isActive={getManagerIsActive(
+                          activityByManagerId,
+                          matchup.winner.managerId,
+                        )}
+                      />
+                    ) : (
+                      <span
+                        className={
+                          rowIsActive ? "text-[#17191f]" : "text-[#8a939e]"
+                        }
+                      >
+                        Tie
                       </span>
                     )}
-                  </div>
-                </td>
-                <td className="px-4 py-3 text-[#424a53]">
-                  <div className="flex flex-col gap-1">
-                    <ManagerTeamLine
-                      managerId={matchup.first.managerId}
-                      managerName={matchup.first.managerName}
-                      teamName={matchup.first.teamName}
-                    />
-                    <ManagerTeamLine
-                      managerId={matchup.second.managerId}
-                      managerName={matchup.second.managerName}
-                      teamName={matchup.second.teamName}
-                    />
-                  </div>
-                </td>
-                <td className="px-4 py-3 text-[#424a53]">
-                  {formatScore(matchup.first.points)}-
-                  {formatScore(matchup.second.points)}
-                </td>
-                <td className="px-4 py-3 font-semibold text-[#17191f]">
-                  {matchup.winner ? (
-                    <Link
-                      href={`/managers/${matchup.winner.managerId}`}
-                      className="underline-offset-4 hover:text-[#2f6f50] hover:underline"
-                    >
-                      {matchup.winner.managerName}
-                    </Link>
-                  ) : (
-                    "Tie"
-                  )}
-                </td>
-                <td className="px-4 py-3 text-[#424a53]">
-                  {formatMarginValue(matchup.margin)}
-                </td>
-              </tr>
-            ))}
+                  </td>
+                  <td className={getMatchupCellClass(rowIsActive)}>
+                    {formatMarginValue(matchup.margin)}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
@@ -193,22 +230,41 @@ function ManagerTeamLine({
   managerId,
   managerName,
   teamName,
+  isActive,
 }: {
   managerId: string;
   managerName: string;
   teamName: string;
+  isActive: boolean;
 }) {
   return (
     <span>
-      <Link
-        href={`/managers/${managerId}`}
-        className="font-semibold text-[#17191f] underline-offset-4 hover:text-[#2f6f50] hover:underline"
-      >
-        {managerName}
-      </Link>
-      <span className="text-[#7a828c]"> / {teamName}</span>
+      <ManagerLink
+        managerId={managerId}
+        managerName={managerName}
+        isActive={isActive}
+      />
+      <span className={isActive ? "text-[#7a828c]" : "text-[#8a939e]"}>
+        {" "}
+        / {teamName}
+      </span>
     </span>
   );
+}
+
+function getManagerIsActive(
+  activityByManagerId: Map<string, ManagerActivity>,
+  managerId: string,
+) {
+  return activityByManagerId.get(managerId)?.isActive ?? false;
+}
+
+function getMatchupRowClass(isActive: boolean) {
+  return `border-t border-[#e8ebef] ${isActive ? "" : "bg-[#fafafa]"}`;
+}
+
+function getMatchupCellClass(isActive: boolean) {
+  return `px-4 py-3 ${isActive ? "text-[#424a53]" : "text-[#8a939e]"}`;
 }
 
 function matchesMatchupScope(

@@ -310,9 +310,10 @@ function MatrixCellLink({
         query: {
           manager: cell.rowManagerId,
           opponent: cell.columnManagerId,
+          scope,
         },
       }}
-      aria-label={`Open head-to-head against ${columnManager.managerName}`}
+      aria-label={`Open head-to-head against ${columnManager.managerName} in ${GAME_SCOPE_LABELS[scope]}`}
       className={getCellLinkClass(record, columnManager)}
     >
       <span className="text-sm font-semibold leading-5">

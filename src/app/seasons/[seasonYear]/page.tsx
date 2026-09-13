@@ -1,9 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { ManagerLink } from "@/components/ManagerLink";
 import { SeasonMatchupsTable } from "@/components/SeasonMatchupsTable";
 import { SeasonStandingsTable } from "@/components/SeasonStandingsTable";
 import { historicalLeagueData } from "@/lib/data/historicalLeagueData";
+import {
+  getManagerActivities,
+  type ManagerActivity,
+} from "@/lib/stats/managerActivity";
 import {
   getSeasonProfile,
   type SeasonGameRecord,
@@ -48,6 +53,10 @@ export default async function SeasonPage({ params }: SeasonPageProps) {
   }
 
   const profile = getSeasonProfile(historicalLeagueData, parsedSeasonYear);
+  const managerActivities = getManagerActivities(historicalLeagueData);
+  const activityByManagerId = new Map(
+    managerActivities.map((activity) => [activity.managerId, activity]),
+  );
 
   if (!profile) {
     notFound();
@@ -63,10 +72,6 @@ export default async function SeasonPage({ params }: SeasonPageProps) {
   const nextSeason = sortedSeasons[seasonIndex + 1] ?? null;
   const championshipLabel =
     profile.champions.length > 1 ? "Championship Tie" : "Champion";
-  const championNames =
-    profile.champions.length > 0
-      ? profile.champions.map((champion) => champion.managerName).join(" + ")
-      : "Not recorded";
   const recordCards = [
     {
       label: "Highest Score",
@@ -149,7 +154,22 @@ export default async function SeasonPage({ params }: SeasonPageProps) {
               {championshipLabel}
             </p>
             <h2 className="mt-2 text-3xl font-semibold leading-tight text-[#17191f]">
-              {championNames}
+              {profile.champions.length > 0
+                ? profile.champions.map((champion, index) => (
+                    <span key={champion.managerId}>
+                      {index > 0 && " + "}
+                      <ManagerLink
+                        managerId={champion.managerId}
+                        managerName={champion.managerName}
+                        isActive={getManagerIsActive(
+                          activityByManagerId,
+                          champion.managerId,
+                        )}
+                        linkClassName="text-3xl"
+                      />
+                    </span>
+                  ))
+                : "Not recorded"}
             </h2>
             <p className="mt-3 text-sm leading-5 text-[#66707a]">
               {formatChampionshipDetail(profile.championshipMatchup)}
@@ -159,7 +179,10 @@ export default async function SeasonPage({ params }: SeasonPageProps) {
             </p>
           </article>
 
-          <SeasonStandingsTable finalStandings={profile.finalStandings} />
+          <SeasonStandingsTable
+            finalStandings={profile.finalStandings}
+            managerActivities={managerActivities}
+          />
         </section>
 
         <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
@@ -184,10 +207,20 @@ export default async function SeasonPage({ params }: SeasonPageProps) {
           ))}
         </section>
 
-        <SeasonMatchupsTable matchups={profile.matchups} />
+        <SeasonMatchupsTable
+          matchups={profile.matchups}
+          managerActivities={managerActivities}
+        />
       </div>
     </main>
   );
+}
+
+function getManagerIsActive(
+  activityByManagerId: Map<string, ManagerActivity>,
+  managerId: string,
+) {
+  return activityByManagerId.get(managerId)?.isActive ?? false;
 }
 
 function formatScore(score: number | null | undefined) {

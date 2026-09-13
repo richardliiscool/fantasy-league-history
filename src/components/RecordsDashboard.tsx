@@ -2,7 +2,9 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { ManagerLink } from "@/components/ManagerLink";
 import { GAME_SCOPE_LABELS } from "@/lib/stats/gameFilters";
+import type { ManagerActivity } from "@/lib/stats/managerActivity";
 import type {
   GameRecordRow,
   MatchupRecordRow,
@@ -22,6 +24,7 @@ import { SortableHeader, type SortDirection } from "./SortableHeader";
 
 type RecordsDashboardProps = {
   profile: RecordsProfile;
+  managerActivities: ManagerActivity[];
 };
 
 type SeasonFilter = "all" | string;
@@ -43,9 +46,19 @@ const gameScopeOptions: SegmentOption<RecordGameScope>[] = [
   { value: "all", label: "All" },
 ];
 
-export function RecordsDashboard({ profile }: RecordsDashboardProps) {
+export function RecordsDashboard({
+  profile,
+  managerActivities,
+}: RecordsDashboardProps) {
   const [gameScope, setGameScope] = useState<RecordGameScope>("official");
   const [seasonFilter, setSeasonFilter] = useState<SeasonFilter>("all");
+  const activityByManagerId = useMemo(
+    () =>
+      new Map(
+        managerActivities.map((activity) => [activity.managerId, activity]),
+      ),
+    [managerActivities],
+  );
   const seasonOptions = useMemo<SelectOption<SeasonFilter>[]>(
     () => [
       { value: "all", label: "All seasons" },
@@ -131,7 +144,10 @@ export function RecordsDashboard({ profile }: RecordsDashboardProps) {
 
   return (
     <div className="flex flex-col gap-8">
-      <TrophyTallyTable rows={profile.trophyTallies} />
+      <TrophyTallyTable
+        rows={profile.trophyTallies}
+        activityByManagerId={activityByManagerId}
+      />
 
       <section className="overflow-hidden rounded-lg border border-[#d9dee4] bg-white shadow-sm">
         <div className="flex flex-col gap-4 px-4 py-4 xl:flex-row xl:items-end xl:justify-between">
@@ -187,19 +203,41 @@ export function RecordsDashboard({ profile }: RecordsDashboardProps) {
       </section>
 
       <section className="grid gap-4 xl:grid-cols-2">
-        <GameRecordTable title="Top Scores" rows={topScores} />
-        <GameRecordTable title="Lowest Scores" rows={lowestScores} />
+        <GameRecordTable
+          title="Top Scores"
+          rows={topScores}
+          activityByManagerId={activityByManagerId}
+        />
+        <GameRecordTable
+          title="Lowest Scores"
+          rows={lowestScores}
+          activityByManagerId={activityByManagerId}
+        />
       </section>
 
       <section className="grid gap-4 xl:grid-cols-2">
-        <MatchupRecordTable title="Dominated" rows={biggestMargins} />
-        <MatchupRecordTable title="Closest Games" rows={closestGames} />
+        <MatchupRecordTable
+          title="Dominated"
+          rows={biggestMargins}
+          activityByManagerId={activityByManagerId}
+        />
+        <MatchupRecordTable
+          title="Closest Games"
+          rows={closestGames}
+          activityByManagerId={activityByManagerId}
+        />
       </section>
     </div>
   );
 }
 
-function TrophyTallyTable({ rows }: { rows: TrophyTallyRow[] }) {
+function TrophyTallyTable({
+  rows,
+  activityByManagerId,
+}: {
+  rows: TrophyTallyRow[];
+  activityByManagerId: Map<string, ManagerActivity>;
+}) {
   const [sortKey, setSortKey] = useState<TrophySortKey>("rank");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
   const rankByManagerId = useMemo(
@@ -293,36 +331,45 @@ function TrophyTallyTable({ rows }: { rows: TrophyTallyRow[] }) {
             </tr>
           </thead>
           <tbody>
-            {sortedRows.map((row) => (
-              <tr key={row.managerId} className="border-t border-[#e8ebef]">
-                <td className="px-4 py-3 font-semibold text-[#17191f]">
-                  {rankByManagerId.get(row.managerId)}
-                </td>
-                <td className="px-4 py-3 font-semibold">
-                  <Link
-                    href={`/managers/${row.managerId}`}
-                    className="text-[#17191f] underline-offset-4 hover:text-[#2f6f50] hover:underline"
-                  >
-                    {row.managerName}
-                  </Link>
-                </td>
-                <td className="px-4 py-3">
-                  <PodiumCount value={row.gold} tone="gold" />
-                </td>
-                <td className="px-4 py-3">
-                  <PodiumCount value={row.silver} tone="silver" />
-                </td>
-                <td className="px-4 py-3">
-                  <PodiumCount value={row.bronze} tone="bronze" />
-                </td>
-                <td className="px-4 py-3 font-semibold text-[#17191f]">
-                  {row.totalPodiums}
-                </td>
-                <td className="px-4 py-3 text-[#424a53]">
-                  {formatPodiumYears(row)}
-                </td>
-              </tr>
-            ))}
+            {sortedRows.map((row) => {
+              const isActive = getManagerIsActive(
+                activityByManagerId,
+                row.managerId,
+              );
+
+              return (
+                <tr
+                  key={row.managerId}
+                  className={getRecordTableRowClass(isActive)}
+                >
+                  <td className="px-4 py-3 font-semibold text-[#17191f]">
+                    {rankByManagerId.get(row.managerId)}
+                  </td>
+                  <td className="px-4 py-3">
+                    <ManagerLink
+                      managerId={row.managerId}
+                      managerName={row.managerName}
+                      isActive={isActive}
+                    />
+                  </td>
+                  <td className="px-4 py-3">
+                    <PodiumCount value={row.gold} tone="gold" />
+                  </td>
+                  <td className="px-4 py-3">
+                    <PodiumCount value={row.silver} tone="silver" />
+                  </td>
+                  <td className="px-4 py-3">
+                    <PodiumCount value={row.bronze} tone="bronze" />
+                  </td>
+                  <td className={getRecordTableEmphasisCellClass(isActive)}>
+                    {row.totalPodiums}
+                  </td>
+                  <td className={getRecordTableCellClass(isActive)}>
+                    {formatPodiumYears(row)}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
@@ -382,9 +429,11 @@ function TrophyTallyHeader({
 function GameRecordTable({
   title,
   rows,
+  activityByManagerId,
 }: {
   title: string;
   rows: GameRecordRow[];
+  activityByManagerId: Map<string, ManagerActivity>;
 }) {
   return (
     <section className="overflow-hidden rounded-lg border border-[#d9dee4] bg-white shadow-sm">
@@ -409,42 +458,59 @@ function GameRecordTable({
             </tr>
           </thead>
           <tbody>
-            {rows.map((row, index) => (
-              <tr key={row.matchupId + row.managerId} className="border-t border-[#e8ebef]">
-                <td className="px-4 py-3 font-semibold text-[#17191f]">
-                  {index + 1}
-                </td>
-                <td className="px-4 py-3 font-semibold">
-                  <Link
-                    href={`/managers/${row.managerId}`}
-                    className="text-[#17191f] underline-offset-4 hover:text-[#2f6f50] hover:underline"
-                  >
-                    {row.managerName}
-                  </Link>
-                </td>
-                <td className="px-4 py-3 text-[#424a53]">
-                  <Link
-                    href={`/seasons/${row.seasonYear}`}
-                    className="underline-offset-4 hover:text-[#2f6f50] hover:underline"
-                  >
-                    {row.seasonYear} Week {row.weekNumber}
-                  </Link>
-                  <span className="text-[#7a828c]">
-                    {" "}
-                    / {formatGameType(row.gameType)}
-                  </span>
-                </td>
-                <td className="px-4 py-3 text-[#424a53]">
-                  {row.opponentManagerName}
-                </td>
-                <td className="px-4 py-3 font-semibold text-[#17191f]">
-                  {formatScore(row.pointsFor)}-{formatScore(row.pointsAgainst)}
-                </td>
-                <td className="px-4 py-3 text-[#424a53]">
-                  {formatOutcome(row.outcome)}
-                </td>
-              </tr>
-            ))}
+            {rows.map((row, index) => {
+              const isActive = getManagerIsActive(
+                activityByManagerId,
+                row.managerId,
+              );
+              const opponentIsActive = getManagerIsActive(
+                activityByManagerId,
+                row.opponentManagerId,
+              );
+
+              return (
+                <tr
+                  key={row.matchupId + row.managerId}
+                  className={getRecordTableRowClass(isActive)}
+                >
+                  <td className="px-4 py-3 font-semibold text-[#17191f]">
+                    {index + 1}
+                  </td>
+                  <td className="px-4 py-3">
+                    <ManagerLink
+                      managerId={row.managerId}
+                      managerName={row.managerName}
+                      isActive={isActive}
+                    />
+                  </td>
+                  <td className={getRecordTableCellClass(isActive)}>
+                    <Link
+                      href={`/seasons/${row.seasonYear}`}
+                      className="underline-offset-4 hover:text-[#2f6f50] hover:underline"
+                    >
+                      {row.seasonYear} Week {row.weekNumber}
+                    </Link>
+                    <span className="text-[#7a828c]">
+                      {" "}
+                      / {formatGameType(row.gameType)}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3">
+                    <ManagerLink
+                      managerId={row.opponentManagerId}
+                      managerName={row.opponentManagerName}
+                      isActive={opponentIsActive}
+                    />
+                  </td>
+                  <td className={getRecordTableEmphasisCellClass(isActive)}>
+                    {formatScore(row.pointsFor)}-{formatScore(row.pointsAgainst)}
+                  </td>
+                  <td className={getRecordTableCellClass(isActive)}>
+                    {formatOutcome(row.outcome)}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
@@ -455,9 +521,11 @@ function GameRecordTable({
 function MatchupRecordTable({
   title,
   rows,
+  activityByManagerId,
 }: {
   title: string;
   rows: MatchupRecordRow[];
+  activityByManagerId: Map<string, ManagerActivity>;
 }) {
   return (
     <section className="overflow-hidden rounded-lg border border-[#d9dee4] bg-white shadow-sm">
@@ -482,49 +550,79 @@ function MatchupRecordTable({
             </tr>
           </thead>
           <tbody>
-            {rows.map((row, index) => (
-              <tr key={row.matchupId} className="border-t border-[#e8ebef]">
-                <td className="px-4 py-3 font-semibold text-[#17191f]">
-                  {index + 1}
-                </td>
-                <td className="px-4 py-3 text-[#424a53]">
-                  <Link
-                    href={`/seasons/${row.seasonYear}`}
-                    className="underline-offset-4 hover:text-[#2f6f50] hover:underline"
-                  >
-                    {row.seasonYear} Week {row.weekNumber}
-                  </Link>
-                  <span className="text-[#7a828c]">
-                    {" "}
-                    / {formatGameType(row.gameType)}
-                  </span>
-                </td>
-                <td className="px-4 py-3 text-[#424a53]">
-                  <Link
-                    href={`/managers/${row.first.managerId}`}
-                    className="font-semibold text-[#17191f] underline-offset-4 hover:text-[#2f6f50] hover:underline"
-                  >
-                    {row.first.managerName}
-                  </Link>
-                  <span className="text-[#7a828c]"> vs </span>
-                  <Link
-                    href={`/managers/${row.second.managerId}`}
-                    className="font-semibold text-[#17191f] underline-offset-4 hover:text-[#2f6f50] hover:underline"
-                  >
-                    {row.second.managerName}
-                  </Link>
-                </td>
-                <td className="px-4 py-3 font-semibold text-[#17191f]">
-                  {formatMatchupRecordScoreLine(row)}
-                </td>
-                <td className="px-4 py-3 text-[#424a53]">
-                  {formatMargin(row.margin)}
-                </td>
-                <td className="px-4 py-3 text-[#424a53]">
-                  {row.winner ? row.winner.managerName : "Tie"}
-                </td>
-              </tr>
-            ))}
+            {rows.map((row, index) => {
+              const firstIsActive = getManagerIsActive(
+                activityByManagerId,
+                row.first.managerId,
+              );
+              const secondIsActive = getManagerIsActive(
+                activityByManagerId,
+                row.second.managerId,
+              );
+              const rowIsActive = firstIsActive && secondIsActive;
+
+              return (
+                <tr
+                  key={row.matchupId}
+                  className={getRecordTableRowClass(rowIsActive)}
+                >
+                  <td className="px-4 py-3 font-semibold text-[#17191f]">
+                    {index + 1}
+                  </td>
+                  <td className={getRecordTableCellClass(rowIsActive)}>
+                    <Link
+                      href={`/seasons/${row.seasonYear}`}
+                      className="underline-offset-4 hover:text-[#2f6f50] hover:underline"
+                    >
+                      {row.seasonYear} Week {row.weekNumber}
+                    </Link>
+                    <span className="text-[#7a828c]">
+                      {" "}
+                      / {formatGameType(row.gameType)}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <ManagerLink
+                        managerId={row.first.managerId}
+                        managerName={row.first.managerName}
+                        isActive={firstIsActive}
+                      />
+                      <span className="text-[#7a828c]">vs</span>
+                      <ManagerLink
+                        managerId={row.second.managerId}
+                        managerName={row.second.managerName}
+                        isActive={secondIsActive}
+                      />
+                    </div>
+                  </td>
+                  <td className={getRecordTableEmphasisCellClass(rowIsActive)}>
+                    {formatMatchupRecordScoreLine(row)}
+                  </td>
+                  <td className={getRecordTableCellClass(rowIsActive)}>
+                    {formatMargin(row.margin)}
+                  </td>
+                  <td className="px-4 py-3">
+                    {row.winner ? (
+                      <ManagerLink
+                        managerId={row.winner.managerId}
+                        managerName={row.winner.managerName}
+                        isActive={getManagerIsActive(
+                          activityByManagerId,
+                          row.winner.managerId,
+                        )}
+                      />
+                    ) : (
+                      <span
+                        className={rowIsActive ? "text-[#424a53]" : "text-[#8a939e]"}
+                      >
+                        Tie
+                      </span>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
@@ -654,6 +752,27 @@ function flipSortDirection(direction: SortDirection): SortDirection {
 
 function getDefaultTrophySortDirection(sortKey: TrophySortKey): SortDirection {
   return sortKey === "rank" || sortKey === "managerName" ? "asc" : "desc";
+}
+
+function getManagerIsActive(
+  activityByManagerId: Map<string, ManagerActivity>,
+  managerId: string,
+) {
+  return activityByManagerId.get(managerId)?.isActive ?? false;
+}
+
+function getRecordTableRowClass(isActive: boolean) {
+  return `border-t border-[#e8ebef] ${isActive ? "" : "bg-[#fafafa]"}`;
+}
+
+function getRecordTableCellClass(isActive: boolean) {
+  return `px-4 py-3 ${isActive ? "text-[#424a53]" : "text-[#8a939e]"}`;
+}
+
+function getRecordTableEmphasisCellClass(isActive: boolean) {
+  return `px-4 py-3 font-semibold ${
+    isActive ? "text-[#17191f]" : "text-[#8a939e]"
+  }`;
 }
 
 function formatGameRecordDetail(row: GameRecordRow | undefined) {

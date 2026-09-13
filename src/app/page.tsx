@@ -3,6 +3,7 @@ import {
   LeagueStandingsTable,
   type LeagueStandingsByScope,
 } from "@/components/LeagueStandingsTable";
+import { ManagerLink } from "@/components/ManagerLink";
 import {
   historicalImportSummary,
   historicalLeagueData,
@@ -12,7 +13,10 @@ import {
   type GameScope,
 } from "@/lib/stats/gameFilters";
 import type { ScoreRecord } from "@/lib/stats/leagueStats";
-import { getManagerActivities } from "@/lib/stats/managerActivity";
+import {
+  getManagerActivities,
+  type ManagerActivity,
+} from "@/lib/stats/managerActivity";
 import {
   buildGameResults,
   getManagerStandings,
@@ -179,7 +183,10 @@ export default function Home() {
         </header>
 
         {latestSeasonProfile && (
-          <LatestSeasonSection profile={latestSeasonProfile} />
+          <LatestSeasonSection
+            profile={latestSeasonProfile}
+            activityByManagerId={activityByManagerId}
+          />
         )}
 
         <section className="grid grid-cols-2 gap-2 rounded-lg border border-[#d9dee4] bg-white p-2 shadow-sm sm:grid-cols-4">
@@ -301,7 +308,13 @@ export default function Home() {
   );
 }
 
-function LatestSeasonSection({ profile }: { profile: SeasonProfile }) {
+function LatestSeasonSection({
+  profile,
+  activityByManagerId,
+}: {
+  profile: SeasonProfile;
+  activityByManagerId: Map<string, ManagerActivity>;
+}) {
   return (
     <section className="overflow-hidden rounded-lg border border-[#d9dee4] bg-white shadow-sm">
       <div className="flex flex-col gap-2 border-b border-[#e8ebef] px-4 py-4">
@@ -336,39 +349,58 @@ function LatestSeasonSection({ profile }: { profile: SeasonProfile }) {
               </tr>
             </thead>
             <tbody>
-              {profile.finalStandings.map((standing) => (
-                <tr
-                  key={`${standing.managerId}-${standing.finish}`}
-                  className="border-t border-[#e8ebef]"
-                >
-                  <td className="px-3 py-3 font-semibold text-[#17191f]">
-                    {formatFinish(standing.finish)}
-                  </td>
-                  <td className="px-3 py-3 font-semibold">
-                    <Link
-                      href={`/managers/${standing.managerId}`}
-                      className="text-[#17191f] underline-offset-4 hover:text-[#2f6f50] hover:underline"
-                    >
-                      {standing.managerName}
-                    </Link>
-                  </td>
-                  <td className="px-3 py-3 text-[#424a53]">
-                    {standing.teamName}
-                  </td>
-                  <td className="px-3 py-3 text-[#424a53]">
-                    {formatStandingRecord(standing)}
-                  </td>
-                  <td className="px-3 py-3 text-[#424a53]">
-                    {standing.official.pointsFor.toFixed(1)}
-                  </td>
-                </tr>
-              ))}
+              {profile.finalStandings.map((standing) => {
+                const isActive = getManagerIsActive(
+                  activityByManagerId,
+                  standing.managerId,
+                );
+
+                return (
+                  <tr
+                    key={`${standing.managerId}-${standing.finish}`}
+                    className={`border-t border-[#e8ebef] ${
+                      isActive ? "" : "bg-[#fafafa]"
+                    }`}
+                  >
+                    <td className="px-3 py-3 font-semibold text-[#17191f]">
+                      {formatFinish(standing.finish)}
+                    </td>
+                    <td className="px-3 py-3">
+                      <ManagerLink
+                        managerId={standing.managerId}
+                        managerName={standing.managerName}
+                        isActive={isActive}
+                      />
+                    </td>
+                    <td className={getLatestStandingCellClass(isActive)}>
+                      {standing.teamName}
+                    </td>
+                    <td className={getLatestStandingCellClass(isActive)}>
+                      {formatStandingRecord(standing)}
+                    </td>
+                    <td className={getLatestStandingCellClass(isActive)}>
+                      {standing.official.pointsFor.toFixed(1)}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
       </div>
     </section>
   );
+}
+
+function getManagerIsActive(
+  activityByManagerId: Map<string, ManagerActivity>,
+  managerId: string,
+) {
+  return activityByManagerId.get(managerId)?.isActive ?? false;
+}
+
+function getLatestStandingCellClass(isActive: boolean) {
+  return `px-3 py-3 ${isActive ? "text-[#424a53]" : "text-[#8a939e]"}`;
 }
 
 function formatChampionNames(profile: SeasonProfile) {

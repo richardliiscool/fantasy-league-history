@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { RecordsDashboard } from "@/components/RecordsDashboard";
 import { historicalLeagueData } from "@/lib/data/historicalLeagueData";
+import { getManagerActivities } from "@/lib/stats/managerActivity";
 import { getRecordsProfile } from "@/lib/stats/recordsProfile";
 
 export const metadata: Metadata = {
@@ -10,6 +11,7 @@ export const metadata: Metadata = {
 
 export default function RecordsPage() {
   const profile = getRecordsProfile(historicalLeagueData);
+  const managerActivities = getManagerActivities(historicalLeagueData);
 
   return (
     <main className="min-h-screen bg-[#f4f5f7] text-[#17191f]">
@@ -35,7 +37,10 @@ export default function RecordsPage() {
           </div>
         </header>
 
-        <RecordsDashboard profile={profile} />
+        <RecordsDashboard
+          profile={profile}
+          managerActivities={managerActivities}
+        />
       </div>
     </main>
   );
