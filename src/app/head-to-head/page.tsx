@@ -8,8 +8,20 @@ export const metadata: Metadata = {
   title: "Head-to-Head | Fantasy League History",
 };
 
-export default function HeadToHeadPage() {
+type HeadToHeadPageProps = {
+  searchParams: Promise<{
+    manager?: string | string[];
+    opponent?: string | string[];
+  }>;
+};
+
+export default async function HeadToHeadPage({
+  searchParams,
+}: HeadToHeadPageProps) {
   const profile = getHeadToHeadProfile(historicalLeagueData);
+  const query = await searchParams;
+  const initialFirstManagerId = getSingleQueryValue(query.manager);
+  const initialSecondManagerId = getSingleQueryValue(query.opponent);
 
   return (
     <main className="min-h-screen bg-[#f4f5f7] text-[#17191f]">
@@ -35,8 +47,16 @@ export default function HeadToHeadPage() {
           </div>
         </header>
 
-        <HeadToHeadDashboard profile={profile} />
+        <HeadToHeadDashboard
+          profile={profile}
+          initialFirstManagerId={initialFirstManagerId}
+          initialSecondManagerId={initialSecondManagerId}
+        />
       </div>
     </main>
   );
+}
+
+function getSingleQueryValue(value: string | string[] | undefined) {
+  return Array.isArray(value) ? value[0] : value;
 }

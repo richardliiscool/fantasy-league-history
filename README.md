@@ -45,8 +45,9 @@ The homepage uses the generated historical data for the first real all-time lead
 ## App Views
 
 - `/` shows the league-wide records dashboard and all-time manager standings.
+- `/managers` shows a sortable manager directory with active/inactive status, career stats, podium counts, and profile/compare links.
 - `/records` shows the record book with trophy tallies, single-game records, matchup margins, filters, and sortable manager-season stat lines.
-- `/head-to-head` compares any two managers with rivalry records, scoring splits, margin records, and a sortable game log.
+- `/head-to-head` compares any two managers with rivalry records, scoring splits, margin records, and a sortable game log. It can accept `?manager=` and `?opponent=` query values for direct comparison links.
 - `/managers/[managerId]` shows an individual manager profile with career totals, season splits, head-to-head records, and recent games.
 - `/seasons/[seasonYear]` shows one season at a time with champions/co-champions, final standings, season records, and weekly matchups.
 
@@ -92,3 +93,4 @@ npm run build
 - Season archive pages consolidate biggest win/loss into a single biggest-margin game card.
 - Records page exists with podium trophy tallies, global filters, top-10 score and margin tables, and sortable manager-season records.
 - Head-to-head comparison pages exist for manager rivalries, including score splits, highest-score/closest-game cards, and sortable rivalry game logs.
+- Manager directory page exists with sortable career stats, podium counts, active/inactive treatment, and links into manager profiles or head-to-head comparisons.

@@ -26,6 +26,8 @@ import { SortableHeader, type SortDirection } from "./SortableHeader";
 
 type HeadToHeadDashboardProps = {
   profile: HeadToHeadProfile;
+  initialFirstManagerId?: string | null;
+  initialSecondManagerId?: string | null;
 };
 
 type GameLogSortKey =
@@ -51,13 +53,26 @@ const gameScopeOptions: SegmentOption<GameScope>[] = [
   { value: "consolation", label: GAME_SCOPE_LABELS.consolation },
 ];
 
-export function HeadToHeadDashboard({ profile }: HeadToHeadDashboardProps) {
-  const initialFirstManagerId =
-    profile.defaultFirstManagerId ?? profile.managers[0]?.managerId ?? "";
-  const initialSecondManagerId =
-    profile.defaultSecondManagerId ?? profile.managers[1]?.managerId ?? "";
-  const [firstManagerId, setFirstManagerId] = useState(initialFirstManagerId);
-  const [secondManagerId, setSecondManagerId] = useState(initialSecondManagerId);
+export function HeadToHeadDashboard({
+  profile,
+  initialFirstManagerId,
+  initialSecondManagerId,
+}: HeadToHeadDashboardProps) {
+  const resolvedInitialFirstManagerId = getInitialFirstManagerId(
+    profile,
+    initialFirstManagerId,
+  );
+  const resolvedInitialSecondManagerId = getInitialSecondManagerId(
+    profile,
+    resolvedInitialFirstManagerId,
+    initialSecondManagerId,
+  );
+  const [firstManagerId, setFirstManagerId] = useState(
+    resolvedInitialFirstManagerId,
+  );
+  const [secondManagerId, setSecondManagerId] = useState(
+    resolvedInitialSecondManagerId,
+  );
   const [gameScope, setGameScope] = useState<GameScope>("official");
   const [gameSortKey, setGameSortKey] = useState<GameLogSortKey>("game");
   const [gameSortDirection, setGameSortDirection] =
@@ -572,6 +587,54 @@ function getFallbackManagerId(
   return (
     profile.managers.find((manager) => manager.managerId !== blockedManagerId)
       ?.managerId ?? blockedManagerId
+  );
+}
+
+function hasManager(profile: HeadToHeadProfile, managerId?: string | null) {
+  return profile.managers.some((manager) => manager.managerId === managerId);
+}
+
+function getInitialFirstManagerId(
+  profile: HeadToHeadProfile,
+  requestedManagerId?: string | null,
+) {
+  if (hasManager(profile, requestedManagerId)) {
+    return requestedManagerId ?? "";
+  }
+
+  return profile.defaultFirstManagerId ?? profile.managers[0]?.managerId ?? "";
+}
+
+function getInitialSecondManagerId(
+  profile: HeadToHeadProfile,
+  firstManagerId: string,
+  requestedOpponentId?: string | null,
+) {
+  if (
+    requestedOpponentId &&
+    requestedOpponentId !== firstManagerId &&
+    hasManager(profile, requestedOpponentId)
+  ) {
+    return requestedOpponentId;
+  }
+
+  if (
+    profile.defaultSecondManagerId &&
+    profile.defaultSecondManagerId !== firstManagerId
+  ) {
+    return profile.defaultSecondManagerId;
+  }
+
+  if (
+    profile.defaultFirstManagerId &&
+    profile.defaultFirstManagerId !== firstManagerId
+  ) {
+    return profile.defaultFirstManagerId;
+  }
+
+  return (
+    profile.managers.find((manager) => manager.managerId !== firstManagerId)
+      ?.managerId ?? ""
   );
 }
 

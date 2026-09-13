@@ -245,7 +245,7 @@ const addPodiumFinish = (
   tally.totalPodiums = tally.gold + tally.silver + tally.bronze;
 };
 
-const getTrophyTallies = (data: LeagueData): TrophyTallyRow[] => {
+export const getTrophyTallies = (data: LeagueData): TrophyTallyRow[] => {
   const managerById = new Map(
     data.managers.map((manager) => [manager.id, manager]),
   );
