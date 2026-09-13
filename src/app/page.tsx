@@ -154,6 +154,12 @@ export default function Home() {
               >
                 Head-to-Head
               </Link>
+              <Link
+                href="/head-to-head/matrix"
+                className="rounded-md border border-[#b8c0c9] bg-white px-3 py-2 text-sm font-semibold text-[#17191f] underline-offset-4 hover:border-[#2f6f50] hover:text-[#2f6f50] hover:underline"
+              >
+                H2H Matrix
+              </Link>
             </div>
           </div>
 

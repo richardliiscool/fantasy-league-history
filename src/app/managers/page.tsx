@@ -42,12 +42,20 @@ export default function ManagersPage() {
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-8 px-4 py-6 sm:px-6 lg:px-8">
         <header className="grid gap-5 border-b border-[#d9dee4] pb-6 lg:grid-cols-[1fr_0.9fr] lg:items-end">
           <div>
-            <Link
-              href="/"
-              className="text-sm font-semibold text-[#2f6f50] underline-offset-4 hover:underline"
-            >
-              Back to League Vault
-            </Link>
+            <div className="flex flex-wrap gap-3">
+              <Link
+                href="/"
+                className="text-sm font-semibold text-[#2f6f50] underline-offset-4 hover:underline"
+              >
+                Back to League Vault
+              </Link>
+              <Link
+                href="/head-to-head/matrix"
+                className="text-sm font-semibold text-[#2f6f50] underline-offset-4 hover:underline"
+              >
+                Head-to-Head Matrix
+              </Link>
+            </div>
             <div className="mt-5">
               <p className="text-sm font-semibold uppercase text-[#58606a]">
                 Managers

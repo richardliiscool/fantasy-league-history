@@ -1,27 +1,15 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { HeadToHeadDashboard } from "@/components/HeadToHeadDashboard";
+import { HeadToHeadMatrixDashboard } from "@/components/HeadToHeadMatrixDashboard";
 import { historicalLeagueData } from "@/lib/data/historicalLeagueData";
-import { getHeadToHeadProfile } from "@/lib/stats/headToHeadProfile";
+import { getHeadToHeadMatrixProfile } from "@/lib/stats/headToHeadMatrixProfile";
 
 export const metadata: Metadata = {
-  title: "Head-to-Head | Fantasy League History",
+  title: "Head-to-Head Matrix | Fantasy League History",
 };
 
-type HeadToHeadPageProps = {
-  searchParams: Promise<{
-    manager?: string | string[];
-    opponent?: string | string[];
-  }>;
-};
-
-export default async function HeadToHeadPage({
-  searchParams,
-}: HeadToHeadPageProps) {
-  const profile = getHeadToHeadProfile(historicalLeagueData);
-  const query = await searchParams;
-  const initialFirstManagerId = getSingleQueryValue(query.manager);
-  const initialSecondManagerId = getSingleQueryValue(query.opponent);
+export default function HeadToHeadMatrixPage() {
+  const profile = getHeadToHeadMatrixProfile(historicalLeagueData);
 
   return (
     <main className="min-h-screen bg-[#f4f5f7] text-[#17191f]">
@@ -35,36 +23,28 @@ export default async function HeadToHeadPage({
               Back to League Vault
             </Link>
             <Link
-              href="/head-to-head/matrix"
+              href="/head-to-head"
               className="text-sm font-semibold text-[#2f6f50] underline-offset-4 hover:underline"
             >
-              Matrix View
+              Rivalry Board
             </Link>
           </div>
           <div className="mt-5">
             <p className="text-sm font-semibold uppercase text-[#58606a]">
-              Head-to-Head
+              Head-to-Head Matrix
             </p>
             <h1 className="mt-2 max-w-3xl text-4xl font-semibold leading-tight text-[#111614] sm:text-5xl">
-              Rivalry Board
+              Rivalry Map
             </h1>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-[#66707a]">
-              Manager-vs-manager records, scoring splits, margin records, and
-              game logs from the imported matchup history.
+              A league-wide grid of manager-vs-manager records. Each cell links
+              to the detailed head-to-head page for that rivalry.
             </p>
           </div>
         </header>
 
-        <HeadToHeadDashboard
-          profile={profile}
-          initialFirstManagerId={initialFirstManagerId}
-          initialSecondManagerId={initialSecondManagerId}
-        />
+        <HeadToHeadMatrixDashboard profile={profile} />
       </div>
     </main>
   );
-}
-
-function getSingleQueryValue(value: string | string[] | undefined) {
-  return Array.isArray(value) ? value[0] : value;
 }
