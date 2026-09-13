@@ -21,6 +21,11 @@ const navItems: NavItem[] = [
     matcher: (pathname) => pathname === "/records",
   },
   {
+    href: "/audit",
+    label: "Audit",
+    matcher: (pathname) => pathname === "/audit",
+  },
+  {
     href: "/head-to-head",
     label: "Head-to-Head",
     matcher: (pathname) => pathname === "/head-to-head",
