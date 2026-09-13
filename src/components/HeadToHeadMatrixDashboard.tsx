@@ -125,6 +125,24 @@ export function HeadToHeadMatrixDashboard({
             />
           </div>
         </div>
+        <div className="grid gap-2 border-t border-[#e8ebef] px-4 py-3 sm:grid-cols-4">
+          <LegendItem
+            label="Under 40%"
+            className="border-[#c75a68] bg-[#f8dadd] text-[#5d1f2b]"
+          />
+          <LegendItem
+            label="40-59.9%"
+            className="border-[#d59a2d] bg-[#fff1bf] text-[#4f3700]"
+          />
+          <LegendItem
+            label="60%+"
+            className="border-[#6aa982] bg-[#dff3e8] text-[#123b2a]"
+          />
+          <LegendItem
+            label="No games"
+            className="border-[#d9dee4] bg-[#f1f3f5] text-[#8a939e]"
+          />
+        </div>
       </section>
 
       <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
@@ -253,6 +271,22 @@ function SummaryCard({
         {detail}
       </p>
     </article>
+  );
+}
+
+function LegendItem({
+  label,
+  className,
+}: {
+  label: string;
+  className: string;
+}) {
+  return (
+    <div
+      className={`rounded-md border px-3 py-2 text-center text-xs font-semibold ${className}`}
+    >
+      {label}
+    </div>
   );
 }
 

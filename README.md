@@ -54,6 +54,8 @@ The homepage uses the generated historical data for the first real all-time lead
 
 Managers are treated as active when they appear in the latest imported season. Historical managers remain visible but are shown with a softer inactive treatment in tables.
 
+The app uses a shared top navigation bar so the main views stay reachable from every page.
+
 Interactive table filters let the league standings switch between official, regular season, playoff, and consolation results, and let manager/profile tables focus on active or inactive managers. Table headers are clickable for sorting, percentages display in normal percent format, and manager game logs can be filtered by a specific opponent.
 
 Season archive pages are linked from the homepage. They calculate year-specific final standings from the workbook's final placement rows, so special cases like the tied 2022 championship stay represented as real historical data.
@@ -95,4 +97,4 @@ npm run build
 - Records page exists with podium trophy tallies, global filters, top-10 score and margin tables, and sortable manager-season records.
 - Head-to-head comparison pages exist for manager rivalries, including score splits, highest-score/closest-game cards, and sortable rivalry game logs.
 - Manager directory page exists with sortable career stats, podium counts, active/inactive treatment, and links into manager profiles or head-to-head comparisons.
-- Head-to-head matrix page exists with active/all/inactive manager filters, game-scope switching, display modes, and clickable rivalry cells.
+- Head-to-head matrix page exists with active/all/inactive manager filters, game-scope switching, display modes, color-threshold legend, and clickable rivalry cells.
