@@ -168,12 +168,6 @@ export default function Home() {
               Records
             </Link>
             <Link
-              href="/audit"
-              className="rounded-md border border-[#b8c0c9] bg-white px-3 py-2 text-sm font-semibold text-[#17191f] underline-offset-4 hover:border-[#2f6f50] hover:text-[#2f6f50] hover:underline"
-            >
-              Audit
-            </Link>
-            <Link
               href="/head-to-head"
               className="rounded-md border border-[#b8c0c9] bg-white px-3 py-2 text-sm font-semibold text-[#17191f] underline-offset-4 hover:border-[#2f6f50] hover:text-[#2f6f50] hover:underline"
             >
@@ -184,6 +178,12 @@ export default function Home() {
               className="rounded-md border border-[#b8c0c9] bg-white px-3 py-2 text-sm font-semibold text-[#17191f] underline-offset-4 hover:border-[#2f6f50] hover:text-[#2f6f50] hover:underline"
             >
               H2H Matrix
+            </Link>
+            <Link
+              href="/audit"
+              className="rounded-md border border-[#d9dee4] bg-[#f8f9fb] px-3 py-2 text-sm font-semibold text-[#58606a] underline-offset-4 hover:border-[#2f6f50] hover:text-[#2f6f50] hover:underline sm:ml-auto"
+            >
+              Audit
             </Link>
           </div>
         </header>

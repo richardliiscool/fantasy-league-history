@@ -19,6 +19,39 @@ export const metadata: Metadata = {
   title: "Data Audit | Fantasy League History",
 };
 
+const leagueContextNotes = [
+  {
+    season: "2015",
+    title: "Two-week playoff rounds",
+    detail:
+      "Four teams made the playoffs. Semifinals ran across Weeks 14-15 and the final ran across Weeks 16-17, with the matchup total divided across the two weeks in the workbook.",
+  },
+  {
+    season: "2019",
+    title: "Scoring format changed",
+    detail:
+      "League scoring moved from full point-per-reception to half point-per-reception.",
+  },
+  {
+    season: "2021",
+    title: "Extra NFL game added",
+    detail:
+      "The NFL added an extra regular-season game, and the fantasy schedule expanded with it.",
+  },
+  {
+    season: "2023",
+    title: "Roster format changed",
+    detail:
+      "An additional FLEX roster spot was added. This season is not imported yet.",
+  },
+  {
+    season: "2025 onward",
+    title: "Platform changed to Sleeper",
+    detail:
+      "The league moved from ESPN to Sleeper. Seasons from 2025 onward should come from Sleeper rather than the ESPN workbook path.",
+  },
+];
+
 export default function AuditPage() {
   const profile = getDataAuditProfile(historicalLeagueData);
   const managerActivities = getManagerActivities(historicalLeagueData);
@@ -98,6 +131,7 @@ export default function AuditPage() {
           ))}
         </section>
 
+        <LeagueContextSection />
         <AuditIssuesSection issues={profile.issues} />
         <SeasonCoverageTable seasons={profile.seasons} />
 
@@ -115,6 +149,42 @@ export default function AuditPage() {
         <DuplicateScoreLinesTable rows={profile.duplicateScoreLines} />
       </div>
     </main>
+  );
+}
+
+function LeagueContextSection() {
+  return (
+    <section className="overflow-hidden rounded-lg border border-[#d9dee4] bg-white shadow-sm">
+      <div className="border-b border-[#e8ebef] px-4 py-4">
+        <p className="text-sm font-semibold text-[#58606a]">
+          League Context
+        </p>
+        <h2 className="mt-1 text-2xl font-semibold text-[#17191f]">
+          Known era changes
+        </h2>
+        <p className="mt-2 text-sm leading-5 text-[#66707a]">
+          These are intentional league-history notes, not data errors.
+        </p>
+      </div>
+      <div className="grid gap-3 p-3 lg:grid-cols-5">
+        {leagueContextNotes.map((note) => (
+          <article
+            key={`${note.season}:${note.title}`}
+            className="rounded-md border border-[#e8ebef] bg-[#f8f9fb] p-3"
+          >
+            <p className="text-xs font-semibold uppercase text-[#58606a]">
+              {note.season}
+            </p>
+            <h3 className="mt-1 text-sm font-semibold text-[#17191f]">
+              {note.title}
+            </h3>
+            <p className="mt-2 text-sm leading-5 text-[#66707a]">
+              {note.detail}
+            </p>
+          </article>
+        ))}
+      </div>
+    </section>
   );
 }
 
