@@ -28,7 +28,7 @@ Next data milestones:
 
 1. Keep validating imported totals against known league records.
 2. Use the local ESPN snapshots to refine 2023-2024 season details as needed.
-3. Add the remaining ESPN/Sleeper-era seasons once their source data is available.
+3. Preview and map Sleeper seasons once the current Sleeper league ID is available.
 4. Add Sleeper API ingestion after the historical model is stable.
 
 Financial tracking is intentionally out of scope for this app.
@@ -42,6 +42,8 @@ The raw `.xlsx` archive files in `reference/workbooks` are ignored by Git so the
 The raw ESPN JSON archives in `reference/espn/raw` are also ignored by Git. They are local reference files only; the committed app uses the generated TypeScript data file.
 
 Historical ESPN team names are saved in `scripts/espn_team_manager_map.json` and applied during generation. The workbook remains the source for 2015-2022 scores, while ESPN supplies the display team names for those seasons.
+
+Raw Sleeper JSON archives in `reference/sleeper/raw` are ignored by Git. Sleeper preview tooling exists, but Sleeper seasons are not merged into the generated app data yet.
 
 The homepage uses the generated historical data for the first real all-time leaderboard. The smaller sample data file remains useful for tiny unit tests.
 
@@ -58,6 +60,16 @@ python3 scripts/generate_historical_data.py
 ```
 
 Private ESPN league credentials belong only in `.env.local`, based on `.env.example`. The preview script can save raw ESPN JSON under `reference/espn/raw`, which is ignored by Git. The generator reads those local snapshots and maps ESPN team IDs and historical team names through `scripts/espn_team_manager_map.json`. See `docs/espn-import-plan.md` for the workflow.
+
+## Sleeper Import
+
+Sleeper's API is public and read-only. Add `SLEEPER_LEAGUE_ID` to `.env.local`, then preview linked league seasons:
+
+```bash
+python3 scripts/preview_sleeper_import.py
+```
+
+Use `--save-raw` to archive local responses under `reference/sleeper/raw`. See `docs/sleeper-import-plan.md` for the workflow.
 
 ## App Views
 
@@ -117,3 +129,4 @@ npm run build
 - Head-to-head matrix page exists with active/all/inactive manager filters, game-scope switching, display modes, color-threshold legend, and clickable rivalry cells.
 - ESPN 2023 and 2024 are imported into the generated local app data from ignored raw JSON snapshots.
 - Historical ESPN team names are backfilled for 2015 through 2022 without replacing the workbook score data.
+- Read-only Sleeper preview tooling exists for inspecting post-ESPN seasons before merging them into app data.

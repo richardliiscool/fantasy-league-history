@@ -48,3 +48,4 @@ __pycache__/
 # local archival source files
 /reference/workbooks/*.xlsx
 /reference/espn/raw/*.json
+/reference/sleeper/raw/*.json
