@@ -16,7 +16,7 @@ describe("records profile", () => {
       historicalLeagueData.matchups.length,
     );
     expect(profile.seasons.map((season) => season.seasonYear)).toEqual([
-      2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022,
+      2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024,
     ]);
   });
 
@@ -74,22 +74,23 @@ describe("records profile", () => {
     });
     expect(richard).toMatchObject({
       gold: 2,
-      silver: 0,
+      silver: 1,
       bronze: 2,
-      totalPodiums: 4,
+      totalPodiums: 5,
       firstPlaceYears: [2015, 2017],
+      secondPlaceYears: [2024],
       thirdPlaceYears: [2020, 2021],
     });
     expect(ld?.secondPlaceYears).toEqual([]);
     expect(
       profile.trophyTallies.reduce((total, row) => total + row.gold, 0),
-    ).toBe(9);
+    ).toBe(11);
     expect(
       profile.trophyTallies.reduce((total, row) => total + row.silver, 0),
-    ).toBe(7);
+    ).toBe(9);
     expect(
       profile.trophyTallies.reduce((total, row) => total + row.bronze, 0),
-    ).toBe(8);
+    ).toBe(10);
   });
 
   it("supports official, regular, playoff, consolation, and all scopes", () => {
@@ -97,18 +98,18 @@ describe("records profile", () => {
 
     expect(
       profile.gameRows.filter((row) => matchesRecordGameScope(row, "official")),
-    ).toHaveLength((636 + 41) * 2);
+    ).toHaveLength(1710);
     expect(
       profile.gameRows.filter((row) => matchesRecordGameScope(row, "regular")),
-    ).toHaveLength(636 * 2);
+    ).toHaveLength(1608);
     expect(
       profile.gameRows.filter((row) => matchesRecordGameScope(row, "playoff")),
-    ).toHaveLength(41 * 2);
+    ).toHaveLength(102);
     expect(
       profile.gameRows.filter((row) =>
         matchesRecordGameScope(row, "consolation"),
       ),
-    ).toHaveLength(102 * 2);
+    ).toHaveLength(252);
     expect(
       profile.gameRows.filter((row) => matchesRecordGameScope(row, "all")),
     ).toHaveLength(historicalLeagueData.matchups.length * 2);
@@ -121,7 +122,7 @@ describe("records profile", () => {
       (row) => row.seasonYear === 2022 && row.managerName === "Tony Zheng",
     );
 
-    expect(regularRows).toHaveLength(96);
+    expect(regularRows).toHaveLength(120);
     expect(tony2022).toMatchObject({
       games: 14,
       wins: 10,

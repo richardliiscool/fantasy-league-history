@@ -30,12 +30,12 @@ describe("head-to-head matrix profile", () => {
     const profile = getHeadToHeadMatrixProfile(historicalLeagueData);
 
     expect(profile).toMatchObject({
-      managerCount: 16,
+      managerCount: 17,
       activeManagerCount: 12,
-      inactiveManagerCount: 4,
+      inactiveManagerCount: 5,
     });
-    expect(profile.rows).toHaveLength(16);
-    expect(profile.rows.every((row) => row.cells.length === 16)).toBe(true);
+    expect(profile.rows).toHaveLength(17);
+    expect(profile.rows.every((row) => row.cells.length === 17)).toBe(true);
 
     for (const [rowIndex, row] of profile.rows.entries()) {
       expect(row.cells[rowIndex]).toBeNull();
@@ -56,22 +56,22 @@ describe("head-to-head matrix profile", () => {
     );
 
     expect(richardVsLd.summariesByScope.official).toMatchObject({
-      games: 14,
-      wins: 7,
-      losses: 7,
+      games: 16,
+      wins: 8,
+      losses: 8,
       ties: 0,
       winPercentage: 0.5,
-      pointsFor: 1559.32,
-      pointsAgainst: 1627.96,
+      pointsFor: 1784.16,
+      pointsAgainst: 1843.76,
     });
     expect(ldVsRichard.summariesByScope.official).toMatchObject({
-      games: 14,
-      wins: 7,
-      losses: 7,
+      games: 16,
+      wins: 8,
+      losses: 8,
       ties: 0,
       winPercentage: 0.5,
-      pointsFor: 1627.96,
-      pointsAgainst: 1559.32,
+      pointsFor: 1843.76,
+      pointsAgainst: 1784.16,
     });
   });
 

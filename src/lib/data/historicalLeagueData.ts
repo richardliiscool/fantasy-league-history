@@ -5,15 +5,36 @@ import type { LeagueData } from "../domain/types";
 export const historicalImportSummary = {
   "sourceWorkbook": "Fantasy History.xlsx",
   "sourceSheet": "Game Log",
-  "matchupRows": 779,
-  "managerCount": 16,
-  "seasonCount": 8,
-  "teamEntries": 96,
-  "weekEntries": 131,
+  "sourceFiles": {
+    "Fantasy History.xlsx": 779,
+    "espn-ffl-2023.json": 101,
+    "espn-ffl-2024.json": 101
+  },
+  "espnImports": [
+    {
+      "source": "espn",
+      "season": 2023,
+      "rawFile": "espn-ffl-2023.json",
+      "matchups": 101,
+      "skippedRows": 2
+    },
+    {
+      "source": "espn",
+      "season": 2024,
+      "rawFile": "espn-ffl-2024.json",
+      "matchups": 101,
+      "skippedRows": 2
+    }
+  ],
+  "matchupRows": 981,
+  "managerCount": 17,
+  "seasonCount": 10,
+  "teamEntries": 120,
+  "weekEntries": 165,
   "gameTypeCounts": {
-    "consolation": 102,
-    "playoff": 41,
-    "regular": 636
+    "consolation": 126,
+    "playoff": 51,
+    "regular": 804
   },
   "seasonMatchupCounts": {
     "2015": 102,
@@ -23,7 +44,9 @@ export const historicalImportSummary = {
     "2019": 95,
     "2020": 95,
     "2021": 101,
-    "2022": 101
+    "2022": 101,
+    "2023": 101,
+    "2024": 101
   },
   "seasonFinalSeedingCounts": {
     "2015": 6,
@@ -33,7 +56,9 @@ export const historicalImportSummary = {
     "2019": 6,
     "2020": 6,
     "2021": 6,
-    "2022": 6
+    "2022": 6,
+    "2023": 6,
+    "2024": 6
   }
 } as const;
 
@@ -102,6 +127,10 @@ export const historicalLeagueData = {
     {
       "id": "manager-sridatta-kompella",
       "displayName": "Sridatta Kompella"
+    },
+    {
+      "id": "manager-nolan-feeny",
+      "displayName": "Nolan Feeny"
     }
   ],
   "seasons": [
@@ -144,6 +173,16 @@ export const historicalLeagueData = {
       "id": "season-2022",
       "year": 2022,
       "label": "2022 Season"
+    },
+    {
+      "id": "season-2023",
+      "year": 2023,
+      "label": "2023 Season"
+    },
+    {
+      "id": "season-2024",
+      "year": 2024,
+      "label": "2024 Season"
     }
   ],
   "teams": [
@@ -722,6 +761,150 @@ export const historicalLeagueData = {
       "seasonId": "season-2022",
       "managerId": "manager-ld-lu",
       "name": "LD Lu"
+    },
+    {
+      "id": "team-2023-sai-vangala",
+      "seasonId": "season-2023",
+      "managerId": "manager-sai-vangala",
+      "name": "Hi Im Youngholave Kookonkwo"
+    },
+    {
+      "id": "team-2023-albert-feeny",
+      "seasonId": "season-2023",
+      "managerId": "manager-albert-feeny",
+      "name": "Cooper? I Hardly Even Butker"
+    },
+    {
+      "id": "team-2023-richard-li",
+      "seasonId": "season-2023",
+      "managerId": "manager-richard-li",
+      "name": "Ford in my LaPorta"
+    },
+    {
+      "id": "team-2023-chad-howard",
+      "seasonId": "season-2023",
+      "managerId": "manager-chad-howard",
+      "name": "Flowers for Charlie"
+    },
+    {
+      "id": "team-2023-mao-zhong",
+      "seasonId": "season-2023",
+      "managerId": "manager-mao-zhong",
+      "name": "My Digg Hurts"
+    },
+    {
+      "id": "team-2023-josh-charest",
+      "seasonId": "season-2023",
+      "managerId": "manager-josh-charest",
+      "name": "Run the Damn Ball"
+    },
+    {
+      "id": "team-2023-nick-bello",
+      "seasonId": "season-2023",
+      "managerId": "manager-nick-bello",
+      "name": "Prison Mike"
+    },
+    {
+      "id": "team-2023-tony-zheng",
+      "seasonId": "season-2023",
+      "managerId": "manager-tony-zheng",
+      "name": "No Punt Intended"
+    },
+    {
+      "id": "team-2023-thomas-du",
+      "seasonId": "season-2023",
+      "managerId": "manager-thomas-du",
+      "name": "Kupp Check"
+    },
+    {
+      "id": "team-2023-ld-lu",
+      "seasonId": "season-2023",
+      "managerId": "manager-ld-lu",
+      "name": "Sewer Mouse"
+    },
+    {
+      "id": "team-2023-billy-kim",
+      "seasonId": "season-2023",
+      "managerId": "manager-billy-kim",
+      "name": "Luigi Padilla"
+    },
+    {
+      "id": "team-2023-mario-padilla",
+      "seasonId": "season-2023",
+      "managerId": "manager-mario-padilla",
+      "name": "Billy  Da Goomba"
+    },
+    {
+      "id": "team-2024-sai-vangala",
+      "seasonId": "season-2024",
+      "managerId": "manager-sai-vangala",
+      "name": "My Loins D Hurts"
+    },
+    {
+      "id": "team-2024-albert-feeny",
+      "seasonId": "season-2024",
+      "managerId": "manager-albert-feeny",
+      "name": "White Rice"
+    },
+    {
+      "id": "team-2024-richard-li",
+      "seasonId": "season-2024",
+      "managerId": "manager-richard-li",
+      "name": "Hail Murr-vins"
+    },
+    {
+      "id": "team-2024-chad-howard",
+      "seasonId": "season-2024",
+      "managerId": "manager-chad-howard",
+      "name": "No Dak Just Mac"
+    },
+    {
+      "id": "team-2024-mao-zhong",
+      "seasonId": "season-2024",
+      "managerId": "manager-mao-zhong",
+      "name": "Bucc me silly"
+    },
+    {
+      "id": "team-2024-josh-charest",
+      "seasonId": "season-2024",
+      "managerId": "manager-josh-charest",
+      "name": "Django Achane'd"
+    },
+    {
+      "id": "team-2024-nick-bello",
+      "seasonId": "season-2024",
+      "managerId": "manager-nick-bello",
+      "name": "Prison Mike"
+    },
+    {
+      "id": "team-2024-tony-zheng",
+      "seasonId": "season-2024",
+      "managerId": "manager-tony-zheng",
+      "name": "To The Stroud!"
+    },
+    {
+      "id": "team-2024-thomas-du",
+      "seasonId": "season-2024",
+      "managerId": "manager-thomas-du",
+      "name": "Kupp Check"
+    },
+    {
+      "id": "team-2024-ld-lu",
+      "seasonId": "season-2024",
+      "managerId": "manager-ld-lu",
+      "name": "Sewer Mouse"
+    },
+    {
+      "id": "team-2024-billy-kim",
+      "seasonId": "season-2024",
+      "managerId": "manager-billy-kim",
+      "name": "LET JAMES COOK"
+    },
+    {
+      "id": "team-2024-nolan-feeny",
+      "seasonId": "season-2024",
+      "managerId": "manager-nolan-feeny",
+      "name": "Blew 42"
     }
   ],
   "weeks": [
@@ -1508,6 +1691,210 @@ export const historicalLeagueData = {
     {
       "id": "week-2022-17",
       "seasonId": "season-2022",
+      "number": 17,
+      "label": "Week 17"
+    },
+    {
+      "id": "week-2023-1",
+      "seasonId": "season-2023",
+      "number": 1,
+      "label": "Week 1"
+    },
+    {
+      "id": "week-2023-2",
+      "seasonId": "season-2023",
+      "number": 2,
+      "label": "Week 2"
+    },
+    {
+      "id": "week-2023-3",
+      "seasonId": "season-2023",
+      "number": 3,
+      "label": "Week 3"
+    },
+    {
+      "id": "week-2023-4",
+      "seasonId": "season-2023",
+      "number": 4,
+      "label": "Week 4"
+    },
+    {
+      "id": "week-2023-5",
+      "seasonId": "season-2023",
+      "number": 5,
+      "label": "Week 5"
+    },
+    {
+      "id": "week-2023-6",
+      "seasonId": "season-2023",
+      "number": 6,
+      "label": "Week 6"
+    },
+    {
+      "id": "week-2023-7",
+      "seasonId": "season-2023",
+      "number": 7,
+      "label": "Week 7"
+    },
+    {
+      "id": "week-2023-8",
+      "seasonId": "season-2023",
+      "number": 8,
+      "label": "Week 8"
+    },
+    {
+      "id": "week-2023-9",
+      "seasonId": "season-2023",
+      "number": 9,
+      "label": "Week 9"
+    },
+    {
+      "id": "week-2023-10",
+      "seasonId": "season-2023",
+      "number": 10,
+      "label": "Week 10"
+    },
+    {
+      "id": "week-2023-11",
+      "seasonId": "season-2023",
+      "number": 11,
+      "label": "Week 11"
+    },
+    {
+      "id": "week-2023-12",
+      "seasonId": "season-2023",
+      "number": 12,
+      "label": "Week 12"
+    },
+    {
+      "id": "week-2023-13",
+      "seasonId": "season-2023",
+      "number": 13,
+      "label": "Week 13"
+    },
+    {
+      "id": "week-2023-14",
+      "seasonId": "season-2023",
+      "number": 14,
+      "label": "Week 14"
+    },
+    {
+      "id": "week-2023-15",
+      "seasonId": "season-2023",
+      "number": 15,
+      "label": "Week 15"
+    },
+    {
+      "id": "week-2023-16",
+      "seasonId": "season-2023",
+      "number": 16,
+      "label": "Week 16"
+    },
+    {
+      "id": "week-2023-17",
+      "seasonId": "season-2023",
+      "number": 17,
+      "label": "Week 17"
+    },
+    {
+      "id": "week-2024-1",
+      "seasonId": "season-2024",
+      "number": 1,
+      "label": "Week 1"
+    },
+    {
+      "id": "week-2024-2",
+      "seasonId": "season-2024",
+      "number": 2,
+      "label": "Week 2"
+    },
+    {
+      "id": "week-2024-3",
+      "seasonId": "season-2024",
+      "number": 3,
+      "label": "Week 3"
+    },
+    {
+      "id": "week-2024-4",
+      "seasonId": "season-2024",
+      "number": 4,
+      "label": "Week 4"
+    },
+    {
+      "id": "week-2024-5",
+      "seasonId": "season-2024",
+      "number": 5,
+      "label": "Week 5"
+    },
+    {
+      "id": "week-2024-6",
+      "seasonId": "season-2024",
+      "number": 6,
+      "label": "Week 6"
+    },
+    {
+      "id": "week-2024-7",
+      "seasonId": "season-2024",
+      "number": 7,
+      "label": "Week 7"
+    },
+    {
+      "id": "week-2024-8",
+      "seasonId": "season-2024",
+      "number": 8,
+      "label": "Week 8"
+    },
+    {
+      "id": "week-2024-9",
+      "seasonId": "season-2024",
+      "number": 9,
+      "label": "Week 9"
+    },
+    {
+      "id": "week-2024-10",
+      "seasonId": "season-2024",
+      "number": 10,
+      "label": "Week 10"
+    },
+    {
+      "id": "week-2024-11",
+      "seasonId": "season-2024",
+      "number": 11,
+      "label": "Week 11"
+    },
+    {
+      "id": "week-2024-12",
+      "seasonId": "season-2024",
+      "number": 12,
+      "label": "Week 12"
+    },
+    {
+      "id": "week-2024-13",
+      "seasonId": "season-2024",
+      "number": 13,
+      "label": "Week 13"
+    },
+    {
+      "id": "week-2024-14",
+      "seasonId": "season-2024",
+      "number": 14,
+      "label": "Week 14"
+    },
+    {
+      "id": "week-2024-15",
+      "seasonId": "season-2024",
+      "number": 15,
+      "label": "Week 15"
+    },
+    {
+      "id": "week-2024-16",
+      "seasonId": "season-2024",
+      "number": 16,
+      "label": "Week 16"
+    },
+    {
+      "id": "week-2024-17",
+      "seasonId": "season-2024",
       "number": 17,
       "label": "Week 17"
     }
@@ -18889,6 +19276,4510 @@ export const historicalLeagueData = {
       "finalStanding": {
         "firstTeamFinish": 11,
         "secondTeamFinish": 12
+      }
+    },
+    {
+      "id": "matchup-2023-w01-01",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-1",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 1
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-richard-li",
+          "points": 139.74
+        },
+        {
+          "teamId": "team-2023-mao-zhong",
+          "points": 92.4
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w01-02",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-1",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 2
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-chad-howard",
+          "points": 82.44
+        },
+        {
+          "teamId": "team-2023-josh-charest",
+          "points": 74.08
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w01-03",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-1",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 3
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-sai-vangala",
+          "points": 109.84
+        },
+        {
+          "teamId": "team-2023-albert-feeny",
+          "points": 103.32
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w01-04",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-1",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 4
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-ld-lu",
+          "points": 113.34
+        },
+        {
+          "teamId": "team-2023-nick-bello",
+          "points": 65.48
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w01-05",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-1",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 5
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-tony-zheng",
+          "points": 129.26
+        },
+        {
+          "teamId": "team-2023-mario-padilla",
+          "points": 86.36
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w01-06",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-1",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 6
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-billy-kim",
+          "points": 110.5
+        },
+        {
+          "teamId": "team-2023-thomas-du",
+          "points": 112.54
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w02-01",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-2",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 7
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-thomas-du",
+          "points": 79.54
+        },
+        {
+          "teamId": "team-2023-chad-howard",
+          "points": 112.26
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w02-02",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-2",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 8
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-albert-feeny",
+          "points": 116.94
+        },
+        {
+          "teamId": "team-2023-richard-li",
+          "points": 126.66
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w02-03",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-2",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 9
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-mario-padilla",
+          "points": 125.18
+        },
+        {
+          "teamId": "team-2023-nick-bello",
+          "points": 123.98
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w02-04",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-2",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 10
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-mao-zhong",
+          "points": 135.42
+        },
+        {
+          "teamId": "team-2023-sai-vangala",
+          "points": 134.74
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w02-05",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-2",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 11
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-billy-kim",
+          "points": 112.72
+        },
+        {
+          "teamId": "team-2023-josh-charest",
+          "points": 146.34
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w02-06",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-2",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 12
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-ld-lu",
+          "points": 104.3
+        },
+        {
+          "teamId": "team-2023-tony-zheng",
+          "points": 92.7
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w03-01",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-3",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 13
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-nick-bello",
+          "points": 116.24
+        },
+        {
+          "teamId": "team-2023-tony-zheng",
+          "points": 124.1
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w03-02",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-3",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 14
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-mario-padilla",
+          "points": 147.18
+        },
+        {
+          "teamId": "team-2023-ld-lu",
+          "points": 122.88
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w03-03",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-3",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 15
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-albert-feeny",
+          "points": 192.6
+        },
+        {
+          "teamId": "team-2023-mao-zhong",
+          "points": 134.98
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w03-04",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-3",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 16
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-richard-li",
+          "points": 159.32
+        },
+        {
+          "teamId": "team-2023-sai-vangala",
+          "points": 75.36
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w03-05",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-3",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 17
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-josh-charest",
+          "points": 81.96
+        },
+        {
+          "teamId": "team-2023-thomas-du",
+          "points": 148.36
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w03-06",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-3",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 18
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-chad-howard",
+          "points": 95.72
+        },
+        {
+          "teamId": "team-2023-billy-kim",
+          "points": 94.82
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w04-01",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-4",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 19
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-thomas-du",
+          "points": 62.9
+        },
+        {
+          "teamId": "team-2023-richard-li",
+          "points": 90.98
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w04-02",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-4",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 20
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-chad-howard",
+          "points": 186.78
+        },
+        {
+          "teamId": "team-2023-albert-feeny",
+          "points": 87.92
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w04-03",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-4",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 21
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-tony-zheng",
+          "points": 124.88
+        },
+        {
+          "teamId": "team-2023-billy-kim",
+          "points": 122.92
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w04-04",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-4",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 22
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-nick-bello",
+          "points": 118.8
+        },
+        {
+          "teamId": "team-2023-mao-zhong",
+          "points": 177.06
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w04-05",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-4",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 23
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-sai-vangala",
+          "points": 104.68
+        },
+        {
+          "teamId": "team-2023-ld-lu",
+          "points": 85.42
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w04-06",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-4",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 24
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-josh-charest",
+          "points": 124.02
+        },
+        {
+          "teamId": "team-2023-mario-padilla",
+          "points": 94.34
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w05-01",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-5",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 25
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-chad-howard",
+          "points": 131.96
+        },
+        {
+          "teamId": "team-2023-richard-li",
+          "points": 104.42
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w05-02",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-5",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 26
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-ld-lu",
+          "points": 99.94
+        },
+        {
+          "teamId": "team-2023-thomas-du",
+          "points": 110.18
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w05-03",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-5",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 27
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-sai-vangala",
+          "points": 117.2
+        },
+        {
+          "teamId": "team-2023-nick-bello",
+          "points": 120.08
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w05-04",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-5",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 28
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-albert-feeny",
+          "points": 130.08
+        },
+        {
+          "teamId": "team-2023-billy-kim",
+          "points": 99.64
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w05-05",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-5",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 29
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-mao-zhong",
+          "points": 172.02
+        },
+        {
+          "teamId": "team-2023-mario-padilla",
+          "points": 94.44
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w05-06",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-5",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 30
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-tony-zheng",
+          "points": 113.62
+        },
+        {
+          "teamId": "team-2023-josh-charest",
+          "points": 124.34
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w06-01",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-6",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 31
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-richard-li",
+          "points": 125.18
+        },
+        {
+          "teamId": "team-2023-ld-lu",
+          "points": 127.34
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w06-02",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-6",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 32
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-thomas-du",
+          "points": 101.22
+        },
+        {
+          "teamId": "team-2023-albert-feeny",
+          "points": 128.4
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w06-03",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-6",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 33
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-billy-kim",
+          "points": 84.8
+        },
+        {
+          "teamId": "team-2023-mao-zhong",
+          "points": 93.4
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w06-04",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-6",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 34
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-chad-howard",
+          "points": 125.76
+        },
+        {
+          "teamId": "team-2023-mario-padilla",
+          "points": 96.12
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w06-05",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-6",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 35
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-nick-bello",
+          "points": 129.5
+        },
+        {
+          "teamId": "team-2023-josh-charest",
+          "points": 111.44
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w06-06",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-6",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 36
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-sai-vangala",
+          "points": 74.14
+        },
+        {
+          "teamId": "team-2023-tony-zheng",
+          "points": 120.08
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w07-01",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-7",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 37
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-mao-zhong",
+          "points": 113.46
+        },
+        {
+          "teamId": "team-2023-thomas-du",
+          "points": 82.56
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w07-02",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-7",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 38
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-josh-charest",
+          "points": 110.24
+        },
+        {
+          "teamId": "team-2023-ld-lu",
+          "points": 119.46
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w07-03",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-7",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 39
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-nick-bello",
+          "points": 105.0
+        },
+        {
+          "teamId": "team-2023-chad-howard",
+          "points": 99.2
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w07-04",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-7",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 40
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-sai-vangala",
+          "points": 141.7
+        },
+        {
+          "teamId": "team-2023-mario-padilla",
+          "points": 125.78
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w07-05",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-7",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 41
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-albert-feeny",
+          "points": 87.78
+        },
+        {
+          "teamId": "team-2023-tony-zheng",
+          "points": 104.26
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w07-06",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-7",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 42
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-billy-kim",
+          "points": 162.86
+        },
+        {
+          "teamId": "team-2023-richard-li",
+          "points": 105.44
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w08-01",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-8",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 43
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-nick-bello",
+          "points": 112.42
+        },
+        {
+          "teamId": "team-2023-billy-kim",
+          "points": 100.26
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w08-02",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-8",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 44
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-richard-li",
+          "points": 146.76
+        },
+        {
+          "teamId": "team-2023-josh-charest",
+          "points": 114.7
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w08-03",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-8",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 45
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-ld-lu",
+          "points": 85.4
+        },
+        {
+          "teamId": "team-2023-mao-zhong",
+          "points": 140.76
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w08-04",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-8",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 46
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-thomas-du",
+          "points": 102.26
+        },
+        {
+          "teamId": "team-2023-sai-vangala",
+          "points": 154.68
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w08-05",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-8",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 47
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-tony-zheng",
+          "points": 162.82
+        },
+        {
+          "teamId": "team-2023-chad-howard",
+          "points": 147.66
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w08-06",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-8",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 48
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-mario-padilla",
+          "points": 93.98
+        },
+        {
+          "teamId": "team-2023-albert-feeny",
+          "points": 148.6
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w09-01",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-9",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 49
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-mao-zhong",
+          "points": 122.4
+        },
+        {
+          "teamId": "team-2023-josh-charest",
+          "points": 123.9
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w09-02",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-9",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 50
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-albert-feeny",
+          "points": 113.7
+        },
+        {
+          "teamId": "team-2023-nick-bello",
+          "points": 138.82
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w09-03",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-9",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 51
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-ld-lu",
+          "points": 83.2
+        },
+        {
+          "teamId": "team-2023-chad-howard",
+          "points": 104.22
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w09-04",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-9",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 52
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-tony-zheng",
+          "points": 91.44
+        },
+        {
+          "teamId": "team-2023-richard-li",
+          "points": 123.32
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w09-05",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-9",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 53
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-mario-padilla",
+          "points": 79.98
+        },
+        {
+          "teamId": "team-2023-thomas-du",
+          "points": 124.36
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w09-06",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-9",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 54
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-sai-vangala",
+          "points": 145.62
+        },
+        {
+          "teamId": "team-2023-billy-kim",
+          "points": 68.98
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w10-01",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-10",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 55
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-nick-bello",
+          "points": 107.28
+        },
+        {
+          "teamId": "team-2023-thomas-du",
+          "points": 145.06
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w10-02",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-10",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 56
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-chad-howard",
+          "points": 93.78
+        },
+        {
+          "teamId": "team-2023-sai-vangala",
+          "points": 119.6
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w10-03",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-10",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 57
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-ld-lu",
+          "points": 92.72
+        },
+        {
+          "teamId": "team-2023-billy-kim",
+          "points": 114.16
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w10-04",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-10",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 58
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-josh-charest",
+          "points": 90.44
+        },
+        {
+          "teamId": "team-2023-albert-feeny",
+          "points": 123.64
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w10-05",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-10",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 59
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-richard-li",
+          "points": 157.86
+        },
+        {
+          "teamId": "team-2023-mario-padilla",
+          "points": 84.82
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w10-06",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-10",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 60
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-tony-zheng",
+          "points": 157.32
+        },
+        {
+          "teamId": "team-2023-mao-zhong",
+          "points": 85.52
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w11-01",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-11",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 61
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-albert-feeny",
+          "points": 130.92
+        },
+        {
+          "teamId": "team-2023-ld-lu",
+          "points": 118.08
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w11-02",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-11",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 62
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-tony-zheng",
+          "points": 131.1
+        },
+        {
+          "teamId": "team-2023-thomas-du",
+          "points": 125.36
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w11-03",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-11",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 63
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-sai-vangala",
+          "points": 159.68
+        },
+        {
+          "teamId": "team-2023-josh-charest",
+          "points": 122.84
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w11-04",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-11",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 64
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-mario-padilla",
+          "points": 92.26
+        },
+        {
+          "teamId": "team-2023-billy-kim",
+          "points": 113.14
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w11-05",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-11",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 65
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-richard-li",
+          "points": 106.56
+        },
+        {
+          "teamId": "team-2023-nick-bello",
+          "points": 113.74
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w11-06",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-11",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 66
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-chad-howard",
+          "points": 84.3
+        },
+        {
+          "teamId": "team-2023-mao-zhong",
+          "points": 83.9
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w12-01",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-12",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 67
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-chad-howard",
+          "points": 173.46
+        },
+        {
+          "teamId": "team-2023-billy-kim",
+          "points": 127.58
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w12-02",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-12",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 68
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-tony-zheng",
+          "points": 106.38
+        },
+        {
+          "teamId": "team-2023-nick-bello",
+          "points": 145.72
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w12-03",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-12",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 69
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-mario-padilla",
+          "points": 121.18
+        },
+        {
+          "teamId": "team-2023-ld-lu",
+          "points": 94.52
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w12-04",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-12",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 70
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-thomas-du",
+          "points": 114.74
+        },
+        {
+          "teamId": "team-2023-josh-charest",
+          "points": 138.66
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w12-05",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-12",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 71
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-richard-li",
+          "points": 115.54
+        },
+        {
+          "teamId": "team-2023-sai-vangala",
+          "points": 141.36
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w12-06",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-12",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 72
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-mao-zhong",
+          "points": 139.1
+        },
+        {
+          "teamId": "team-2023-albert-feeny",
+          "points": 111.16
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w13-01",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-13",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 73
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-nick-bello",
+          "points": 111.34
+        },
+        {
+          "teamId": "team-2023-mario-padilla",
+          "points": 111.8
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w13-02",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-13",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 74
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-ld-lu",
+          "points": 109.7
+        },
+        {
+          "teamId": "team-2023-tony-zheng",
+          "points": 89.08
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w13-03",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-13",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 75
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-josh-charest",
+          "points": 135.56
+        },
+        {
+          "teamId": "team-2023-billy-kim",
+          "points": 132.02
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w13-04",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-13",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 76
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-sai-vangala",
+          "points": 98.52
+        },
+        {
+          "teamId": "team-2023-mao-zhong",
+          "points": 142.72
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w13-05",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-13",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 77
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-albert-feeny",
+          "points": 132.46
+        },
+        {
+          "teamId": "team-2023-richard-li",
+          "points": 142.3
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w13-06",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-13",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 78
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-thomas-du",
+          "points": 105.56
+        },
+        {
+          "teamId": "team-2023-chad-howard",
+          "points": 124.8
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w14-01",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-14",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 79
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-tony-zheng",
+          "points": 88.24
+        },
+        {
+          "teamId": "team-2023-mario-padilla",
+          "points": 88.3
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w14-02",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-14",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 80
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-thomas-du",
+          "points": 81.44
+        },
+        {
+          "teamId": "team-2023-billy-kim",
+          "points": 84.24
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w14-03",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-14",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 81
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-richard-li",
+          "points": 104.6
+        },
+        {
+          "teamId": "team-2023-mao-zhong",
+          "points": 91.38
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w14-04",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-14",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 82
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-nick-bello",
+          "points": 83.52
+        },
+        {
+          "teamId": "team-2023-ld-lu",
+          "points": 109.04
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w14-05",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-14",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 83
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-albert-feeny",
+          "points": 157.72
+        },
+        {
+          "teamId": "team-2023-sai-vangala",
+          "points": 98.78
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w14-06",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-14",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 84
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-josh-charest",
+          "points": 151.14
+        },
+        {
+          "teamId": "team-2023-chad-howard",
+          "points": 102.02
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w15-01",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-15",
+      "gameType": "playoff",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 86
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-mao-zhong",
+          "points": 95.62
+        },
+        {
+          "teamId": "team-2023-sai-vangala",
+          "points": 113.26
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w15-02",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-15",
+      "gameType": "playoff",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 87
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-tony-zheng",
+          "points": 129.82
+        },
+        {
+          "teamId": "team-2023-albert-feeny",
+          "points": 173.18
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w15-03",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-15",
+      "gameType": "consolation",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 89
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-josh-charest",
+          "points": 76.52
+        },
+        {
+          "teamId": "team-2023-nick-bello",
+          "points": 92.22
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w15-04",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-15",
+      "gameType": "consolation",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 90
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-ld-lu",
+          "points": 131.18
+        },
+        {
+          "teamId": "team-2023-thomas-du",
+          "points": 131.46
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w15-05",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-15",
+      "gameType": "consolation",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 91
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-mario-padilla",
+          "points": 111.4
+        },
+        {
+          "teamId": "team-2023-billy-kim",
+          "points": 118.22
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w16-01",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-16",
+      "gameType": "playoff",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 92
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-chad-howard",
+          "points": 109.96
+        },
+        {
+          "teamId": "team-2023-sai-vangala",
+          "points": 114.84
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w16-02",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-16",
+      "gameType": "playoff",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 93
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-richard-li",
+          "points": 101.32
+        },
+        {
+          "teamId": "team-2023-albert-feeny",
+          "points": 134.5
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w16-03",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-16",
+      "gameType": "consolation",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 94
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-tony-zheng",
+          "points": 116.82
+        },
+        {
+          "teamId": "team-2023-mao-zhong",
+          "points": 28.82
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w16-04",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-16",
+      "gameType": "consolation",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 95
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-nick-bello",
+          "points": 115.06
+        },
+        {
+          "teamId": "team-2023-thomas-du",
+          "points": 93.02
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w16-05",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-16",
+      "gameType": "consolation",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 96
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-josh-charest",
+          "points": 151.88
+        },
+        {
+          "teamId": "team-2023-billy-kim",
+          "points": 123.68
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w16-06",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-16",
+      "gameType": "consolation",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 97
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-ld-lu",
+          "points": 107.0
+        },
+        {
+          "teamId": "team-2023-mario-padilla",
+          "points": 126.9
+        }
+      ]
+    },
+    {
+      "id": "matchup-2023-w17-01",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-17",
+      "gameType": "playoff",
+      "isFinalSeedingGame": true,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 98
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-sai-vangala",
+          "points": 97.98
+        },
+        {
+          "teamId": "team-2023-albert-feeny",
+          "points": 119.6
+        }
+      ],
+      "finalSeedingRank": 1,
+      "finalStanding": {
+        "firstTeamFinish": 2,
+        "secondTeamFinish": 1
+      }
+    },
+    {
+      "id": "matchup-2023-w17-02",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-17",
+      "gameType": "consolation",
+      "isFinalSeedingGame": true,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 99
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-chad-howard",
+          "points": 128.96
+        },
+        {
+          "teamId": "team-2023-richard-li",
+          "points": 118.88
+        }
+      ],
+      "finalSeedingRank": 3,
+      "finalStanding": {
+        "firstTeamFinish": 3,
+        "secondTeamFinish": 4
+      }
+    },
+    {
+      "id": "matchup-2023-w17-03",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-17",
+      "gameType": "consolation",
+      "isFinalSeedingGame": true,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 100
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-tony-zheng",
+          "points": 147.98
+        },
+        {
+          "teamId": "team-2023-mao-zhong",
+          "points": 24.66
+        }
+      ],
+      "finalSeedingRank": 5,
+      "finalStanding": {
+        "firstTeamFinish": 5,
+        "secondTeamFinish": 6
+      }
+    },
+    {
+      "id": "matchup-2023-w17-04",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-17",
+      "gameType": "consolation",
+      "isFinalSeedingGame": true,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 101
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-josh-charest",
+          "points": 120.02
+        },
+        {
+          "teamId": "team-2023-nick-bello",
+          "points": 116.84
+        }
+      ],
+      "finalSeedingRank": 7,
+      "finalStanding": {
+        "firstTeamFinish": 7,
+        "secondTeamFinish": 8
+      }
+    },
+    {
+      "id": "matchup-2023-w17-05",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-17",
+      "gameType": "consolation",
+      "isFinalSeedingGame": true,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 102
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-thomas-du",
+          "points": 139.1
+        },
+        {
+          "teamId": "team-2023-mario-padilla",
+          "points": 127.5
+        }
+      ],
+      "finalSeedingRank": 9,
+      "finalStanding": {
+        "firstTeamFinish": 9,
+        "secondTeamFinish": 10
+      }
+    },
+    {
+      "id": "matchup-2023-w17-06",
+      "seasonId": "season-2023",
+      "weekId": "week-2023-17",
+      "gameType": "consolation",
+      "isFinalSeedingGame": true,
+      "source": {
+        "workbook": "espn-ffl-2023.json",
+        "sheet": "schedule",
+        "rowNumber": 103
+      },
+      "scores": [
+        {
+          "teamId": "team-2023-ld-lu",
+          "points": 85.1
+        },
+        {
+          "teamId": "team-2023-billy-kim",
+          "points": 101.24
+        }
+      ],
+      "finalSeedingRank": 11,
+      "finalStanding": {
+        "firstTeamFinish": 12,
+        "secondTeamFinish": 11
+      }
+    },
+    {
+      "id": "matchup-2024-w01-01",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-1",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 1
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-tony-zheng",
+          "points": 121.06
+        },
+        {
+          "teamId": "team-2024-mao-zhong",
+          "points": 117.84
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w01-02",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-1",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 2
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-sai-vangala",
+          "points": 106.62
+        },
+        {
+          "teamId": "team-2024-josh-charest",
+          "points": 133.58
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w01-03",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-1",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 3
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-chad-howard",
+          "points": 76.86
+        },
+        {
+          "teamId": "team-2024-nick-bello",
+          "points": 138.08
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w01-04",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-1",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 4
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-ld-lu",
+          "points": 77.82
+        },
+        {
+          "teamId": "team-2024-albert-feeny",
+          "points": 115.18
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w01-05",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-1",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 5
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-richard-li",
+          "points": 101.58
+        },
+        {
+          "teamId": "team-2024-nolan-feeny",
+          "points": 108.6
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w01-06",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-1",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 6
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-billy-kim",
+          "points": 127.38
+        },
+        {
+          "teamId": "team-2024-thomas-du",
+          "points": 133.92
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w02-01",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-2",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 7
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-ld-lu",
+          "points": 89.26
+        },
+        {
+          "teamId": "team-2024-chad-howard",
+          "points": 82.9
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w02-02",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-2",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 8
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-billy-kim",
+          "points": 141.8
+        },
+        {
+          "teamId": "team-2024-richard-li",
+          "points": 142.34
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w02-03",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-2",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 9
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-nolan-feeny",
+          "points": 98.24
+        },
+        {
+          "teamId": "team-2024-thomas-du",
+          "points": 96.58
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w02-04",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-2",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 10
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-nick-bello",
+          "points": 94.16
+        },
+        {
+          "teamId": "team-2024-albert-feeny",
+          "points": 121.06
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w02-05",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-2",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 11
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-tony-zheng",
+          "points": 143.9
+        },
+        {
+          "teamId": "team-2024-josh-charest",
+          "points": 129.58
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w02-06",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-2",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 12
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-mao-zhong",
+          "points": 96.54
+        },
+        {
+          "teamId": "team-2024-sai-vangala",
+          "points": 112.72
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w03-01",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-3",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 13
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-thomas-du",
+          "points": 115.68
+        },
+        {
+          "teamId": "team-2024-richard-li",
+          "points": 140.18
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w03-02",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-3",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 14
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-chad-howard",
+          "points": 127.26
+        },
+        {
+          "teamId": "team-2024-albert-feeny",
+          "points": 82.68
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w03-03",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-3",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 15
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-josh-charest",
+          "points": 106.46
+        },
+        {
+          "teamId": "team-2024-mao-zhong",
+          "points": 120.38
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w03-04",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-3",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 16
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-tony-zheng",
+          "points": 133.66
+        },
+        {
+          "teamId": "team-2024-sai-vangala",
+          "points": 79.04
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w03-05",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-3",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 17
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-ld-lu",
+          "points": 147.08
+        },
+        {
+          "teamId": "team-2024-nick-bello",
+          "points": 132.22
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w03-06",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-3",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 18
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-nolan-feeny",
+          "points": 114.34
+        },
+        {
+          "teamId": "team-2024-billy-kim",
+          "points": 63.72
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w04-01",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-4",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 19
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-nick-bello",
+          "points": 118.7
+        },
+        {
+          "teamId": "team-2024-billy-kim",
+          "points": 105.3
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w04-02",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-4",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 20
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-thomas-du",
+          "points": 122.24
+        },
+        {
+          "teamId": "team-2024-albert-feeny",
+          "points": 113.14
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w04-03",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-4",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 21
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-tony-zheng",
+          "points": 132.78
+        },
+        {
+          "teamId": "team-2024-nolan-feeny",
+          "points": 99.3
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w04-04",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-4",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 22
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-chad-howard",
+          "points": 100.54
+        },
+        {
+          "teamId": "team-2024-mao-zhong",
+          "points": 101.2
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w04-05",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-4",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 23
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-sai-vangala",
+          "points": 132.92
+        },
+        {
+          "teamId": "team-2024-ld-lu",
+          "points": 141.52
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w04-06",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-4",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 24
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-richard-li",
+          "points": 127.78
+        },
+        {
+          "teamId": "team-2024-josh-charest",
+          "points": 122.78
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w05-01",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-5",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 25
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-chad-howard",
+          "points": 103.08
+        },
+        {
+          "teamId": "team-2024-richard-li",
+          "points": 116.6
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w05-02",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-5",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 26
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-tony-zheng",
+          "points": 136.68
+        },
+        {
+          "teamId": "team-2024-thomas-du",
+          "points": 143.92
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w05-03",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-5",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 27
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-sai-vangala",
+          "points": 116.52
+        },
+        {
+          "teamId": "team-2024-nick-bello",
+          "points": 149.34
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w05-04",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-5",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 28
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-albert-feeny",
+          "points": 103.9
+        },
+        {
+          "teamId": "team-2024-billy-kim",
+          "points": 146.46
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w05-05",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-5",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 29
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-josh-charest",
+          "points": 93.94
+        },
+        {
+          "teamId": "team-2024-nolan-feeny",
+          "points": 142.06
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w05-06",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-5",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 30
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-ld-lu",
+          "points": 101.46
+        },
+        {
+          "teamId": "team-2024-mao-zhong",
+          "points": 81.44
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w06-01",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-6",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 31
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-nolan-feeny",
+          "points": 110.52
+        },
+        {
+          "teamId": "team-2024-albert-feeny",
+          "points": 140.8
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w06-02",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-6",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 32
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-thomas-du",
+          "points": 104.72
+        },
+        {
+          "teamId": "team-2024-ld-lu",
+          "points": 94.5
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w06-03",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-6",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 33
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-nick-bello",
+          "points": 152.2
+        },
+        {
+          "teamId": "team-2024-tony-zheng",
+          "points": 138.22
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w06-04",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-6",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 34
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-mao-zhong",
+          "points": 101.2
+        },
+        {
+          "teamId": "team-2024-richard-li",
+          "points": 96.66
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w06-05",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-6",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 35
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-billy-kim",
+          "points": 85.08
+        },
+        {
+          "teamId": "team-2024-josh-charest",
+          "points": 121.8
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w06-06",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-6",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 36
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-sai-vangala",
+          "points": 117.26
+        },
+        {
+          "teamId": "team-2024-chad-howard",
+          "points": 91.02
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w07-01",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-7",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 37
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-josh-charest",
+          "points": 105.96
+        },
+        {
+          "teamId": "team-2024-thomas-du",
+          "points": 135.74
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w07-02",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-7",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 38
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-nolan-feeny",
+          "points": 77.4
+        },
+        {
+          "teamId": "team-2024-ld-lu",
+          "points": 118.98
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w07-03",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-7",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 39
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-tony-zheng",
+          "points": 135.74
+        },
+        {
+          "teamId": "team-2024-chad-howard",
+          "points": 90.48
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w07-04",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-7",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 40
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-sai-vangala",
+          "points": 81.44
+        },
+        {
+          "teamId": "team-2024-billy-kim",
+          "points": 169.54
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w07-05",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-7",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 41
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-mao-zhong",
+          "points": 89.86
+        },
+        {
+          "teamId": "team-2024-nick-bello",
+          "points": 135.32
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w07-06",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-7",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 42
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-albert-feeny",
+          "points": 102.3
+        },
+        {
+          "teamId": "team-2024-richard-li",
+          "points": 114.2
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w08-01",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-8",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 43
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-ld-lu",
+          "points": 118.4
+        },
+        {
+          "teamId": "team-2024-billy-kim",
+          "points": 114.42
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w08-02",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-8",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 44
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-chad-howard",
+          "points": 133.36
+        },
+        {
+          "teamId": "team-2024-josh-charest",
+          "points": 116.7
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w08-03",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-8",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 45
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-nick-bello",
+          "points": 164.94
+        },
+        {
+          "teamId": "team-2024-nolan-feeny",
+          "points": 121.14
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w08-04",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-8",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 46
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-thomas-du",
+          "points": 133.76
+        },
+        {
+          "teamId": "team-2024-sai-vangala",
+          "points": 152.54
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w08-05",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-8",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 47
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-tony-zheng",
+          "points": 86.2
+        },
+        {
+          "teamId": "team-2024-richard-li",
+          "points": 136.28
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w08-06",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-8",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 48
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-mao-zhong",
+          "points": 94.48
+        },
+        {
+          "teamId": "team-2024-albert-feeny",
+          "points": 127.1
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w09-01",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-9",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 49
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-tony-zheng",
+          "points": 145.14
+        },
+        {
+          "teamId": "team-2024-albert-feeny",
+          "points": 129.7
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w09-02",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-9",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 50
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-josh-charest",
+          "points": 129.5
+        },
+        {
+          "teamId": "team-2024-nick-bello",
+          "points": 119.9
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w09-03",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-9",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 51
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-thomas-du",
+          "points": 126.9
+        },
+        {
+          "teamId": "team-2024-chad-howard",
+          "points": 114.52
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w09-04",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-9",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 52
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-mao-zhong",
+          "points": 145.32
+        },
+        {
+          "teamId": "team-2024-billy-kim",
+          "points": 105.28
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w09-05",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-9",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 53
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-nolan-feeny",
+          "points": 74.12
+        },
+        {
+          "teamId": "team-2024-sai-vangala",
+          "points": 137.1
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w09-06",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-9",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 54
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-ld-lu",
+          "points": 88.46
+        },
+        {
+          "teamId": "team-2024-richard-li",
+          "points": 99.66
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w10-01",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-10",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 55
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-nolan-feeny",
+          "points": 73.64
+        },
+        {
+          "teamId": "team-2024-chad-howard",
+          "points": 123.2
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w10-02",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-10",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 56
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-sai-vangala",
+          "points": 119.28
+        },
+        {
+          "teamId": "team-2024-albert-feeny",
+          "points": 73.64
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w10-03",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-10",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 57
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-thomas-du",
+          "points": 166.5
+        },
+        {
+          "teamId": "team-2024-mao-zhong",
+          "points": 95.72
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w10-04",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-10",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 58
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-josh-charest",
+          "points": 103.24
+        },
+        {
+          "teamId": "team-2024-ld-lu",
+          "points": 103.82
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w10-05",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-10",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 59
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-richard-li",
+          "points": 104.24
+        },
+        {
+          "teamId": "team-2024-nick-bello",
+          "points": 102.4
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w10-06",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-10",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 60
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-tony-zheng",
+          "points": 137.12
+        },
+        {
+          "teamId": "team-2024-billy-kim",
+          "points": 100.64
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w11-01",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-11",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 61
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-sai-vangala",
+          "points": 122.74
+        },
+        {
+          "teamId": "team-2024-richard-li",
+          "points": 113.0
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w11-02",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-11",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 62
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-tony-zheng",
+          "points": 199.04
+        },
+        {
+          "teamId": "team-2024-ld-lu",
+          "points": 109.86
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w11-03",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-11",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 63
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-albert-feeny",
+          "points": 135.88
+        },
+        {
+          "teamId": "team-2024-josh-charest",
+          "points": 113.64
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w11-04",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-11",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 64
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-chad-howard",
+          "points": 107.18
+        },
+        {
+          "teamId": "team-2024-billy-kim",
+          "points": 104.32
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w11-05",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-11",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 65
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-thomas-du",
+          "points": 122.98
+        },
+        {
+          "teamId": "team-2024-nick-bello",
+          "points": 145.88
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w11-06",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-11",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 66
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-nolan-feeny",
+          "points": 79.54
+        },
+        {
+          "teamId": "team-2024-mao-zhong",
+          "points": 97.34
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w12-01",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-12",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 67
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-chad-howard",
+          "points": 75.42
+        },
+        {
+          "teamId": "team-2024-albert-feeny",
+          "points": 95.36
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w12-02",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-12",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 68
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-richard-li",
+          "points": 132.12
+        },
+        {
+          "teamId": "team-2024-thomas-du",
+          "points": 129.98
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w12-03",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-12",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 69
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-nolan-feeny",
+          "points": 116.52
+        },
+        {
+          "teamId": "team-2024-billy-kim",
+          "points": 107.88
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w12-04",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-12",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 70
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-mao-zhong",
+          "points": 161.4
+        },
+        {
+          "teamId": "team-2024-josh-charest",
+          "points": 112.08
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w12-05",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-12",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 71
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-tony-zheng",
+          "points": 98.98
+        },
+        {
+          "teamId": "team-2024-sai-vangala",
+          "points": 129.06
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w12-06",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-12",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 72
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-nick-bello",
+          "points": 95.26
+        },
+        {
+          "teamId": "team-2024-ld-lu",
+          "points": 102.7
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w13-01",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-13",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 73
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-thomas-du",
+          "points": 110.78
+        },
+        {
+          "teamId": "team-2024-nolan-feeny",
+          "points": 121.66
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w13-02",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-13",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 74
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-josh-charest",
+          "points": 125.14
+        },
+        {
+          "teamId": "team-2024-tony-zheng",
+          "points": 145.88
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w13-03",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-13",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 75
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-richard-li",
+          "points": 93.78
+        },
+        {
+          "teamId": "team-2024-billy-kim",
+          "points": 138.6
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w13-04",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-13",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 76
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-sai-vangala",
+          "points": 110.02
+        },
+        {
+          "teamId": "team-2024-mao-zhong",
+          "points": 150.14
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w13-05",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-13",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 77
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-chad-howard",
+          "points": 100.56
+        },
+        {
+          "teamId": "team-2024-ld-lu",
+          "points": 111.56
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w13-06",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-13",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 78
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-nick-bello",
+          "points": 163.22
+        },
+        {
+          "teamId": "team-2024-albert-feeny",
+          "points": 108.4
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w14-01",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-14",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 79
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-richard-li",
+          "points": 109.86
+        },
+        {
+          "teamId": "team-2024-nolan-feeny",
+          "points": 79.34
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w14-02",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-14",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 80
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-thomas-du",
+          "points": 152.52
+        },
+        {
+          "teamId": "team-2024-billy-kim",
+          "points": 85.34
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w14-03",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-14",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 81
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-tony-zheng",
+          "points": 130.56
+        },
+        {
+          "teamId": "team-2024-mao-zhong",
+          "points": 103.28
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w14-04",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-14",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 82
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-nick-bello",
+          "points": 139.08
+        },
+        {
+          "teamId": "team-2024-chad-howard",
+          "points": 68.62
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w14-05",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-14",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 83
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-josh-charest",
+          "points": 119.3
+        },
+        {
+          "teamId": "team-2024-sai-vangala",
+          "points": 131.42
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w14-06",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-14",
+      "gameType": "regular",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 84
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-albert-feeny",
+          "points": 148.2
+        },
+        {
+          "teamId": "team-2024-ld-lu",
+          "points": 138.3
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w15-01",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-15",
+      "gameType": "playoff",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 86
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-ld-lu",
+          "points": 99.88
+        },
+        {
+          "teamId": "team-2024-thomas-du",
+          "points": 132.2
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w15-02",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-15",
+      "gameType": "playoff",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 87
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-nick-bello",
+          "points": 145.98
+        },
+        {
+          "teamId": "team-2024-sai-vangala",
+          "points": 135.4
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w15-03",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-15",
+      "gameType": "consolation",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 89
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-albert-feeny",
+          "points": 157.62
+        },
+        {
+          "teamId": "team-2024-mao-zhong",
+          "points": 129.14
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w15-04",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-15",
+      "gameType": "consolation",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 90
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-nolan-feeny",
+          "points": 99.06
+        },
+        {
+          "teamId": "team-2024-chad-howard",
+          "points": 94.7
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w15-05",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-15",
+      "gameType": "consolation",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 91
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-josh-charest",
+          "points": 90.16
+        },
+        {
+          "teamId": "team-2024-billy-kim",
+          "points": 127.24
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w16-01",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-16",
+      "gameType": "playoff",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 92
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-tony-zheng",
+          "points": 129.68
+        },
+        {
+          "teamId": "team-2024-thomas-du",
+          "points": 101.08
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w16-02",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-16",
+      "gameType": "playoff",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 93
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-richard-li",
+          "points": 125.68
+        },
+        {
+          "teamId": "team-2024-nick-bello",
+          "points": 104.76
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w16-03",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-16",
+      "gameType": "consolation",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 94
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-ld-lu",
+          "points": 112.32
+        },
+        {
+          "teamId": "team-2024-sai-vangala",
+          "points": 133.84
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w16-04",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-16",
+      "gameType": "consolation",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 95
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-albert-feeny",
+          "points": 129.92
+        },
+        {
+          "teamId": "team-2024-nolan-feeny",
+          "points": 102.18
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w16-05",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-16",
+      "gameType": "consolation",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 96
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-mao-zhong",
+          "points": 120.92
+        },
+        {
+          "teamId": "team-2024-billy-kim",
+          "points": 130.9
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w16-06",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-16",
+      "gameType": "consolation",
+      "isFinalSeedingGame": false,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 97
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-chad-howard",
+          "points": 183.62
+        },
+        {
+          "teamId": "team-2024-josh-charest",
+          "points": 159.94
+        }
+      ]
+    },
+    {
+      "id": "matchup-2024-w17-01",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-17",
+      "gameType": "playoff",
+      "isFinalSeedingGame": true,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 98
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-tony-zheng",
+          "points": 171.78
+        },
+        {
+          "teamId": "team-2024-richard-li",
+          "points": 138.22
+        }
+      ],
+      "finalSeedingRank": 1,
+      "finalStanding": {
+        "firstTeamFinish": 1,
+        "secondTeamFinish": 2
+      }
+    },
+    {
+      "id": "matchup-2024-w17-02",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-17",
+      "gameType": "consolation",
+      "isFinalSeedingGame": true,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 99
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-nick-bello",
+          "points": 125.68
+        },
+        {
+          "teamId": "team-2024-thomas-du",
+          "points": 122.62
+        }
+      ],
+      "finalSeedingRank": 3,
+      "finalStanding": {
+        "firstTeamFinish": 3,
+        "secondTeamFinish": 4
+      }
+    },
+    {
+      "id": "matchup-2024-w17-03",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-17",
+      "gameType": "consolation",
+      "isFinalSeedingGame": true,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 100
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-ld-lu",
+          "points": 147.58
+        },
+        {
+          "teamId": "team-2024-sai-vangala",
+          "points": 69.0
+        }
+      ],
+      "finalSeedingRank": 5,
+      "finalStanding": {
+        "firstTeamFinish": 5,
+        "secondTeamFinish": 6
+      }
+    },
+    {
+      "id": "matchup-2024-w17-04",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-17",
+      "gameType": "consolation",
+      "isFinalSeedingGame": true,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 101
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-albert-feeny",
+          "points": 142.16
+        },
+        {
+          "teamId": "team-2024-billy-kim",
+          "points": 92.3
+        }
+      ],
+      "finalSeedingRank": 7,
+      "finalStanding": {
+        "firstTeamFinish": 7,
+        "secondTeamFinish": 8
+      }
+    },
+    {
+      "id": "matchup-2024-w17-05",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-17",
+      "gameType": "consolation",
+      "isFinalSeedingGame": true,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 102
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-nolan-feeny",
+          "points": 92.8
+        },
+        {
+          "teamId": "team-2024-chad-howard",
+          "points": 122.26
+        }
+      ],
+      "finalSeedingRank": 9,
+      "finalStanding": {
+        "firstTeamFinish": 10,
+        "secondTeamFinish": 9
+      }
+    },
+    {
+      "id": "matchup-2024-w17-06",
+      "seasonId": "season-2024",
+      "weekId": "week-2024-17",
+      "gameType": "consolation",
+      "isFinalSeedingGame": true,
+      "source": {
+        "workbook": "espn-ffl-2024.json",
+        "sheet": "schedule",
+        "rowNumber": 103
+      },
+      "scores": [
+        {
+          "teamId": "team-2024-mao-zhong",
+          "points": 124.18
+        },
+        {
+          "teamId": "team-2024-josh-charest",
+          "points": 127.02
+        }
+      ],
+      "finalSeedingRank": 11,
+      "finalStanding": {
+        "firstTeamFinish": 12,
+        "secondTeamFinish": 11
       }
     }
   ]

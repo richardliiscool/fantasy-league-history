@@ -22,36 +22,40 @@ Core entities:
 
 ## Data Plan
 
-This project starts with sample data so the records engine can be proven before any real import work. The archived Excel workbooks are the authoritative source for historical league data.
+The archived Excel workbooks are the authoritative source for 2015-2022 historical league data. ESPN is now the source for the imported 2023 and 2024 seasons.
 
 Next data milestones:
 
-1. Preview the workbook import without changing app data.
-2. Map workbook columns into the normalized league model.
-3. Validate imported totals against known league records.
-4. Generate local seed data from the workbook.
-5. Preview ESPN 2023-2024 imports without changing app data.
-6. Add Sleeper API ingestion after the historical model is stable.
+1. Keep validating imported totals against known league records.
+2. Use the local ESPN snapshots to refine 2023-2024 season details as needed.
+3. Add the remaining ESPN/Sleeper-era seasons once their source data is available.
+4. Add Sleeper API ingestion after the historical model is stable.
 
 Financial tracking is intentionally out of scope for this app.
 
 ## Historical Data
 
-The real historical data is generated from the archived workbook into `src/lib/data/historicalLeagueData.ts`. That generated file is app-shaped data and should not be edited by hand.
+The real historical data is generated into `src/lib/data/historicalLeagueData.ts`. That generated file is app-shaped data and should not be edited by hand.
 
 The raw `.xlsx` archive files in `reference/workbooks` are ignored by Git so they stay local unless explicitly approved for sharing.
+
+The raw ESPN JSON archives in `reference/espn/raw` are also ignored by Git. They are local reference files only; the committed app uses the generated TypeScript data file.
 
 The homepage uses the generated historical data for the first real all-time leaderboard. The smaller sample data file remains useful for tiny unit tests.
 
 ## ESPN Import
 
-The first ESPN checkpoint is a read-only preview script:
+ESPN data is handled in two steps: preview/fetch the private league data locally, then regenerate the committed app-shaped data.
 
 ```bash
 python3 scripts/preview_espn_import.py --season 2023 --season 2024
 ```
 
-Private ESPN league credentials belong only in `.env.local`, based on `.env.example`. The script can save raw ESPN JSON under `reference/espn/raw`, which is ignored by Git. See `docs/espn-import-plan.md` for the workflow.
+```bash
+python3 scripts/generate_historical_data.py
+```
+
+Private ESPN league credentials belong only in `.env.local`, based on `.env.example`. The preview script can save raw ESPN JSON under `reference/espn/raw`, which is ignored by Git. The generator reads those local snapshots and maps ESPN team IDs through `scripts/espn_team_manager_map.json`. See `docs/espn-import-plan.md` for the workflow.
 
 ## App Views
 
@@ -102,11 +106,11 @@ npm run build
 - League standings and manager profile tables include interactive filters and sortable columns.
 - Manager game logs show the first 10 rows and can expand 10 more at a time.
 - Manager game logs can filter down to one opponent.
-- Season archive pages exist for each imported season from 2015 through 2022.
+- Season archive pages exist for each imported season from 2015 through 2024.
 - Season archive pages use workbook finish-order data, including tied finishers when the historical result calls for it, and the final standings table can be sorted by finish, manager, team, records, PF, PA, Avg PF, and Avg PA.
 - Season archive pages consolidate biggest win/loss into a single biggest-margin game card.
 - Records page exists with podium trophy tallies, global filters, top-10 score and margin tables, and sortable manager-season records.
 - Head-to-head comparison pages exist for manager rivalries, including score splits, highest-score/closest-game cards, and sortable rivalry game logs.
 - Manager directory page exists with sortable career stats, podium counts, active/inactive treatment, and links into manager profiles or head-to-head comparisons.
 - Head-to-head matrix page exists with active/all/inactive manager filters, game-scope switching, display modes, color-threshold legend, and clickable rivalry cells.
-- Read-only ESPN preview tooling exists for inspecting 2023 and 2024 before adding those seasons to app data.
+- ESPN 2023 and 2024 are imported into the generated local app data from ignored raw JSON snapshots.

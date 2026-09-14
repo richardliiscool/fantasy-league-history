@@ -1,6 +1,6 @@
 # ESPN Import Plan
 
-This is the first ESPN checkpoint. It is intentionally read-only: fetch ESPN data, inspect the shape, and archive the raw JSON locally before changing the app data.
+This doc tracks the ESPN import path. The first checkpoint was read-only: fetch ESPN data, inspect the shape, and archive the raw JSON locally before changing the app data. The current checkpoint imports the saved 2023 and 2024 ESPN snapshots into the generated app data.
 
 ## What ESPN Needs
 
@@ -44,6 +44,22 @@ python3 scripts/preview_espn_import.py --season 2023 --season 2024 --save-raw
 
 Raw ESPN JSON archives are written to `reference/espn/raw` and ignored by Git.
 
+## Generate App Data
+
+After raw snapshots exist locally, regenerate the app-shaped data:
+
+```bash
+python3 scripts/generate_historical_data.py
+```
+
+The generator reads:
+
+- Excel workbook history from `reference/workbooks`
+- ESPN raw snapshots from `reference/espn/raw`
+- ESPN team-to-manager mappings from `scripts/espn_team_manager_map.json`
+
+The output is committed to `src/lib/data/historicalLeagueData.ts`. The private raw ESPN responses stay local and ignored.
+
 ## What The Preview Checks
 
 The preview reports:
@@ -58,9 +74,9 @@ The preview reports:
 - a few sample teams
 - a few sample matchup rows
 
-## Next Mapping Step
+## Current Mapping
 
-After the preview works, the next task is to map ESPN's data into the same app shape as the workbook import:
+ESPN's data is mapped into the same app shape as the workbook import:
 
 ```text
 ESPN teams + schedule rows
@@ -73,6 +89,15 @@ ESPN teams + schedule rows
 ```
 
 The key review step will be matching ESPN team IDs and owner/member IDs back to the existing manager IDs in `src/lib/data/historicalLeagueData.ts`.
+
+For the current local snapshots:
+
+- 2023 champion: Albert Feeny
+- 2024 champion: Tony Zheng
+- 2024 runner-up: Richard Li
+- Nolan Feeny appears as a new manager in 2024.
+
+The raw ESPN schedule includes two bye/placeholder rows per season. The generator skips those rows and imports the 101 completed matchup rows for each season.
 
 ## Safety Notes
 

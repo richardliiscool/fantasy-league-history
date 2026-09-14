@@ -1,0 +1,35 @@
+{
+  "displayNames": {
+    "manager-nolan-feeny": "Nolan Feeny"
+  },
+  "teamManagers": {
+    "2023": {
+      "1": "manager-sai-vangala",
+      "2": "manager-albert-feeny",
+      "3": "manager-richard-li",
+      "4": "manager-chad-howard",
+      "5": "manager-mao-zhong",
+      "6": "manager-josh-charest",
+      "8": "manager-nick-bello",
+      "9": "manager-tony-zheng",
+      "10": "manager-thomas-du",
+      "11": "manager-ld-lu",
+      "12": "manager-billy-kim",
+      "13": "manager-mario-padilla"
+    },
+    "2024": {
+      "1": "manager-sai-vangala",
+      "2": "manager-albert-feeny",
+      "3": "manager-richard-li",
+      "4": "manager-chad-howard",
+      "5": "manager-mao-zhong",
+      "6": "manager-josh-charest",
+      "8": "manager-nick-bello",
+      "9": "manager-tony-zheng",
+      "10": "manager-thomas-du",
+      "11": "manager-ld-lu",
+      "12": "manager-billy-kim",
+      "13": "manager-nolan-feeny"
+    }
+  }
+}

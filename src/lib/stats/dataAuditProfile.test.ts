@@ -7,16 +7,16 @@ describe("data audit profile", () => {
     const profile = getDataAuditProfile(historicalLeagueData);
 
     expect(profile.summary).toMatchObject({
-      seasonCount: 8,
-      managerCount: 16,
-      teamCount: 96,
-      matchupCount: 779,
-      teamResultCount: 1558,
+      seasonCount: 10,
+      managerCount: 17,
+      teamCount: 120,
+      matchupCount: 981,
+      teamResultCount: 1962,
       warningCount: 0,
       tieCount: 1,
       duplicateScoreLineCount: 0,
     });
-    expect(profile.seasons).toHaveLength(8);
+    expect(profile.seasons).toHaveLength(10);
     expect(profile.seasons.every((season) => season.teamCount === 12)).toBe(
       true,
     );
@@ -60,7 +60,7 @@ describe("data audit profile", () => {
   it("lists score outliers without treating them as structural warnings", () => {
     const profile = getDataAuditProfile(historicalLeagueData);
 
-    expect(profile.summary.scoreOutlierCount).toBe(6);
+    expect(profile.summary.scoreOutlierCount).toBe(8);
     expect(profile.scoreOutliers).toContainEqual(
       expect.objectContaining({
         seasonYear: 2015,
@@ -89,7 +89,7 @@ describe("data audit profile", () => {
     );
 
     expect(cleanSeasons.map((season) => season.seasonYear)).toEqual([
-      2015, 2016, 2017, 2018, 2019, 2020, 2021,
+      2015, 2016, 2017, 2018, 2019, 2020, 2021, 2023, 2024,
     ]);
     expect(profile.duplicateScoreLines).toEqual([]);
   });

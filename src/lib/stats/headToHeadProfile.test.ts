@@ -30,10 +30,10 @@ describe("head-to-head profile", () => {
   it("builds manager options, defaults, and ordered rivalries", () => {
     const profile = getHeadToHeadProfile(historicalLeagueData);
 
-    expect(profile.managers).toHaveLength(16);
+    expect(profile.managers).toHaveLength(17);
     expect(profile.defaultFirstManagerId).toBe("manager-richard-li");
     expect(profile.defaultSecondManagerId).toBe("manager-ld-lu");
-    expect(profile.rivalries).toHaveLength(16 * 15);
+    expect(profile.rivalries).toHaveLength(17 * 16);
   });
 
   it("keeps each head-to-head matchup as one row for the selected view", () => {

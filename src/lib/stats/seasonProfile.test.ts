@@ -114,6 +114,8 @@ describe("season profile", () => {
 
   it("reads a normal season champion from the final placement rows", () => {
     const profile = requireSeasonProfile(2021);
+    const profile2023 = requireSeasonProfile(2023);
+    const profile2024 = requireSeasonProfile(2024);
 
     expect(profile.champions.map((champion) => champion.managerName)).toEqual([
       "LD Lu",
@@ -122,6 +124,23 @@ describe("season profile", () => {
       finish: 1,
       managerName: "LD Lu",
     });
+    expect(profile2023.champions.map((champion) => champion.managerName)).toEqual([
+      "Albert Feeny",
+    ]);
+    expect(profile2023.finalStandings[0]).toMatchObject({
+      finish: 1,
+      managerName: "Albert Feeny",
+    });
+    expect(profile2024.champions.map((champion) => champion.managerName)).toEqual([
+      "Tony Zheng",
+    ]);
+    expect(profile2024.finalStandings.slice(0, 2)).toMatchObject([
+      { finish: 1, managerName: "Tony Zheng" },
+      { finish: 2, managerName: "Richard Li" },
+    ]);
+    expect(profile2024.finalStandings.map((standing) => standing.finish)).toEqual([
+      1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+    ]);
   });
 
   it("keeps season records attached to their source matchup", () => {
@@ -148,6 +167,6 @@ describe("season profile", () => {
   });
 
   it("returns null for seasons that are not imported yet", () => {
-    expect(getSeasonProfile(historicalLeagueData, 2023)).toBeNull();
+    expect(getSeasonProfile(historicalLeagueData, 2025)).toBeNull();
   });
 });
