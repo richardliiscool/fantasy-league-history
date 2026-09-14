@@ -76,6 +76,7 @@ Use `--save-raw` to archive local responses under `reference/sleeper/raw`. See `
 - `/` shows the league-wide records dashboard and all-time manager standings.
 - `/managers` shows a sortable manager directory with active/inactive status, career stats, podium counts, and profile/compare links.
 - `/records` shows the record book with trophy tallies, single-game records, matchup margins, filters, and sortable manager-season stat lines.
+- `/data-sources` explains which years come from Excel, ESPN, and Sleeper, plus what is committed versus kept local.
 - `/head-to-head` compares any two managers with rivalry records, scoring splits, margin records, and a sortable game log. It can accept `?manager=` and `?opponent=` query values for direct comparison links.
 - `/head-to-head/matrix` shows a league-wide head-to-head grid where each manager-vs-manager cell links into the detailed rivalry page.
 - `/managers/[managerId]` shows an individual manager profile with career totals, season splits, head-to-head records, and recent games.
@@ -122,6 +123,7 @@ npm run build
 - Manager game logs can filter down to one opponent.
 - Season archive pages exist for each imported season from 2015 through 2025.
 - Seasons index page exists with a year-by-year podium and last-place table from newest to oldest.
+- Data sources page exists to explain import coverage, clone-safe generated data, and local-only raw archives.
 - Season archive pages use workbook finish-order data, including tied finishers when the historical result calls for it, and the final standings table can be sorted by finish, manager, team, records, PF, PA, Avg PF, and Avg PA.
 - Season archive pages consolidate biggest win/loss into a single biggest-margin game card.
 - Closest-game cards and tables ignore tied games, so closest margin means the smallest non-zero margin.

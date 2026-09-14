@@ -27,6 +27,11 @@ const navItems: NavItem[] = [
       pathname === "/seasons" || pathname.startsWith("/seasons/"),
   },
   {
+    href: "/data-sources",
+    label: "Data",
+    matcher: (pathname) => pathname === "/data-sources",
+  },
+  {
     href: "/head-to-head",
     label: "Head-to-Head",
     matcher: (pathname) => pathname === "/head-to-head",

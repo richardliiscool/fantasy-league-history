@@ -113,7 +113,7 @@ export default function Home() {
     {
       label: "Raw Matchups",
       value: summary.matchupCount,
-      detail: "from the workbook",
+      detail: "from generated app data",
       tone: "bg-[#e7f6f8]",
     },
     {
@@ -248,11 +248,15 @@ export default function Home() {
             <div className="flex items-center justify-between gap-4">
               <div>
                 <p className="text-sm font-semibold text-[#58606a]">
-                  Data Source
+                  Data Sources
                 </p>
                 <h2 className="mt-1 text-2xl font-semibold text-[#17191f]">
-                  Historical workbook
+                  Generated history
                 </h2>
+                <p className="mt-2 text-sm leading-5 text-[#66707a]">
+                  Excel, ESPN, and Sleeper imports are normalized into one
+                  committed dataset.
+                </p>
               </div>
               <div className="flex h-16 w-24 shrink-0 items-center justify-center rounded-md border border-[#244c39] bg-[#2f6f50] p-2">
                 <div className="grid h-full w-full grid-cols-3 gap-1">
@@ -264,9 +268,9 @@ export default function Home() {
             </div>
             <dl className="mt-5 grid gap-3">
               <div className="flex items-center justify-between border-t border-[#e8ebef] pt-3">
-                <dt className="text-sm text-[#58606a]">Current input</dt>
+                <dt className="text-sm text-[#58606a]">Committed data</dt>
                 <dd className="text-sm font-semibold text-[#17191f]">
-                  Excel Game Log
+                  2015-2025
                 </dd>
               </div>
               <div className="flex items-center justify-between border-t border-[#e8ebef] pt-3">
@@ -288,6 +292,12 @@ export default function Home() {
                 </dd>
               </div>
             </dl>
+            <Link
+              href="/data-sources"
+              className="mt-4 inline-flex rounded-md border border-[#b8c0c9] px-3 py-2 text-sm font-semibold text-[#17191f] underline-offset-4 hover:border-[#2f6f50] hover:text-[#2f6f50] hover:underline"
+            >
+              View data sources
+            </Link>
           </div>
 
           <div className="grid gap-3 sm:grid-cols-2">
