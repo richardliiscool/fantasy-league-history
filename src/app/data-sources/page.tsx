@@ -1,6 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { historicalImportSummary } from "@/lib/data/historicalLeagueData";
+import { DataAuditSummaryDialog } from "@/components/DataAuditSummaryDialog";
+import {
+  historicalImportSummary,
+  historicalLeagueData,
+} from "@/lib/data/historicalLeagueData";
+import { getDataAuditProfile } from "@/lib/stats/dataAuditProfile";
 
 export const metadata: Metadata = {
   title: "Data Sources | Fantasy League History",
@@ -61,6 +66,8 @@ const coverageItems = [
 ];
 
 export default function DataSourcesPage() {
+  const auditProfile = getDataAuditProfile(historicalLeagueData);
+
   return (
     <main className="min-h-screen bg-[#f4f5f7] text-[#17191f]">
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-8 px-4 py-6 sm:px-6 lg:px-8">
@@ -100,6 +107,8 @@ export default function DataSourcesPage() {
             </div>
           ))}
         </section>
+
+        <DataAuditSummaryDialog profile={auditProfile} />
 
         <section className="overflow-hidden rounded-lg border border-[#d9dee4] bg-white shadow-sm">
           <div className="border-b border-[#e8ebef] px-4 py-4">
