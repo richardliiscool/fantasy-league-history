@@ -42,7 +42,7 @@ describe("season profile", () => {
     expect(richard).toMatchObject({
       managerId: "manager-richard-li",
       teamId: "team-2022-richard-li",
-      teamName: "Richard Li",
+      teamName: "Me So Herbert",
     });
     expect(richard?.games).toBeGreaterThan(0);
   });

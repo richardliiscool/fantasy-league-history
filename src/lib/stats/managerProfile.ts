@@ -8,6 +8,7 @@ import {
   type LeagueRecords,
 } from "./leagueStats";
 import { getManagerActivities, type ManagerActivity } from "./managerActivity";
+import { getTrophyTallies, type TrophyTallyRow } from "./recordsProfile";
 
 export type ManagerRecordSummary = {
   games: number;
@@ -47,6 +48,8 @@ export type ManagerStreak = {
 export type ManagerSeasonSplit = {
   seasonId: EntityId;
   seasonYear: number;
+  finalFinish: number | null;
+  madePlayoffs: boolean;
   regular: ManagerRecordSummary;
   playoff: ManagerRecordSummary;
   consolation: ManagerRecordSummary;
@@ -76,6 +79,7 @@ export type ManagerProfile = {
   regularSeason: ManagerRecordSummary;
   playoffs: ManagerRecordSummary;
   consolation: ManagerRecordSummary;
+  trophyTally: TrophyTallyRow;
   records: LeagueRecords;
   bestRegularSeason: ManagerSeasonMark | null;
   worstRegularSeason: ManagerSeasonMark | null;
@@ -241,6 +245,67 @@ const getSeasonYearsForManager = (data: LeagueData, managerId: EntityId) => {
   ).sort((first, second) => first - second);
 };
 
+const emptyTrophyTally = (
+  managerId: EntityId,
+  managerName: string,
+): TrophyTallyRow => ({
+  managerId,
+  managerName,
+  gold: 0,
+  silver: 0,
+  bronze: 0,
+  totalPodiums: 0,
+  firstPlaceYears: [],
+  secondPlaceYears: [],
+  thirdPlaceYears: [],
+});
+
+const getFinalFinishBySeasonAndManager = (data: LeagueData) => {
+  const seasonById = new Map(
+    data.seasons.map((season) => [season.id, season]),
+  );
+  const teamById = new Map(data.teams.map((team) => [team.id, team]));
+  const finalFinishBySeasonAndManager = new Map<string, number>();
+
+  for (const matchup of data.matchups) {
+    if (!matchup.isFinalSeedingGame || !matchup.finalStanding) {
+      continue;
+    }
+
+    const season = seasonById.get(matchup.seasonId);
+
+    if (!season) {
+      throw new Error(`Missing season for matchup "${matchup.id}".`);
+    }
+
+    const placements = [
+      {
+        score: matchup.scores[0],
+        finish: matchup.finalStanding.firstTeamFinish,
+      },
+      {
+        score: matchup.scores[1],
+        finish: matchup.finalStanding.secondTeamFinish,
+      },
+    ];
+
+    for (const placement of placements) {
+      const team = teamById.get(placement.score.teamId);
+
+      if (!team) {
+        throw new Error(`Missing team for score "${placement.score.teamId}".`);
+      }
+
+      finalFinishBySeasonAndManager.set(
+        `${season.year}:${team.managerId}`,
+        placement.finish,
+      );
+    }
+  }
+
+  return finalFinishBySeasonAndManager;
+};
+
 const rankRegularSeason = (
   first: ManagerSeasonSplit,
   second: ManagerSeasonSplit,
@@ -317,6 +382,10 @@ export const getManagerProfile = (
   );
   const managerActivity = activityByManagerId.get(managerId);
   const managerGames = gameResults.filter((game) => game.managerId === managerId);
+  const finalFinishBySeasonAndManager = getFinalFinishBySeasonAndManager(data);
+  const trophyTally =
+    getTrophyTallies(data).find((tally) => tally.managerId === managerId) ??
+    emptyTrophyTally(managerId, manager.displayName);
   const officialGames = managerGames.filter(isRecordEligibleGame);
   const regularSeasonGames = managerGames.filter(
     (game) => game.gameType === "regular",
@@ -344,6 +413,9 @@ export const getManagerProfile = (
     return {
       seasonId: season?.id ?? `season-${seasonYear}`,
       seasonYear,
+      finalFinish:
+        finalFinishBySeasonAndManager.get(`${seasonYear}:${managerId}`) ?? null,
+      madePlayoffs: playoff.games > 0,
       regular,
       playoff,
       consolation,
@@ -367,6 +439,7 @@ export const getManagerProfile = (
     regularSeason: summarizeManagerGames(regularSeasonGames),
     playoffs: summarizeManagerGames(playoffGames),
     consolation: summarizeManagerGames(consolationGames),
+    trophyTally,
     records: getLeagueRecords(officialGames),
     bestRegularSeason: getSeasonMark(rankedRegularSeasons.at(-1)),
     worstRegularSeason: getSeasonMark(rankedRegularSeasons.at(0)),

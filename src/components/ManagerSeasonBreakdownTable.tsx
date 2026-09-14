@@ -10,6 +10,7 @@ import { SortableHeader, type SortDirection } from "./SortableHeader";
 
 type SeasonSortKey =
   | "seasonYear"
+  | "finalFinish"
   | "regularRecord"
   | "regularWinPercentage"
   | "regularAveragePointsFor"
@@ -57,13 +58,22 @@ export function ManagerSeasonBreakdownTable({
         </div>
       </div>
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[940px] border-collapse text-left text-sm">
+        <table className="w-full min-w-[1060px] border-collapse text-left text-sm">
           <thead className="bg-[#f8f9fb] text-[#58606a]">
             <tr>
               <th className="px-4 py-3">
                 <SortableHeader
                   label="Season"
                   sortKey="seasonYear"
+                  activeSortKey={sortKey}
+                  direction={sortDirection}
+                  onSort={handleSort}
+                />
+              </th>
+              <th className="px-4 py-3">
+                <SortableHeader
+                  label="Finish"
+                  sortKey="finalFinish"
                   activeSortKey={sortKey}
                   direction={sortDirection}
                   onSort={handleSort}
@@ -136,9 +146,24 @@ export function ManagerSeasonBreakdownTable({
           </thead>
           <tbody>
             {rows.map((season) => (
-              <tr key={season.seasonId} className="border-t border-[#e8ebef]">
+              <tr
+                key={season.seasonId}
+                className={getSeasonRowClass(season.madePlayoffs)}
+              >
+                <td className="px-4 py-3">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="font-semibold text-[#17191f]">
+                      {season.seasonYear}
+                    </span>
+                    {season.madePlayoffs ? (
+                      <span className="rounded-md bg-[#dceee5] px-2 py-1 text-xs font-semibold text-[#2f6f50]">
+                        Playoffs
+                      </span>
+                    ) : null}
+                  </div>
+                </td>
                 <td className="px-4 py-3 font-semibold text-[#17191f]">
-                  {season.seasonYear}
+                  {formatFinalFinish(season.finalFinish)}
                 </td>
                 <td className="px-4 py-3 text-[#424a53]">
                   {formatRecord(season.regular)}
@@ -200,6 +225,10 @@ function getSeasonSortValue(season: ManagerSeasonSplit, sortKey: SeasonSortKey) 
     return season.seasonYear;
   }
 
+  if (sortKey === "finalFinish") {
+    return season.finalFinish ?? Number.POSITIVE_INFINITY;
+  }
+
   if (sortKey === "regularRecord") {
     return season.regular.wins;
   }
@@ -244,7 +273,15 @@ function flipSortDirection(direction: SortDirection): SortDirection {
 }
 
 function getDefaultSortDirection(sortKey: SeasonSortKey): SortDirection {
-  return sortKey === "seasonYear" ? "asc" : "desc";
+  return sortKey === "seasonYear" || sortKey === "finalFinish"
+    ? "asc"
+    : "desc";
+}
+
+function getSeasonRowClass(madePlayoffs: boolean) {
+  return `border-t border-[#e8ebef] ${
+    madePlayoffs ? "bg-[#f2faf5] shadow-[inset_4px_0_0_#3d8b62]" : ""
+  }`;
 }
 
 function formatRecord(record: ManagerRecordSummary) {
@@ -265,4 +302,27 @@ function formatOptionalScore(score: number | null | undefined) {
 
 function formatScoreOrEmpty(score: number) {
   return score === 0 ? "N/A" : formatScore(score);
+}
+
+function formatFinalFinish(finish: number | null) {
+  if (finish === null) {
+    return "N/A";
+  }
+
+  const remainderTen = finish % 10;
+  const remainderHundred = finish % 100;
+
+  if (remainderTen === 1 && remainderHundred !== 11) {
+    return `${finish}st`;
+  }
+
+  if (remainderTen === 2 && remainderHundred !== 12) {
+    return `${finish}nd`;
+  }
+
+  if (remainderTen === 3 && remainderHundred !== 13) {
+    return `${finish}rd`;
+  }
+
+  return `${finish}th`;
 }

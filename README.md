@@ -41,6 +41,8 @@ The raw `.xlsx` archive files in `reference/workbooks` are ignored by Git so the
 
 The raw ESPN JSON archives in `reference/espn/raw` are also ignored by Git. They are local reference files only; the committed app uses the generated TypeScript data file.
 
+Historical ESPN team names are saved in `scripts/espn_team_manager_map.json` and applied during generation. The workbook remains the source for 2015-2022 scores, while ESPN supplies the display team names for those seasons.
+
 The homepage uses the generated historical data for the first real all-time leaderboard. The smaller sample data file remains useful for tiny unit tests.
 
 ## ESPN Import
@@ -55,7 +57,7 @@ python3 scripts/preview_espn_import.py --season 2023 --season 2024
 python3 scripts/generate_historical_data.py
 ```
 
-Private ESPN league credentials belong only in `.env.local`, based on `.env.example`. The preview script can save raw ESPN JSON under `reference/espn/raw`, which is ignored by Git. The generator reads those local snapshots and maps ESPN team IDs through `scripts/espn_team_manager_map.json`. See `docs/espn-import-plan.md` for the workflow.
+Private ESPN league credentials belong only in `.env.local`, based on `.env.example`. The preview script can save raw ESPN JSON under `reference/espn/raw`, which is ignored by Git. The generator reads those local snapshots and maps ESPN team IDs and historical team names through `scripts/espn_team_manager_map.json`. See `docs/espn-import-plan.md` for the workflow.
 
 ## App Views
 
@@ -114,3 +116,4 @@ npm run build
 - Manager directory page exists with sortable career stats, podium counts, active/inactive treatment, and links into manager profiles or head-to-head comparisons.
 - Head-to-head matrix page exists with active/all/inactive manager filters, game-scope switching, display modes, color-threshold legend, and clickable rivalry cells.
 - ESPN 2023 and 2024 are imported into the generated local app data from ignored raw JSON snapshots.
+- Historical ESPN team names are backfilled for 2015 through 2022 without replacing the workbook score data.

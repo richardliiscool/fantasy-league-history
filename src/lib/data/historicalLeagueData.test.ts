@@ -81,6 +81,33 @@ describe("historical workbook data", () => {
     expect(Object.values(seasonTeamCounts)).toEqual(Array(10).fill(12));
   });
 
+  it("preserves ESPN team names across workbook and ESPN-imported seasons", () => {
+    expect(
+      historicalLeagueData.teams.find(
+        (team) => team.id === "team-2015-richard-li",
+      ),
+    ).toMatchObject({
+      managerId: "manager-richard-li",
+      name: "Mrs. Albie",
+    });
+    expect(
+      historicalLeagueData.teams.find(
+        (team) => team.id === "team-2022-richard-li",
+      ),
+    ).toMatchObject({
+      managerId: "manager-richard-li",
+      name: "Me So Herbert",
+    });
+    expect(
+      historicalLeagueData.teams.find(
+        (team) => team.id === "team-2024-nolan-feeny",
+      ),
+    ).toMatchObject({
+      managerId: "manager-nolan-feeny",
+      name: "Blew 42",
+    });
+  });
+
   it("keeps each matchup traceable to its workbook row", () => {
     expect(historicalLeagueData.matchups[0]).toMatchObject({
       id: "matchup-2015-w01-01",
@@ -280,6 +307,15 @@ describe("historical workbook data", () => {
         losses: 6,
         ties: 1,
       },
+      trophyTally: {
+        gold: 1,
+        silver: 1,
+        bronze: 2,
+        totalPodiums: 4,
+        firstPlaceYears: [2022],
+        secondPlaceYears: [2015],
+        thirdPlaceYears: [2016, 2017],
+      },
     });
     expect(josh?.bestRegularSeason).toMatchObject({
       seasonYear: 2016,
@@ -338,6 +374,8 @@ describe("historical workbook data", () => {
     );
 
     expect(season2015).toMatchObject({
+      finalFinish: 2,
+      madePlayoffs: true,
       regular: {
         wins: 8,
         losses: 5,
@@ -354,6 +392,8 @@ describe("historical workbook data", () => {
       },
     });
     expect(season2022).toMatchObject({
+      finalFinish: 1,
+      madePlayoffs: true,
       playoff: {
         wins: 2,
         losses: 0,

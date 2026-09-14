@@ -56,7 +56,7 @@ The generator reads:
 
 - Excel workbook history from `reference/workbooks`
 - ESPN raw snapshots from `reference/espn/raw`
-- ESPN team-to-manager mappings from `scripts/espn_team_manager_map.json`
+- ESPN team-to-manager mappings and historical team names from `scripts/espn_team_manager_map.json`
 
 The output is committed to `src/lib/data/historicalLeagueData.ts`. The private raw ESPN responses stay local and ignored.
 
@@ -98,6 +98,8 @@ For the current local snapshots:
 - Nolan Feeny appears as a new manager in 2024.
 
 The raw ESPN schedule includes two bye/placeholder rows per season. The generator skips those rows and imports the 101 completed matchup rows for each season.
+
+The same mapping file also backfills ESPN team names for 2015-2022 while preserving the workbook as the score/stat source for those seasons.
 
 ## Safety Notes
 

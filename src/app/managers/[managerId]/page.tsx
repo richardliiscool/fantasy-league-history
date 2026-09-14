@@ -10,6 +10,7 @@ import {
   type ManagerRecordSummary,
   type ManagerStreak,
 } from "@/lib/stats/managerProfile";
+import type { TrophyTallyRow } from "@/lib/stats/recordsProfile";
 
 type ManagerPageProps = {
   params: Promise<{
@@ -114,6 +115,26 @@ export default async function ManagerPage({ params }: ManagerPageProps) {
       detail: formatStreakRange(profile.longestLosingStreak),
     },
   ];
+  const podiumGroups = [
+    {
+      label: "1st Place",
+      value: profile.trophyTally.gold,
+      years: profile.trophyTally.firstPlaceYears,
+      tone: "bg-[#fff4d6]",
+    },
+    {
+      label: "2nd Place",
+      value: profile.trophyTally.silver,
+      years: profile.trophyTally.secondPlaceYears,
+      tone: "bg-[#eef1f4]",
+    },
+    {
+      label: "3rd Place",
+      value: profile.trophyTally.bronze,
+      years: profile.trophyTally.thirdPlaceYears,
+      tone: "bg-[#f5ece4]",
+    },
+  ];
 
   return (
     <main className="min-h-screen bg-[#f4f5f7] text-[#17191f]">
@@ -167,6 +188,39 @@ export default async function ManagerPage({ params }: ManagerPageProps) {
           </div>
         </header>
 
+        <section className="grid gap-3 lg:grid-cols-[1.1fr_2fr]">
+          <article className="rounded-lg border border-[#d9dee4] bg-white p-4 shadow-sm">
+            <p className="text-sm font-semibold text-[#58606a]">
+              Podium Finishes
+            </p>
+            <p className="mt-2 text-4xl font-semibold text-[#17191f]">
+              {profile.trophyTally.totalPodiums}
+            </p>
+            <p className="mt-2 text-sm leading-5 text-[#66707a]">
+              {formatPodiumSummary(profile.trophyTally)}
+            </p>
+          </article>
+
+          <div className="grid gap-3 sm:grid-cols-3">
+            {podiumGroups.map((group) => (
+              <article
+                key={group.label}
+                className={`rounded-lg border border-[#d9dee4] p-4 shadow-sm ${group.tone}`}
+              >
+                <p className="text-sm font-semibold text-[#58606a]">
+                  {group.label}
+                </p>
+                <p className="mt-2 text-3xl font-semibold text-[#17191f]">
+                  {group.value}
+                </p>
+                <p className="mt-2 min-h-10 text-sm leading-5 text-[#66707a]">
+                  {formatPodiumYears(group.years)}
+                </p>
+              </article>
+            ))}
+          </div>
+        </section>
+
         <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {highlightCards.map((card) => (
             <article
@@ -219,6 +273,18 @@ function formatStreakRange(streak: ManagerStreak | null) {
   }
 
   return `${streak.start.seasonYear} W${streak.start.weekNumber} to ${streak.end.seasonYear} W${streak.end.weekNumber}`;
+}
+
+function formatPodiumSummary(tally: TrophyTallyRow) {
+  if (tally.totalPodiums === 0) {
+    return "No podium finishes yet";
+  }
+
+  return `${tally.gold} first, ${tally.silver} second, ${tally.bronze} third`;
+}
+
+function formatPodiumYears(years: number[]) {
+  return years.length > 0 ? years.join(", ") : "None";
 }
 
 function getProfileActivityBadgeClass(isActive: boolean) {
