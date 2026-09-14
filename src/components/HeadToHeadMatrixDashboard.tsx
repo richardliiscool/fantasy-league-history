@@ -129,11 +129,11 @@ export function HeadToHeadMatrixDashboard({
         </div>
         <div className="grid gap-2 border-t border-[#e8ebef] px-4 py-3 sm:grid-cols-4">
           <LegendItem
-            label="Under 40%"
+            label="40% or less"
             className="border-[#c75a68] bg-[#f8dadd] text-[#5d1f2b]"
           />
           <LegendItem
-            label="40-59.9%"
+            label="40.1-59.9%"
             className="border-[#d59a2d] bg-[#fff1bf] text-[#4f3700]"
           />
           <LegendItem
@@ -492,7 +492,7 @@ function getCellLinkClass(
     return `${baseClass} border-[#d9dee4] bg-[#f1f3f5] text-[#8a939e] ${inactiveClass}`;
   }
 
-  if (record.winPercentage < 0.4) {
+  if (record.winPercentage <= 0.4) {
     return `${baseClass} border-[#c75a68] bg-[#f8dadd] text-[#5d1f2b] ${inactiveClass}`;
   }
 
