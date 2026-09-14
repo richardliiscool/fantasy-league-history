@@ -164,19 +164,55 @@ def roster_team_name(
 
 def is_completed_matchup_entry(entry: dict[str, Any]) -> bool:
     matchup_id = entry.get("matchup_id")
-    points = entry.get("custom_points", entry.get("points"))
+    points = score_for_matchup_entry(entry)
 
     return isinstance(matchup_id, int) and isinstance(points, (int, float))
 
 
-def summarize_matchups(matchups_by_week: dict[int, list[dict[str, Any]]]) -> dict[str, Any]:
+def score_for_matchup_entry(entry: dict[str, Any]) -> float | int | None:
+    custom_points = entry.get("custom_points")
+
+    if isinstance(custom_points, (int, float)):
+        return custom_points
+
+    points = entry.get("points")
+
+    return points if isinstance(points, (int, float)) else None
+
+
+def completed_week_cutoff(league: dict[str, Any]) -> int | None:
+    settings = league.get("settings")
+    leg = settings.get("leg") if isinstance(settings, dict) else None
+    status = league.get("status")
+
+    if not isinstance(leg, int):
+        return None if status == "complete" else 0
+
+    if status == "complete":
+        return leg
+
+    if status == "in_season":
+        return max(0, leg - 1)
+
+    return 0
+
+
+def summarize_matchups(
+    league: dict[str, Any],
+    matchups_by_week: dict[int, list[dict[str, Any]]],
+) -> dict[str, Any]:
     completed_matchup_count = 0
     completed_weeks: list[int] = []
+    cutoff_week = completed_week_cutoff(league)
     team_entries = 0
     sample_matchups: list[dict[str, Any]] = []
 
     for week, entries in sorted(matchups_by_week.items()):
         if not entries:
+            continue
+
+        if cutoff_week is not None and week > cutoff_week:
+            team_entries += len(entries)
             continue
 
         grouped_entries: dict[int, list[dict[str, Any]]] = defaultdict(list)
@@ -202,12 +238,9 @@ def summarize_matchups(matchups_by_week: dict[int, list[dict[str, Any]]]) -> dic
                         "week": week,
                         "matchupId": matchup_id,
                         "firstRosterId": first.get("roster_id"),
-                        "firstPoints": first.get("custom_points", first.get("points")),
+                        "firstPoints": score_for_matchup_entry(first),
                         "secondRosterId": second.get("roster_id"),
-                        "secondPoints": second.get(
-                            "custom_points",
-                            second.get("points"),
-                        ),
+                        "secondPoints": score_for_matchup_entry(second),
                     }
                 )
 
@@ -219,6 +252,7 @@ def summarize_matchups(matchups_by_week: dict[int, list[dict[str, Any]]]) -> dic
         "teamEntries": team_entries,
         "completedMatchups": completed_matchup_count,
         "completedWeeks": completed_weeks,
+        "completedWeekCutoff": cutoff_week,
         "sampleMatchups": sample_matchups,
     }
 
@@ -275,7 +309,7 @@ def summarize_payload(payload: dict[str, Any]) -> dict[str, Any]:
         for week, entries in payload["matchupsByWeek"].items()
         if isinstance(entries, list)
     }
-    matchup_summary = summarize_matchups(matchups_by_week)
+    matchup_summary = summarize_matchups(league, matchups_by_week)
 
     return {
         "season": league.get("season"),

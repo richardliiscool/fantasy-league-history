@@ -7,16 +7,17 @@ describe("data audit profile", () => {
     const profile = getDataAuditProfile(historicalLeagueData);
 
     expect(profile.summary).toMatchObject({
-      seasonCount: 10,
+      seasonCount: 11,
       managerCount: 17,
-      teamCount: 120,
-      matchupCount: 981,
-      teamResultCount: 1962,
+      teamCount: 132,
+      matchupCount: 1079,
+      teamResultCount: 2158,
       warningCount: 0,
+      noticeCount: 1,
       tieCount: 1,
       duplicateScoreLineCount: 0,
     });
-    expect(profile.seasons).toHaveLength(10);
+    expect(profile.seasons).toHaveLength(11);
     expect(profile.seasons.every((season) => season.teamCount === 12)).toBe(
       true,
     );
@@ -89,7 +90,7 @@ describe("data audit profile", () => {
     );
 
     expect(cleanSeasons.map((season) => season.seasonYear)).toEqual([
-      2015, 2016, 2017, 2018, 2019, 2020, 2021, 2023, 2024,
+      2015, 2016, 2017, 2018, 2019, 2020, 2021, 2023, 2024, 2025,
     ]);
     expect(profile.duplicateScoreLines).toEqual([]);
   });

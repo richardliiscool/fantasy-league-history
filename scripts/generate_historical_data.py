@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate normalized TypeScript seed data from the Fantasy History workbook."""
+"""Generate normalized TypeScript seed data from workbook, ESPN, and Sleeper archives."""
 
 from __future__ import annotations
 
@@ -19,8 +19,11 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_OUTPUT = PROJECT_ROOT / "src" / "lib" / "data" / "historicalLeagueData.ts"
 DEFAULT_ESPN_RAW_DIR = PROJECT_ROOT / "reference" / "espn" / "raw"
 DEFAULT_ESPN_TEAM_MANAGER_MAP = PROJECT_ROOT / "scripts" / "espn_team_manager_map.json"
+DEFAULT_SLEEPER_RAW_DIR = PROJECT_ROOT / "reference" / "sleeper" / "raw"
+DEFAULT_SLEEPER_MANAGER_MAP = PROJECT_ROOT / "scripts" / "sleeper_manager_map.json"
 SOURCE_SHEET = "Game Log"
 ESPN_SOURCE_SHEET = "schedule"
+SLEEPER_SOURCE_SHEET = "matchups"
 
 
 def slug(value: str) -> str:
@@ -93,6 +96,21 @@ def read_espn_team_manager_map(
         raw_mapping.get("displayNames", {}),
         season_team_names,
     )
+
+
+def read_sleeper_manager_map(mapping_path: Path) -> dict[int, dict[str, str]]:
+    if not mapping_path.exists():
+        return {}
+
+    raw_mapping = json.loads(mapping_path.read_text())
+
+    return {
+        int(season): {
+            owner_id: manager_id
+            for owner_id, manager_id in owner_map.items()
+        }
+        for season, owner_map in raw_mapping.get("ownerManagers", {}).items()
+    }
 
 
 def team_name_for(
@@ -375,11 +393,352 @@ def append_espn_data(
     return import_summaries
 
 
+def sleeper_user_name(user: dict[str, Any] | None) -> str:
+    if not isinstance(user, dict):
+        return "Unknown User"
+
+    for key in ("display_name", "username"):
+        value = user.get(key)
+        if isinstance(value, str) and value.strip():
+            return value.strip()
+
+    return "Unknown User"
+
+
+def sleeper_team_name(
+    roster: dict[str, Any],
+    user_by_id: dict[str, dict[str, Any]],
+) -> str:
+    roster_metadata = roster.get("metadata")
+    if isinstance(roster_metadata, dict):
+        for key in ("team_name", "nickname"):
+            value = roster_metadata.get(key)
+            if isinstance(value, str) and value.strip():
+                return value.strip()
+
+    owner_id = roster.get("owner_id")
+    user = user_by_id.get(owner_id) if isinstance(owner_id, str) else None
+    user_metadata = user.get("metadata") if isinstance(user, dict) else None
+    if isinstance(user_metadata, dict):
+        value = user_metadata.get("team_name")
+        if isinstance(value, str) and value.strip():
+            return value.strip()
+
+    return sleeper_user_name(user)
+
+
+def sleeper_score(entry: dict[str, Any]) -> float | None:
+    custom_points = entry.get("custom_points")
+    if isinstance(custom_points, (int, float)):
+        return round(float(custom_points), 2)
+
+    points = entry.get("points")
+    if isinstance(points, (int, float)):
+        return round(float(points), 2)
+
+    return None
+
+
+def sleeper_completed_week_cutoff(league: dict[str, Any]) -> int:
+    settings = league.get("settings")
+    leg = settings.get("leg") if isinstance(settings, dict) else None
+    status = league.get("status")
+
+    if isinstance(leg, int) and status == "complete":
+        return leg
+
+    if isinstance(leg, int) and status == "in_season":
+        return max(0, leg - 1)
+
+    return 0
+
+
+def sleeper_matchups_by_week(payload: dict[str, Any]) -> dict[int, list[dict[str, Any]]]:
+    matchups_by_week = payload.get("matchupsByWeek")
+
+    if not isinstance(matchups_by_week, dict):
+        return {}
+
+    return {
+        int(week): entries
+        for week, entries in matchups_by_week.items()
+        if str(week).isdigit() and isinstance(entries, list)
+    }
+
+
+def sleeper_bracket_lookup(
+    rows: list[Any],
+    playoff_week_start: int,
+    game_type: str,
+    final_rank_offset: int,
+) -> dict[tuple[int, frozenset[int]], dict[str, Any]]:
+    lookup: dict[tuple[int, frozenset[int]], dict[str, Any]] = {}
+
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+
+        t1 = row.get("t1")
+        t2 = row.get("t2")
+        round_number = row.get("r")
+
+        if not all(isinstance(value, int) for value in (t1, t2, round_number)):
+            continue
+
+        week_number = playoff_week_start + int(round_number) - 1
+        rank = row.get("p")
+        final_seeding_rank = (
+            int(rank) + final_rank_offset if isinstance(rank, int) else None
+        )
+
+        lookup[(week_number, frozenset([int(t1), int(t2)]))] = {
+            "gameType": game_type,
+            "winnerRosterId": row.get("w") if isinstance(row.get("w"), int) else None,
+            "loserRosterId": row.get("l") if isinstance(row.get("l"), int) else None,
+            "finalSeedingRank": final_seeding_rank,
+        }
+
+    return lookup
+
+
+def sleeper_final_standing(
+    first_roster_id: int,
+    second_roster_id: int,
+    first_points: float,
+    second_points: float,
+    bracket_matchup: dict[str, Any],
+) -> dict[str, int]:
+    final_seeding_rank = bracket_matchup["finalSeedingRank"]
+    winner_roster_id = bracket_matchup.get("winnerRosterId")
+    loser_roster_id = bracket_matchup.get("loserRosterId")
+
+    if first_roster_id == winner_roster_id and second_roster_id == loser_roster_id:
+        return {
+            "firstTeamFinish": final_seeding_rank,
+            "secondTeamFinish": final_seeding_rank + 1,
+        }
+
+    if second_roster_id == winner_roster_id and first_roster_id == loser_roster_id:
+        return {
+            "firstTeamFinish": final_seeding_rank + 1,
+            "secondTeamFinish": final_seeding_rank,
+        }
+
+    return final_standing_for(first_points, second_points, final_seeding_rank)
+
+
+def append_sleeper_data(
+    data: dict[str, Any],
+    raw_dir: Path,
+    mapping_path: Path,
+) -> list[dict[str, Any]]:
+    if not raw_dir.exists():
+        return []
+
+    season_owner_manager_ids = read_sleeper_manager_map(mapping_path)
+    if not season_owner_manager_ids:
+        return []
+
+    import_summaries: list[dict[str, Any]] = []
+
+    for raw_path in sorted(raw_dir.glob("sleeper-ffl-*.json")):
+        payload = json.loads(raw_path.read_text())
+        league = payload.get("league")
+
+        if not isinstance(league, dict):
+            continue
+
+        season_year = int(league["season"])
+        owner_manager_ids = season_owner_manager_ids.get(season_year)
+
+        if not owner_manager_ids or league.get("status") != "complete":
+            continue
+
+        season_id = f"season-{season_year}"
+        if any(season["id"] == season_id for season in data["seasons"]):
+            raise ValueError(f"Season already exists before Sleeper import: {season_year}")
+
+        data["seasons"].append(
+            {
+                "id": season_id,
+                "year": season_year,
+                "label": f"{season_year} Season",
+            }
+        )
+
+        users = payload.get("users") if isinstance(payload.get("users"), list) else []
+        user_by_id = {
+            user["user_id"]: user
+            for user in users
+            if isinstance(user, dict) and isinstance(user.get("user_id"), str)
+        }
+        rosters = [
+            roster
+            for roster in payload.get("rosters", [])
+            if isinstance(roster, dict)
+            and isinstance(roster.get("roster_id"), int)
+            and isinstance(roster.get("owner_id"), str)
+        ]
+        roster_by_id = {roster["roster_id"]: roster for roster in rosters}
+        team_id_by_roster_id: dict[int, str] = {}
+
+        missing_owner_ids = {
+            roster["owner_id"]
+            for roster in rosters
+            if roster["owner_id"] not in owner_manager_ids
+        }
+        if missing_owner_ids:
+            raise ValueError(
+                f"Sleeper {season_year} mapping has unknown owner ids: {sorted(missing_owner_ids)}"
+            )
+
+        for roster in sorted(rosters, key=lambda item: item["roster_id"]):
+            roster_id = roster["roster_id"]
+            manager_id = owner_manager_ids[roster["owner_id"]]
+            team_id = f"team-{season_year}-{slug_from_manager_id(manager_id)}"
+            team_id_by_roster_id[roster_id] = team_id
+            data["teams"].append(
+                {
+                    "id": team_id,
+                    "seasonId": season_id,
+                    "managerId": manager_id,
+                    "name": sleeper_team_name(roster, user_by_id),
+                }
+            )
+
+        playoff_week_start = league.get("settings", {}).get("playoff_week_start")
+        if not isinstance(playoff_week_start, int):
+            raise ValueError(f"Sleeper {season_year} is missing playoff_week_start.")
+
+        bracket_lookup = {
+            **sleeper_bracket_lookup(
+                payload.get("winnersBracket", []),
+                playoff_week_start,
+                "playoff",
+                0,
+            ),
+            **sleeper_bracket_lookup(
+                payload.get("losersBracket", []),
+                playoff_week_start,
+                "consolation",
+                league.get("settings", {}).get("playoff_teams", 0),
+            ),
+        }
+        cutoff_week = sleeper_completed_week_cutoff(league)
+        matchups_by_week = sleeper_matchups_by_week(payload)
+        imported_matchups = 0
+        skipped_entries = 0
+
+        for week_number in range(1, cutoff_week + 1):
+            if week_number not in matchups_by_week:
+                continue
+
+            data["weeks"].append(
+                {
+                    "id": f"week-{season_year}-{week_number}",
+                    "seasonId": season_id,
+                    "number": week_number,
+                    "label": f"Week {week_number}",
+                }
+            )
+
+            grouped_entries: dict[int, list[dict[str, Any]]] = defaultdict(list)
+            for entry in matchups_by_week[week_number]:
+                if not isinstance(entry, dict) or not isinstance(entry.get("matchup_id"), int):
+                    skipped_entries += 1
+                    continue
+
+                grouped_entries[entry["matchup_id"]].append(entry)
+
+            sequence = 0
+            for matchup_id, entries in sorted(grouped_entries.items()):
+                if len(entries) != 2:
+                    skipped_entries += len(entries)
+                    continue
+
+                first_entry, second_entry = sorted(
+                    entries,
+                    key=lambda entry: entry["roster_id"],
+                )
+                first_roster_id = first_entry["roster_id"]
+                second_roster_id = second_entry["roster_id"]
+                first_points = sleeper_score(first_entry)
+                second_points = sleeper_score(second_entry)
+
+                if first_points is None or second_points is None:
+                    skipped_entries += 2
+                    continue
+
+                sequence += 1
+                bracket_matchup = bracket_lookup.get(
+                    (week_number, frozenset([first_roster_id, second_roster_id]))
+                )
+                game_type = (
+                    "regular"
+                    if week_number < playoff_week_start
+                    else bracket_matchup["gameType"]
+                    if bracket_matchup
+                    else "consolation"
+                )
+                matchup = {
+                    "id": f"matchup-{season_year}-w{week_number:02d}-{sequence:02d}",
+                    "seasonId": season_id,
+                    "weekId": f"week-{season_year}-{week_number}",
+                    "gameType": game_type,
+                    "isFinalSeedingGame": bool(
+                        bracket_matchup and bracket_matchup.get("finalSeedingRank")
+                    ),
+                    "source": {
+                        "workbook": raw_path.name,
+                        "sheet": SLEEPER_SOURCE_SHEET,
+                        "rowNumber": week_number * 100 + matchup_id,
+                    },
+                    "scores": [
+                        {
+                            "teamId": team_id_by_roster_id[first_roster_id],
+                            "points": first_points,
+                        },
+                        {
+                            "teamId": team_id_by_roster_id[second_roster_id],
+                            "points": second_points,
+                        },
+                    ],
+                }
+
+                if bracket_matchup and bracket_matchup.get("finalSeedingRank"):
+                    final_seeding_rank = bracket_matchup["finalSeedingRank"]
+                    matchup["finalSeedingRank"] = final_seeding_rank
+                    matchup["finalStanding"] = sleeper_final_standing(
+                        first_roster_id,
+                        second_roster_id,
+                        first_points,
+                        second_points,
+                        bracket_matchup,
+                    )
+
+                data["matchups"].append(matchup)
+                imported_matchups += 1
+
+        import_summaries.append(
+            {
+                "source": "sleeper",
+                "season": season_year,
+                "rawFile": raw_path.name,
+                "matchups": imported_matchups,
+                "skippedEntries": skipped_entries,
+            }
+        )
+
+    return import_summaries
+
+
 def build_historical_data(
     workbook_path: Path,
     espn_raw_dir: Path = DEFAULT_ESPN_RAW_DIR,
     espn_mapping_path: Path = DEFAULT_ESPN_TEAM_MANAGER_MAP,
-) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+    sleeper_raw_dir: Path = DEFAULT_SLEEPER_RAW_DIR,
+    sleeper_mapping_path: Path = DEFAULT_SLEEPER_MANAGER_MAP,
+) -> tuple[dict[str, Any], list[dict[str, Any]], list[dict[str, Any]]]:
     records, issues = parse_workbook(workbook_path)
     if issues:
         issue_text = "\n".join(f"- {issue}" for issue in issues[:25])
@@ -488,14 +847,20 @@ def build_historical_data(
         "matchups": matchups,
     }
     espn_imports = append_espn_data(data, espn_raw_dir, espn_mapping_path)
+    sleeper_imports = append_sleeper_data(
+        data,
+        sleeper_raw_dir,
+        sleeper_mapping_path,
+    )
 
-    return data, espn_imports
+    return data, espn_imports, sleeper_imports
 
 
 def build_import_summary(
     data: dict[str, Any],
     workbook_path: Path,
     espn_imports: list[dict[str, Any]],
+    sleeper_imports: list[dict[str, Any]],
 ) -> dict[str, Any]:
     game_type_counts = defaultdict(int)
     final_seeding_counts = defaultdict(int)
@@ -515,6 +880,7 @@ def build_import_summary(
         "sourceSheet": SOURCE_SHEET,
         "sourceFiles": dict(sorted(source_file_counts.items())),
         "espnImports": espn_imports,
+        "sleeperImports": sleeper_imports,
         "matchupRows": len(data["matchups"]),
         "managerCount": len(data["managers"]),
         "seasonCount": len(data["seasons"]),
@@ -532,7 +898,7 @@ def to_typescript(data: dict[str, Any], import_summary: dict[str, Any]) -> str:
     return (
         "import type { LeagueData } from \"../domain/types\";\n\n"
         "// Generated by scripts/generate_historical_data.py. Do not edit by hand.\n"
-        "// Source of truth: reference/workbooks/Fantasy History.xlsx, ESPN snapshots, and scripts/espn_team_manager_map.json.\n"
+        "// Source of truth: reference/workbooks/Fantasy History.xlsx, ESPN/Sleeper snapshots, and mapping JSON files.\n"
         f"export const historicalImportSummary = {summary_json} as const;\n\n"
         f"export const historicalLeagueData = {data_json} satisfies LeagueData;\n"
     )
@@ -543,28 +909,46 @@ def main() -> int:
     parser.add_argument("workbook", nargs="?", default=DEFAULT_WORKBOOK, type=Path)
     parser.add_argument("--output", default=DEFAULT_OUTPUT, type=Path)
     parser.add_argument("--espn-raw-dir", default=DEFAULT_ESPN_RAW_DIR, type=Path)
+    parser.add_argument("--sleeper-raw-dir", default=DEFAULT_SLEEPER_RAW_DIR, type=Path)
     parser.add_argument(
         "--espn-team-manager-map",
         default=DEFAULT_ESPN_TEAM_MANAGER_MAP,
         type=Path,
     )
+    parser.add_argument(
+        "--sleeper-manager-map",
+        default=DEFAULT_SLEEPER_MANAGER_MAP,
+        type=Path,
+    )
     parser.add_argument("--skip-espn", action="store_true")
+    parser.add_argument("--skip-sleeper", action="store_true")
     args = parser.parse_args()
 
     workbook_path = args.workbook.expanduser().resolve()
     output_path = args.output.expanduser().resolve()
     espn_raw_dir = args.espn_raw_dir.expanduser().resolve()
     espn_mapping_path = args.espn_team_manager_map.expanduser().resolve()
+    sleeper_raw_dir = args.sleeper_raw_dir.expanduser().resolve()
+    sleeper_mapping_path = args.sleeper_manager_map.expanduser().resolve()
 
     if not workbook_path.exists():
         raise FileNotFoundError(f"Workbook not found: {workbook_path}")
 
-    data, espn_imports = build_historical_data(
+    data, espn_imports, sleeper_imports = build_historical_data(
         workbook_path,
         espn_raw_dir=Path("__missing_espn_raw__") if args.skip_espn else espn_raw_dir,
         espn_mapping_path=espn_mapping_path,
+        sleeper_raw_dir=Path("__missing_sleeper_raw__")
+        if args.skip_sleeper
+        else sleeper_raw_dir,
+        sleeper_mapping_path=sleeper_mapping_path,
     )
-    import_summary = build_import_summary(data, workbook_path, espn_imports)
+    import_summary = build_import_summary(
+        data,
+        workbook_path,
+        espn_imports,
+        sleeper_imports,
+    )
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(to_typescript(data, import_summary))
 
@@ -577,6 +961,8 @@ def main() -> int:
     print(f"Game types: {import_summary['gameTypeCounts']}")
     if espn_imports:
         print(f"ESPN imports: {espn_imports}")
+    if sleeper_imports:
+        print(f"Sleeper imports: {sleeper_imports}")
     return 0
 
 

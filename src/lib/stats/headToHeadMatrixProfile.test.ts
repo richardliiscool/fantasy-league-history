@@ -56,22 +56,22 @@ describe("head-to-head matrix profile", () => {
     );
 
     expect(richardVsLd.summariesByScope.official).toMatchObject({
-      games: 16,
+      games: 17,
       wins: 8,
-      losses: 8,
+      losses: 9,
       ties: 0,
-      winPercentage: 0.5,
-      pointsFor: 1784.16,
-      pointsAgainst: 1843.76,
+      winPercentage: 0.471,
+      pointsFor: 1867.64,
+      pointsAgainst: 1967.42,
     });
     expect(ldVsRichard.summariesByScope.official).toMatchObject({
-      games: 16,
-      wins: 8,
+      games: 17,
+      wins: 9,
       losses: 8,
       ties: 0,
-      winPercentage: 0.5,
-      pointsFor: 1843.76,
-      pointsAgainst: 1784.16,
+      winPercentage: 0.529,
+      pointsFor: 1967.42,
+      pointsAgainst: 1867.64,
     });
   });
 

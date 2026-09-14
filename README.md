@@ -22,14 +22,14 @@ Core entities:
 
 ## Data Plan
 
-The archived Excel workbooks are the authoritative source for 2015-2022 historical league data. ESPN is now the source for the imported 2023 and 2024 seasons.
+The archived Excel workbooks are the authoritative source for 2015-2022 historical league data. ESPN is the source for the imported 2023 and 2024 seasons. Sleeper is the source for the imported 2025 season and future post-ESPN seasons.
 
 Next data milestones:
 
 1. Keep validating imported totals against known league records.
-2. Use the local ESPN snapshots to refine 2023-2024 season details as needed.
-3. Preview and map Sleeper seasons once the current Sleeper league ID is available.
-4. Add Sleeper API ingestion after the historical model is stable.
+2. Use the local ESPN and Sleeper snapshots to refine imported season details as needed.
+3. Keep 2026 Sleeper data in preview mode while the season is still in progress.
+4. Add a repeatable current-season refresh flow after the historical model is stable.
 
 Financial tracking is intentionally out of scope for this app.
 
@@ -43,7 +43,7 @@ The raw ESPN JSON archives in `reference/espn/raw` are also ignored by Git. They
 
 Historical ESPN team names are saved in `scripts/espn_team_manager_map.json` and applied during generation. The workbook remains the source for 2015-2022 scores, while ESPN supplies the display team names for those seasons.
 
-Raw Sleeper JSON archives in `reference/sleeper/raw` are ignored by Git. Sleeper preview tooling exists, but Sleeper seasons are not merged into the generated app data yet.
+Raw Sleeper JSON archives in `reference/sleeper/raw` are ignored by Git. The committed app uses the generated TypeScript data file, while `scripts/sleeper_manager_map.json` maps Sleeper owners back to the app's manager IDs. Completed Sleeper seasons can be merged into the generated data; in-progress seasons are intentionally skipped.
 
 The homepage uses the generated historical data for the first real all-time leaderboard. The smaller sample data file remains useful for tiny unit tests.
 
@@ -120,7 +120,7 @@ npm run build
 - League standings and manager profile tables include interactive filters and sortable columns.
 - Manager game logs show the first 10 rows and can expand 10 more at a time.
 - Manager game logs can filter down to one opponent.
-- Season archive pages exist for each imported season from 2015 through 2024.
+- Season archive pages exist for each imported season from 2015 through 2025.
 - Season archive pages use workbook finish-order data, including tied finishers when the historical result calls for it, and the final standings table can be sorted by finish, manager, team, records, PF, PA, Avg PF, and Avg PA.
 - Season archive pages consolidate biggest win/loss into a single biggest-margin game card.
 - Records page exists with podium trophy tallies, global filters, top-10 score and margin tables, and sortable manager-season records.
@@ -129,4 +129,5 @@ npm run build
 - Head-to-head matrix page exists with active/all/inactive manager filters, game-scope switching, display modes, color-threshold legend, and clickable rivalry cells.
 - ESPN 2023 and 2024 are imported into the generated local app data from ignored raw JSON snapshots.
 - Historical ESPN team names are backfilled for 2015 through 2022 without replacing the workbook score data.
-- Read-only Sleeper preview tooling exists for inspecting post-ESPN seasons before merging them into app data.
+- Sleeper 2025 is imported into the generated local app data from ignored raw JSON snapshots.
+- Sleeper 2026 raw data can be previewed locally, but it is skipped by the generator while the league is still in season.

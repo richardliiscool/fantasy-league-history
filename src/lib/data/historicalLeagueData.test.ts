@@ -29,18 +29,19 @@ describe("historical workbook data", () => {
         "Fantasy History.xlsx": 779,
         "espn-ffl-2023.json": 101,
         "espn-ffl-2024.json": 101,
+        "sleeper-ffl-2025-1254892718270722048.json": 98,
       },
-      matchupRows: 981,
+      matchupRows: 1079,
       managerCount: 17,
-      seasonCount: 10,
-      teamEntries: 120,
-      weekEntries: 165,
+      seasonCount: 11,
+      teamEntries: 132,
+      weekEntries: 182,
     });
 
-    expect(historicalLeagueData.matchups).toHaveLength(981);
+    expect(historicalLeagueData.matchups).toHaveLength(1079);
     expect(historicalLeagueData.managers).toHaveLength(17);
     expect(historicalLeagueData.seasons.map((season) => season.year)).toEqual([
-      2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024,
+      2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025,
     ]);
   });
 
@@ -56,11 +57,12 @@ describe("historical workbook data", () => {
       "2022": 101,
       "2023": 101,
       "2024": 101,
+      "2025": 98,
     });
     expect(historicalImportSummary.gameTypeCounts).toEqual({
-      consolation: 126,
-      playoff: 51,
-      regular: 804,
+      consolation: 133,
+      playoff: 58,
+      regular: 888,
     });
     expect(historicalImportSummary.seasonFinalSeedingCounts).toEqual({
       "2015": 6,
@@ -73,12 +75,13 @@ describe("historical workbook data", () => {
       "2022": 6,
       "2023": 6,
       "2024": 6,
+      "2025": 6,
     });
 
     const seasonTeamCounts = countBy(
       historicalLeagueData.teams.map((team) => team.seasonId),
     );
-    expect(Object.values(seasonTeamCounts)).toEqual(Array(10).fill(12));
+    expect(Object.values(seasonTeamCounts)).toEqual(Array(11).fill(12));
   });
 
   it("preserves ESPN team names across workbook and ESPN-imported seasons", () => {
@@ -105,6 +108,14 @@ describe("historical workbook data", () => {
     ).toMatchObject({
       managerId: "manager-nolan-feeny",
       name: "Blew 42",
+    });
+    expect(
+      historicalLeagueData.teams.find(
+        (team) => team.id === "team-2025-richard-li",
+      ),
+    ).toMatchObject({
+      managerId: "manager-richard-li",
+      name: "My Worthy Skatt",
     });
   });
 
@@ -144,7 +155,11 @@ describe("historical workbook data", () => {
       source: { rowNumber: 782 },
     });
 
-    expect(historicalLeagueData.matchups.at(-1)).toMatchObject({
+    expect(
+      historicalLeagueData.matchups.find(
+        (matchup) => matchup.id === "matchup-2024-w17-06",
+      ),
+    ).toMatchObject({
       id: "matchup-2024-w17-06",
       seasonId: "season-2024",
       weekId: "week-2024-17",
@@ -160,6 +175,32 @@ describe("historical workbook data", () => {
         sheet: "schedule",
         rowNumber: 103,
       },
+    });
+
+    expect(
+      historicalLeagueData.matchups.find(
+        (matchup) => matchup.id === "matchup-2025-w17-01",
+      ),
+    ).toMatchObject({
+      id: "matchup-2025-w17-01",
+      seasonId: "season-2025",
+      weekId: "week-2025-17",
+      gameType: "playoff",
+      isFinalSeedingGame: true,
+      finalSeedingRank: 1,
+      finalStanding: {
+        firstTeamFinish: 2,
+        secondTeamFinish: 1,
+      },
+      source: {
+        workbook: "sleeper-ffl-2025-1254892718270722048.json",
+        sheet: "matchups",
+        rowNumber: 1701,
+      },
+      scores: [
+        { teamId: "team-2025-richard-li", points: 99.1 },
+        { teamId: "team-2025-josh-charest", points: 132.4 },
+      ],
     });
   });
 
@@ -196,17 +237,17 @@ describe("historical workbook data", () => {
       (standing) => standing.managerName === "Richard Li",
     );
 
-    expect(recordEligibleResults).toHaveLength(1710);
+    expect(recordEligibleResults).toHaveLength(1892);
     expect(richard).toMatchObject({
-      games: 149,
-      wins: 92,
-      losses: 57,
+      games: 165,
+      wins: 103,
+      losses: 62,
       ties: 0,
-      winPercentage: 0.617,
-      pointsFor: 17921.38,
-      pointsAgainst: 16762.56,
-      averagePointsFor: 120.3,
-      averagePointsAgainst: 112.5,
+      winPercentage: 0.624,
+      pointsFor: 19870.88,
+      pointsAgainst: 18453.16,
+      averagePointsFor: 120.4,
+      averagePointsAgainst: 111.8,
     });
   });
 
@@ -216,8 +257,8 @@ describe("historical workbook data", () => {
     );
     const summary = summarizeLeague(historicalLeagueData, recordEligibleResults);
 
-    expect(summary.matchupCount).toBe(981);
-    expect(summary.gameCount).toBe(1710);
+    expect(summary.matchupCount).toBe(1079);
+    expect(summary.gameCount).toBe(1892);
     expect(summary.records.highestScore).toMatchObject({
       managerName: "Josh Charest",
       points: 201.98,
@@ -238,17 +279,17 @@ describe("historical workbook data", () => {
     const allGameResults = buildGameResults(historicalLeagueData);
 
     expect(filterGameResultsByScope(allGameResults, "official")).toHaveLength(
-      1710,
+      1892,
     );
     expect(filterGameResultsByScope(allGameResults, "regular")).toHaveLength(
-      1608,
+      1776,
     );
     expect(filterGameResultsByScope(allGameResults, "playoff")).toHaveLength(
-      102,
+      116,
     );
     expect(
       filterGameResultsByScope(allGameResults, "consolation"),
-    ).toHaveLength(252);
+    ).toHaveLength(266);
   });
 
   it("marks managers active when they played in the latest imported season", () => {
@@ -264,7 +305,7 @@ describe("historical workbook data", () => {
     expect(richard).toMatchObject({
       isActive: true,
       firstSeasonYear: 2015,
-      lastSeasonYear: 2024,
+      lastSeasonYear: 2025,
     });
     expect(kevin).toMatchObject({
       isActive: false,
@@ -283,36 +324,39 @@ describe("historical workbook data", () => {
     expect(josh).toMatchObject({
       managerName: "Josh Charest",
       isActive: true,
-      lastSeasonYear: 2024,
-      seasonsPlayed: 10,
+      lastSeasonYear: 2025,
+      seasonsPlayed: 11,
+      seasonYears: [
+        2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025,
+      ],
       career: {
-        games: 146,
-        wins: 72,
-        losses: 73,
+        games: 162,
+        wins: 83,
+        losses: 78,
         ties: 1,
-        pointsFor: 17189.16,
-        pointsAgainst: 16961.36,
-        averagePointsFor: 117.7,
-        averagePointsAgainst: 116.2,
+        pointsFor: 19237.12,
+        pointsAgainst: 18715.72,
+        averagePointsFor: 118.7,
+        averagePointsAgainst: 115.5,
       },
       regularSeason: {
-        games: 134,
-        wins: 67,
-        losses: 67,
+        games: 148,
+        wins: 76,
+        losses: 72,
         ties: 0,
       },
       playoffs: {
-        games: 12,
-        wins: 5,
+        games: 14,
+        wins: 7,
         losses: 6,
         ties: 1,
       },
       trophyTally: {
-        gold: 1,
+        gold: 2,
         silver: 1,
         bronze: 2,
-        totalPodiums: 4,
-        firstPlaceYears: [2022],
+        totalPodiums: 5,
+        firstPlaceYears: [2022, 2025],
         secondPlaceYears: [2015],
         thirdPlaceYears: [2016, 2017],
       },
@@ -357,7 +401,7 @@ describe("historical workbook data", () => {
         weekNumber: 1,
       },
     });
-    expect(josh?.games).toHaveLength(164);
+    expect(josh?.games).toHaveLength(180);
     expect(
       josh?.headToHead.find(
         (row) => row.opponentManagerName === "Kevin Zhang",

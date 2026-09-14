@@ -116,6 +116,7 @@ describe("season profile", () => {
     const profile = requireSeasonProfile(2021);
     const profile2023 = requireSeasonProfile(2023);
     const profile2024 = requireSeasonProfile(2024);
+    const profile2025 = requireSeasonProfile(2025);
 
     expect(profile.champions.map((champion) => champion.managerName)).toEqual([
       "LD Lu",
@@ -141,6 +142,44 @@ describe("season profile", () => {
     expect(profile2024.finalStandings.map((standing) => standing.finish)).toEqual([
       1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
     ]);
+    expect(profile2025.champions.map((champion) => champion.managerName)).toEqual([
+      "Josh Charest",
+    ]);
+    expect(profile2025.championshipMatchup).toMatchObject({
+      weekNumber: 17,
+      gameType: "playoff",
+      finalSeedingRank: 1,
+      margin: 33.3,
+      first: {
+        managerName: "Richard Li",
+        points: 99.1,
+        finalFinish: 2,
+      },
+      second: {
+        managerName: "Josh Charest",
+        points: 132.4,
+        finalFinish: 1,
+      },
+      winner: {
+        managerName: "Josh Charest",
+        points: 132.4,
+        finalFinish: 1,
+      },
+    });
+    expect(profile2025.finalStandings.slice(0, 3)).toMatchObject([
+      { finish: 1, managerName: "Josh Charest" },
+      { finish: 2, managerName: "Richard Li" },
+      { finish: 3, managerName: "Nick Bello" },
+    ]);
+    expect(profile2025.finalStandings.map((standing) => standing.finish)).toEqual([
+      1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+    ]);
+    expect(profile2025).toMatchObject({
+      regularMatchupCount: 84,
+      playoffMatchupCount: 7,
+      consolationMatchupCount: 7,
+      officialMatchupCount: 91,
+    });
   });
 
   it("keeps season records attached to their source matchup", () => {
@@ -167,6 +206,6 @@ describe("season profile", () => {
   });
 
   it("returns null for seasons that are not imported yet", () => {
-    expect(getSeasonProfile(historicalLeagueData, 2025)).toBeNull();
+    expect(getSeasonProfile(historicalLeagueData, 2026)).toBeNull();
   });
 });

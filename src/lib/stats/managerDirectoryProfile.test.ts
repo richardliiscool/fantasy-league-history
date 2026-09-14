@@ -11,7 +11,7 @@ describe("manager directory profile", () => {
       activeManagerCount: 12,
       inactiveManagerCount: 5,
       podiumManagerCount: 12,
-      titleCount: 11,
+      titleCount: 12,
     });
     expect(profile.rows).toHaveLength(17);
     expect(profile.rows.slice(0, 12).every((row) => row.isActive)).toBe(true);
@@ -31,18 +31,18 @@ describe("manager directory profile", () => {
       managerName: "Richard Li",
       isActive: true,
       firstSeasonYear: 2015,
-      lastSeasonYear: 2024,
-      seasonsPlayed: 10,
+      lastSeasonYear: 2025,
+      seasonsPlayed: 11,
       seasonYears: [
-        2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024,
+        2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025,
       ],
       career: {
-        games: 149,
-        wins: 92,
-        losses: 57,
+        games: 165,
+        wins: 103,
+        losses: 62,
         ties: 0,
-        winPercentage: 0.617,
-        pointsFor: 17921.38,
+        winPercentage: 0.624,
+        pointsFor: 19870.88,
       },
     });
     expect(kevin).toMatchObject({
@@ -72,11 +72,11 @@ describe("manager directory profile", () => {
       firstPlaceYears: [2019, 2021, 2022],
     });
     expect(josh?.trophyTally).toMatchObject({
-      gold: 1,
+      gold: 2,
       silver: 1,
       bronze: 2,
-      totalPodiums: 4,
-      firstPlaceYears: [2022],
+      totalPodiums: 5,
+      firstPlaceYears: [2022, 2025],
       secondPlaceYears: [2015],
       thirdPlaceYears: [2016, 2017],
     });
@@ -85,10 +85,10 @@ describe("manager directory profile", () => {
         ?.trophyTally,
     ).toMatchObject({
       gold: 2,
-      silver: 1,
+      silver: 2,
       bronze: 2,
-      totalPodiums: 5,
-      secondPlaceYears: [2024],
+      totalPodiums: 6,
+      secondPlaceYears: [2024, 2025],
     });
     expect(kevin?.trophyTally).toMatchObject({
       gold: 0,
