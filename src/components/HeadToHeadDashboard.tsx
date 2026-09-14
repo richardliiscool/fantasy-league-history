@@ -130,7 +130,10 @@ export function HeadToHeadDashboard({
     [scopedGames],
   );
   const closestGame = useMemo(
-    () => [...scopedGames].sort(compareGamesByMarginAscending)[0] ?? null,
+    () =>
+      [...scopedGames]
+        .filter((game) => game.margin > 0)
+        .sort(compareGamesByMarginAscending)[0] ?? null,
     [scopedGames],
   );
 

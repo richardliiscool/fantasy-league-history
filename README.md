@@ -121,8 +121,10 @@ npm run build
 - Manager game logs show the first 10 rows and can expand 10 more at a time.
 - Manager game logs can filter down to one opponent.
 - Season archive pages exist for each imported season from 2015 through 2025.
+- Seasons index page exists with a year-by-year podium and last-place table from newest to oldest.
 - Season archive pages use workbook finish-order data, including tied finishers when the historical result calls for it, and the final standings table can be sorted by finish, manager, team, records, PF, PA, Avg PF, and Avg PA.
 - Season archive pages consolidate biggest win/loss into a single biggest-margin game card.
+- Closest-game cards and tables ignore tied games, so closest margin means the smallest non-zero margin.
 - Records page exists with podium trophy tallies, global filters, top-10 score and margin tables, and sortable manager-season records.
 - Head-to-head comparison pages exist for manager rivalries, including score splits, highest-score/closest-game cards, and sortable rivalry game logs.
 - Manager directory page exists with sortable career stats, podium counts, active/inactive treatment, and links into manager profiles or head-to-head comparisons.

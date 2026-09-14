@@ -26,6 +26,8 @@ type HeadToHeadMatrixDashboardProps = {
 type ManagerStatusFilter = "active" | "all" | "inactive";
 type CellDisplayMode = "record" | "winPercentage" | "games";
 
+const DOMINATED_MATCHUP_MIN_GAMES = 9;
+
 const gameScopeOptions: SegmentOption<GameScope>[] = [
   { value: "official", label: GAME_SCOPE_LABELS.official },
   { value: "regular", label: GAME_SCOPE_LABELS.regular },
@@ -78,8 +80,8 @@ export function HeadToHeadMatrixDashboard({
         })),
     [profile.managers, profile.rows, visibleManagerIds],
   );
-  const leader = useMemo(
-    () => getMatrixLeader(visibleRows, gameScope),
+  const mostDominated = useMemo(
+    () => getMostDominatedCell(visibleRows, gameScope),
     [gameScope, visibleRows],
   );
   const mostPlayed = useMemo(
@@ -157,9 +159,9 @@ export function HeadToHeadMatrixDashboard({
           detail="change the game set above"
         />
         <SummaryCard
-          label="Best Cell"
-          value={formatLeaderValue(leader?.record)}
-          detail={formatLeaderDetail(leader)}
+          label="Most Dominated Matchup"
+          value={formatLeaderValue(mostDominated?.record)}
+          detail={formatLeaderDetail(mostDominated)}
         />
         <SummaryCard
           label="Most Played"
@@ -345,54 +347,53 @@ function getVisibleMatchupCellCount(managerCount: number) {
   return managerCount * Math.max(managerCount - 1, 0);
 }
 
-function getMatrixLeader(rows: HeadToHeadMatrixRow[], scope: GameScope) {
-  return rows
-    .flatMap((row) =>
-      row.cells.flatMap((cell) => {
-        if (!cell) {
-          return [];
-        }
+function getMatrixCellsWithManagers(
+  rows: HeadToHeadMatrixRow[],
+  scope: GameScope,
+) {
+  return rows.flatMap((row) =>
+    row.cells.flatMap((cell) => {
+      if (!cell) {
+        return [];
+      }
 
-        return [
-          {
-            manager: row.manager,
-            opponent: rows.find(
-              (matrixRow) => matrixRow.manager.managerId === cell.columnManagerId,
-            )?.manager,
-            record: cell.summariesByScope[scope],
-          },
-        ];
-      }),
-    )
-    .filter((item) => item.record.games > 0)
-    .sort(
-      (first, second) =>
-        second.record.winPercentage - first.record.winPercentage ||
-        second.record.games - first.record.games ||
-        second.record.wins - first.record.wins ||
-        first.manager.managerName.localeCompare(second.manager.managerName),
-    )[0] ?? null;
+      return [
+        {
+          manager: row.manager,
+          opponent: rows.find(
+            (matrixRow) => matrixRow.manager.managerId === cell.columnManagerId,
+          )?.manager,
+          record: cell.summariesByScope[scope],
+        },
+      ];
+    }),
+  );
+}
+
+function getMostDominatedCell(rows: HeadToHeadMatrixRow[], scope: GameScope) {
+  const candidates = getMatrixCellsWithManagers(rows, scope).filter(
+    (item) => item.record.games > 0,
+  );
+  const qualifiedCandidates = candidates.filter(
+    (item) => item.record.games >= DOMINATED_MATCHUP_MIN_GAMES,
+  );
+  const rankedCandidates =
+    qualifiedCandidates.length > 0 ? qualifiedCandidates : candidates;
+
+  return (
+    rankedCandidates
+      .sort(
+        (first, second) =>
+          second.record.winPercentage - first.record.winPercentage ||
+          second.record.games - first.record.games ||
+          second.record.wins - first.record.wins ||
+          first.manager.managerName.localeCompare(second.manager.managerName),
+      )[0] ?? null
+  );
 }
 
 function getMostPlayedCell(rows: HeadToHeadMatrixRow[], scope: GameScope) {
-  return rows
-    .flatMap((row) =>
-      row.cells.flatMap((cell) => {
-        if (!cell) {
-          return [];
-        }
-
-        return [
-          {
-            manager: row.manager,
-            opponent: rows.find(
-              (matrixRow) => matrixRow.manager.managerId === cell.columnManagerId,
-            )?.manager,
-            record: cell.summariesByScope[scope],
-          },
-        ];
-      }),
-    )
+  return getMatrixCellsWithManagers(rows, scope)
     .filter((item) => item.record.games > 0)
     .sort(
       (first, second) =>

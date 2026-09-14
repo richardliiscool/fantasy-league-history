@@ -196,11 +196,11 @@ describe("season profile", () => {
       },
     });
     expect(profile.records.closestGame).toMatchObject({
-      margin: 0,
+      margin: 0.34,
       matchup: {
-        weekNumber: 17,
-        first: { managerName: "LD Lu", points: 103.66 },
-        second: { managerName: "Josh Charest", points: 103.66 },
+        weekNumber: 3,
+        first: { managerName: "Sai Vangala", points: 90.96 },
+        second: { managerName: "Tony Zheng", points: 91.3 },
       },
     });
   });

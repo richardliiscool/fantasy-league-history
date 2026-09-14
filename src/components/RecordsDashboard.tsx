@@ -111,6 +111,7 @@ export function RecordsDashboard({
   const closestGames = useMemo(
     () =>
       [...filteredMatchupRows]
+        .filter((row) => row.margin > 0)
         .sort(compareMatchupsByMarginAscending)
         .slice(0, GAME_RECORD_LIMIT),
     [filteredMatchupRows],

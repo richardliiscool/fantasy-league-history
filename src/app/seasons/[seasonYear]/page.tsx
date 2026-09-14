@@ -103,12 +103,20 @@ export default async function SeasonPage({ params }: SeasonPageProps) {
     <main className="min-h-screen bg-[#f4f5f7] text-[#17191f]">
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-8 px-4 py-6 sm:px-6 lg:px-8">
         <header className="border-b border-[#d9dee4] pb-6">
-          <Link
-            href="/"
-            className="text-sm font-semibold text-[#2f6f50] underline-offset-4 hover:underline"
-          >
-            Back to League Vault
-          </Link>
+          <div className="flex flex-wrap gap-3">
+            <Link
+              href="/"
+              className="text-sm font-semibold text-[#2f6f50] underline-offset-4 hover:underline"
+            >
+              Back to League Vault
+            </Link>
+            <Link
+              href="/seasons"
+              className="text-sm font-semibold text-[#2f6f50] underline-offset-4 hover:underline"
+            >
+              All Seasons
+            </Link>
+          </div>
 
           <div className="mt-5 grid gap-5 lg:grid-cols-[1fr_0.95fr] lg:items-end">
             <div>

@@ -290,7 +290,10 @@ const getSeasonRecords = (
   const officialMatchups = matchups.filter(isOfficialMatchup);
   const scoreRecords = getSeasonScoreRecords(officialMatchups);
   const biggestMargin = maxBy(officialMatchups, (matchup) => matchup.margin);
-  const closestGame = minBy(officialMatchups, (matchup) => matchup.margin);
+  const closestGame = minBy(
+    officialMatchups.filter((matchup) => matchup.margin > 0),
+    (matchup) => matchup.margin,
+  );
 
   return {
     highestScore: maxBy(scoreRecords, (record) => record.points),

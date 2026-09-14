@@ -49,7 +49,9 @@ export default function Home() {
     [...officialMatchupRecords].sort(compareMatchupsByMarginDescending)[0] ??
     null;
   const closestGameRecord =
-    [...officialMatchupRecords].sort(compareMatchupsByMarginAscending)[0] ??
+    [...officialMatchupRecords]
+      .filter((row) => row.margin > 0)
+      .sort(compareMatchupsByMarginAscending)[0] ??
     null;
   const seasons = historicalLeagueData.seasons.map((season) => season.year);
   const latestSeasonYear = Math.max(...seasons);
@@ -180,10 +182,10 @@ export default function Home() {
               H2H Matrix
             </Link>
             <Link
-              href="/audit"
-              className="rounded-md border border-[#d9dee4] bg-[#f8f9fb] px-3 py-2 text-sm font-semibold text-[#58606a] underline-offset-4 hover:border-[#2f6f50] hover:text-[#2f6f50] hover:underline sm:ml-auto"
+              href="/seasons"
+              className="rounded-md border border-[#b8c0c9] bg-white px-3 py-2 text-sm font-semibold text-[#17191f] underline-offset-4 hover:border-[#2f6f50] hover:text-[#2f6f50] hover:underline"
             >
-              Audit
+              Seasons
             </Link>
           </div>
         </header>
